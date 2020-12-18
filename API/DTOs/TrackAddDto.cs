@@ -6,8 +6,6 @@ namespace API.DTOs {
 
         [Required]
         public string URL { get; set; }
-        [Required]
-        public DateTime CreatedOn { get; set; }
         public UserDto user { get; set; }
     }
 }

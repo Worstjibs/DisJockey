@@ -18,7 +18,7 @@ namespace API.Controllers {
             _userRepository = userRepository;
         }
 
-        [HttpPost("add")]
+        [HttpPost]
         public async Task<ActionResult> AddTrack(TrackAddDto trackDto) {
             // Find the user using the UserDto in the TrackDto
             var user = await _userRepository.GetUserByUsernameAsync(trackDto.user.Username);
@@ -41,7 +41,7 @@ namespace API.Controllers {
             return Ok();
         }
 
-        [HttpGet("get/{id}")]
+        [HttpGet("{id}")]
         public async Task<ActionResult<TrackDto>> GetTrackById(int id) {
             var track = await _trackRepository.GetTrackByIdAsync(id);
 
@@ -55,7 +55,7 @@ namespace API.Controllers {
             return Ok(trackDto);
         }
 
-        [HttpGet("get")]
+        [HttpGet]
         public async Task<ActionResult<IEnumerable<TrackDto>>> GetTracks() {
             return Ok(await _trackRepository.GetTracksAsync());
         }
