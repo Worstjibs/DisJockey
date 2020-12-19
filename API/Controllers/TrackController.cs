@@ -1,12 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using API.Data;
 using API.DTOs;
 using API.Entities;
 using API.Interfaces;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.WebUtilities;
 
 namespace API.Controllers {
     public class TrackController : BaseApiController {
@@ -26,14 +25,25 @@ namespace API.Controllers {
             // If the user doesn't exist, return a BadRequest
             if (user == null) return BadRequest("User does not exist");
 
-            if (!trackDto.URL.Contains("https://youtu")) return BadRequest("Must be Youtube Link");
+            // Validate the URL before attempting to get the YoutubeId from it
+            if (!trackDto.URL.Contains("youtu")) return BadRequest("Must be Youtube Link");
 
-            var track = new Track
-            {
-                URL = trackDto.URL,
-                CreatedOn = DateTime.Now
-            };
+            // Get the YoutubeId
+            var youtubeId = GetYouTubeId(trackDto.URL);
+            if (youtubeId == null) return BadRequest("Something is wrong with the URL");
 
+            // See if the track already exists
+            var track = await _trackRepository.GetTrackByYoutubeIdAsync(youtubeId);
+
+            // If it doesn't create a record for it
+            if (track == null) {
+                track = new Track {
+                    YoutubeId = youtubeId,
+                    CreatedOn = DateTime.Now
+                };
+            }
+
+            // Add the track to the user
             user.Tracks.Add(track);
 
             await _userRepository.SaveAllAsync();
@@ -48,7 +58,7 @@ namespace API.Controllers {
             if (track == null) return BadRequest("Track does not exist");
 
             TrackDto trackDto = new TrackDto {
-                URL = track.URL,
+                YoutubeId = track.YoutubeId,
                 CreatedOn = track.CreatedOn
             };
 
@@ -58,6 +68,28 @@ namespace API.Controllers {
         [HttpGet]
         public async Task<ActionResult<IEnumerable<TrackDto>>> GetTracks() {
             return Ok(await _trackRepository.GetTracksAsync());
+        }
+
+        public string GetYouTubeId(string url) {
+            try {
+                Uri uri = new Uri(url);
+
+                if (uri == null) return null;
+
+                string youtubeId = null;
+
+                if (url.Contains("youtube.com")) {
+                    var queryString = QueryHelpers.ParseQuery(uri.Query);
+
+                    if (queryString.ContainsKey("v")) youtubeId = queryString["v"];
+                } else if (url.Contains("youtu.be")) {
+                    youtubeId = uri.Segments[1];
+                }
+
+                return youtubeId;
+            } catch {
+                throw new Exception("Something went wrong");
+            }
         }
     }
 }

@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using API.Data;
 using API.DTOs;
@@ -20,7 +21,8 @@ namespace API.Controllers {
             // Generate a new AppUser
             AppUser user = new AppUser
             {
-                UserName = registerDto.Username.ToLower()
+                UserName = registerDto.Username.ToLower(),
+                CreatedOn = DateTime.Now
             };
 
             // Add it to the DbContext

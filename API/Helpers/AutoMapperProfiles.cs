@@ -7,7 +7,12 @@ namespace API.Helpers {
         public AutoMapperProfiles() {
             CreateMap<AppUser, MemberDto>();
 
+            CreateMap<AppUser, UserDto>();
+
             CreateMap<Track, TrackDto>();
+
+            CreateMap<Track, TrackUsersDto>()
+                .ForMember(dest => dest.Users, opt => opt.MapFrom(src => src.AppUsers));
         }
     }
 }

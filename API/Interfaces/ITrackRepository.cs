@@ -5,7 +5,8 @@ using API.Entities;
 
 namespace API.Interfaces {
     public interface ITrackRepository {
-        Task<IEnumerable<TrackDto>> GetTracksAsync();
         Task<Track> GetTrackByIdAsync(int id);
+        Task<Track> GetTrackByYoutubeIdAsync(string youtubeId);
+        Task<IEnumerable<TrackUsersDto>> GetTracksAsync();
     }
 }

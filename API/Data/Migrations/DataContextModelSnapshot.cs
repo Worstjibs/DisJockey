@@ -39,32 +39,45 @@ namespace API.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<int?>("AppUserId")
-                        .HasColumnType("INTEGER");
-
                     b.Property<DateTime>("CreatedOn")
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("URL")
+                    b.Property<string>("YoutubeId")
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("AppUserId");
-
                     b.ToTable("Tracks");
                 });
 
-            modelBuilder.Entity("API.Entities.Track", b =>
+            modelBuilder.Entity("AppUserTrack", b =>
                 {
-                    b.HasOne("API.Entities.AppUser", null)
-                        .WithMany("Tracks")
-                        .HasForeignKey("AppUserId");
+                    b.Property<int>("AppUsersId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("TracksId")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("AppUsersId", "TracksId");
+
+                    b.HasIndex("TracksId");
+
+                    b.ToTable("AppUserTrack");
                 });
 
-            modelBuilder.Entity("API.Entities.AppUser", b =>
+            modelBuilder.Entity("AppUserTrack", b =>
                 {
-                    b.Navigation("Tracks");
+                    b.HasOne("API.Entities.AppUser", null)
+                        .WithMany()
+                        .HasForeignKey("AppUsersId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("API.Entities.Track", null)
+                        .WithMany()
+                        .HasForeignKey("TracksId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 #pragma warning restore 612, 618
         }

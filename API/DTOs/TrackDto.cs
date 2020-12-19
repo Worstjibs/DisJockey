@@ -1,9 +1,9 @@
 using System;
-using System.ComponentModel.DataAnnotations;
+using System.Collections.Generic;
 
 namespace API.DTOs {
     public class TrackDto {
-        public string URL { get; set; }
+        public string YoutubeId { get; set; }
         public DateTime CreatedOn { get; set; }
     }
 }
