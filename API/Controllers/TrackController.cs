@@ -57,14 +57,9 @@ namespace API.Controllers {
 
             if (track == null) return BadRequest("Track does not exist");
 
-            var likes = await _trackRepository.GetTrackLikes(track, true);
-            var dislikes = await _trackRepository.GetTrackLikes(track, false);
-
             TrackDto trackDto = new TrackDto {
                 YoutubeId = track.YoutubeId,
-                CreatedOn = track.CreatedOn,
-                Likes = likes,
-                Dislikes = dislikes
+                CreatedOn = track.CreatedOn
             };
 
             return Ok(trackDto);

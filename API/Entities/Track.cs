@@ -9,5 +9,6 @@ namespace API.Entities {
         public string YoutubeId { get; set; }
         public DateTime CreatedOn { get; set; }
         public virtual ICollection<AppUser> AppUsers { get; set; }
+        public virtual ICollection<TrackLikes> Likes { get; set; }
     }
 }

@@ -3,5 +3,7 @@ import { User } from "./user";
 export interface Track {
     youtubeId: string,
     users: User[],
-    createdOn: Date
+    createdOn: Date,
+    likes: Number,
+    dislikes: Number
 }

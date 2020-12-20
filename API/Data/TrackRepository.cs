@@ -25,24 +25,32 @@ namespace API.Data {
         public async Task<Track> GetTrackByYoutubeIdAsync(string youtubeId) {
             return await _context.Tracks
                 .Include(x => x.AppUsers)
+                .Include(x => x.Likes)
                 .FirstOrDefaultAsync(x => x.YoutubeId == youtubeId);
         }
 
         public async Task<IEnumerable<TrackUsersDto>> GetTracksAsync() {
             return await _context.Tracks
                 .Include(x => x.AppUsers)
+                .Include(x => x.Likes)
                 .OrderByDescending(x => x.CreatedOn)
                 .ProjectTo<TrackUsersDto>(_mapper.ConfigurationProvider)
                 .ToListAsync();
         }
 
-        public async Task<int> GetTrackLikes(Track track, bool liked) {
-            var likes = _context.TrackLikes;
+        // public async Task<int> GetTrackLikes(Track track, bool liked) {
+        //     // var likes = _context.TrackLikes;
             
-            return await likes
-                .Where(x => x.Track == track && x.Liked == liked)
-                .CountAsync();
-        }
+        //     // return await likes
+        //     //     .Where(x => x.Track == track && x.Liked == liked)
+        //     //     .CountAsync();
+
+        //     var track = await _context.Tracks
+        //         .Include(x => x.Likes)
+        //         .FirstOrDefaultAsync(x => x.)
+
+        //     return await _context.Track
+        // }
 
         public async Task<bool> AddTrackLike(Track track, AppUser user, bool liked) {
             // Get the TrackLike record
