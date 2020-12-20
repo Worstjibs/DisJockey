@@ -10,6 +10,6 @@ namespace API.Data {
         public DbSet<AppUser> Users { get; set; }
 
         public DbSet<Track> Tracks { get; set; }
-
+        public DbSet<TrackLikes> TrackLikes { get; set; }
     }
 }

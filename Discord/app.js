@@ -34,48 +34,45 @@ client.on("message", async message => {
     if (cmd.slice(prefix.length) == "play") {
         console.log("Play Command Used");
 
-        var trackUser = getUserById(author.id);
+        data = {
+            url: content[1],
+            user: {
+                discordId: author.id
+            }
+        }
 
-        if (!trackUser) {
-            console.log("User not logged in");
+        await axios.post(baseUrl + "/track", data)
+        .then(response => {
+            if (response.status == 200) {
+                console.log("Track Added Successfully");
+            }
+        });
+
+        return;      
+    }
+
+    if (cmd.slice(prefix.length) == "register") {
+        let username = content[1];
+
+        if (!username) {
+            console.log("Please enter a username to register");
             return;
         }
 
         data = {
-            url: content[1],
-            user: {
-                username: trackUser.username
-            }
+            username: username,
+            discordId: author.id
         }
 
-        axios.post(baseUrl + "/track", data)
+        axios.post(baseUrl + "/account/register", data)
             .then(response => {
                 if (response.status == 200) {
-                    console.log("Track Added Successfully");
+                    console.log("User Registered Successfully");
                 }
             })
             .catch(error => {
                 console.log(error);
             })  
-
-        return;      
-    }
-
-    if (cmd.slice(prefix.length) == "setuser") {
-        let username = content[1];
-
-        let checkUser = getUserById(author.id);
-
-        if (!checkUser) {
-            checkUser = {
-                id: author.id,
-                username: username
-            }
-            loggedInUsers.push(checkUser);
-        }
-
-        console.log(checkUser);
-        return;
     }
 });
 

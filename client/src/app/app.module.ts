@@ -8,25 +8,30 @@ import { NavComponent } from './nav/nav.component';
 import { HomeComponent } from './home/home.component';
 import { TracksComponent } from './tracks/tracks.component';
 import { UsersComponent } from './users/users.component';
-import { HttpClientModule } from '@angular/common/http';
+import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { YouTubePlayerModule } from '@angular/youtube-player';
+import { NgxSpinnerModule } from 'ngx-spinner';
+import { LoadingInterceptor } from './_interceptors/loading.interceptor';
 
 @NgModule({
-  declarations: [
-    AppComponent,
-    NavComponent,
-    HomeComponent,
-    TracksComponent,
-    UsersComponent
-  ],
-  imports: [
-    BrowserModule,
-    AppRoutingModule,
-    HttpClientModule,
-    YouTubePlayerModule,
-    BrowserAnimationsModule
-  ],
-  providers: [],
-  bootstrap: [AppComponent]
+    declarations: [
+        AppComponent,
+        NavComponent,
+        HomeComponent,
+        TracksComponent,
+        UsersComponent
+    ],
+    imports: [
+        BrowserModule,
+        AppRoutingModule,
+        HttpClientModule,
+        YouTubePlayerModule,
+        BrowserAnimationsModule,
+        NgxSpinnerModule
+    ],
+    providers: [
+        { provide : HTTP_INTERCEPTORS, useClass: LoadingInterceptor, multi: true }
+    ],
+    bootstrap: [AppComponent]
 })
 export class AppModule { }

@@ -11,6 +11,7 @@
             </youtube-player>
         </div>
         <div class="col-6">
+            <p>First posted on {{track.createdOn}}</p>
             <p>Posted By</p>
             <ul>
                 <li *ngFor="let user of track.users">{{user.username}}</li>

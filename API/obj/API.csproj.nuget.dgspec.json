@@ -42,6 +42,10 @@
               "target": "Package",
               "version": "[8.1.0, )"
             },
+            "Google.Apis.YouTube.v3": {
+              "target": "Package",
+              "version": "[1.49.0.2173, )"
+            },
             "Microsoft.EntityFrameworkCore.Design": {
               "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
               "suppressParent": "All",

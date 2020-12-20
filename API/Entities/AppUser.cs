@@ -7,6 +7,7 @@ namespace API.Entities {
         public int Id { get; set; }
         public DateTime CreatedOn { get; set; }
         public string UserName { get; set; }
+        public long DiscordId { get; set; }
         public virtual ICollection<Track> Tracks { get; set; }
     }
 }

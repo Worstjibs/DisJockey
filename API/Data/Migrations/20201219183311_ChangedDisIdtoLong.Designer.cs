@@ -3,14 +3,16 @@ using System;
 using API.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace API.Data.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20201219183311_ChangedDisIdtoLong")]
+    partial class ChangedDisIdtoLong
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -53,30 +55,6 @@ namespace API.Data.Migrations
                     b.ToTable("Tracks");
                 });
 
-            modelBuilder.Entity("API.Entities.TrackLikes", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<bool>("Liked")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int?>("TrackId")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int?>("UserId")
-                        .HasColumnType("INTEGER");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("TrackId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("TrackLikes");
-                });
-
             modelBuilder.Entity("AppUserTrack", b =>
                 {
                     b.Property<int>("AppUsersId")
@@ -90,21 +68,6 @@ namespace API.Data.Migrations
                     b.HasIndex("TracksId");
 
                     b.ToTable("AppUserTrack");
-                });
-
-            modelBuilder.Entity("API.Entities.TrackLikes", b =>
-                {
-                    b.HasOne("API.Entities.Track", "Track")
-                        .WithMany()
-                        .HasForeignKey("TrackId");
-
-                    b.HasOne("API.Entities.AppUser", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId");
-
-                    b.Navigation("Track");
-
-                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("AppUserTrack", b =>

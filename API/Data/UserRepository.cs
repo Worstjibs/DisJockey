@@ -30,6 +30,12 @@ namespace API.Data {
             return await _context.SaveChangesAsync() > 0;
         }
 
+        public async Task<AppUser> GetUserByDiscordIdAsync(long discordId) {
+            return await _context.Users
+                .Include(x => x.Tracks)
+                .FirstOrDefaultAsync(user => user.DiscordId == discordId);
+        }
+
         public async Task<IEnumerable<MemberDto>> GetUsersAsync() {
             return await _context.Users
                 .ProjectTo<MemberDto>(_mapper.ConfigurationProvider)

@@ -20,7 +20,7 @@ namespace API.Controllers {
         [HttpPost]
         public async Task<ActionResult> AddTrack(TrackAddDto trackDto) {
             // Find the user using the UserDto in the TrackDto
-            var user = await _userRepository.GetUserByUsernameAsync(trackDto.user.Username);
+            var user = await _userRepository.GetUserByDiscordIdAsync(trackDto.User.DiscordId);
 
             // If the user doesn't exist, return a BadRequest
             if (user == null) return BadRequest("User does not exist");
@@ -57,17 +57,35 @@ namespace API.Controllers {
 
             if (track == null) return BadRequest("Track does not exist");
 
+            var likes = await _trackRepository.GetTrackLikes(track, true);
+            var dislikes = await _trackRepository.GetTrackLikes(track, false);
+
             TrackDto trackDto = new TrackDto {
                 YoutubeId = track.YoutubeId,
-                CreatedOn = track.CreatedOn
+                CreatedOn = track.CreatedOn,
+                Likes = likes,
+                Dislikes = dislikes
             };
 
             return Ok(trackDto);
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<TrackDto>>> GetTracks() {
+        public async Task<ActionResult<IEnumerable<TrackUsersDto>>> GetTracks() {
             return Ok(await _trackRepository.GetTracksAsync());
+        }
+
+        [HttpPost("like")]
+        public async Task<ActionResult> LikeTrack(TrackLikeDto trackLikeDto) {
+            var user = await _userRepository.GetUserByUsernameAsync((trackLikeDto.Username));
+
+            if (user == null) return BadRequest("Invalid Username");
+
+            var track = await _trackRepository.GetTrackByYoutubeIdAsync(trackLikeDto.YoutubeId);
+
+            if (track == null) return BadRequest("Invalid Youtube Id");
+
+            return Ok(await _trackRepository.AddTrackLike(track, user, trackLikeDto.Liked));
         }
 
         public string GetYouTubeId(string url) {

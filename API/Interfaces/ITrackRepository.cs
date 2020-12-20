@@ -8,5 +8,8 @@ namespace API.Interfaces {
         Task<Track> GetTrackByIdAsync(int id);
         Task<Track> GetTrackByYoutubeIdAsync(string youtubeId);
         Task<IEnumerable<TrackUsersDto>> GetTracksAsync();
+
+        Task<int> GetTrackLikes(Track track, bool liked);
+        Task<bool> AddTrackLike(Track track, AppUser user, bool liked);
     }
 }

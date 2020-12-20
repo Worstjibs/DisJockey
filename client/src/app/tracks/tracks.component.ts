@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Observable } from 'rxjs';
 import { TracksService } from '../_services/tracks.service';
-import { HttpClient } from '@angular/common/http';
+import { Track } from '../_models/track';
 
 @Component({
     selector: 'app-tracks',
@@ -9,9 +9,9 @@ import { HttpClient } from '@angular/common/http';
     styleUrls: ['./tracks.component.css']
 })
 export class TracksComponent implements OnInit {
-    tracks$: any;
+    tracks$: Observable<Track[]>;
 
-    constructor(private tracksService: TracksService, private http: HttpClient) { }
+    constructor(private tracksService: TracksService) { }
 
     ngOnInit(): void {
         this.tracks$ = this.tracksService.getTracks();

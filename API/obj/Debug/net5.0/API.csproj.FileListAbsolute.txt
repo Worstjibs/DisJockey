@@ -56,3 +56,9 @@ E:\Morgan\OneDrive\Discord Youtube Playlist Project\API\bin\Debug\net5.0\Humaniz
 E:\Morgan\OneDrive\Discord Youtube Playlist Project\API\bin\Debug\net5.0\Microsoft.EntityFrameworkCore.Design.dll
 E:\Morgan\OneDrive\Discord Youtube Playlist Project\API\bin\Debug\net5.0\AutoMapper.dll
 E:\Morgan\OneDrive\Discord Youtube Playlist Project\API\bin\Debug\net5.0\AutoMapper.Extensions.Microsoft.DependencyInjection.dll
+E:\Morgan\OneDrive\Discord Youtube Playlist Project\API\bin\Debug\net5.0\Google.Apis.dll
+E:\Morgan\OneDrive\Discord Youtube Playlist Project\API\bin\Debug\net5.0\Google.Apis.Auth.PlatformServices.dll
+E:\Morgan\OneDrive\Discord Youtube Playlist Project\API\bin\Debug\net5.0\Google.Apis.Auth.dll
+E:\Morgan\OneDrive\Discord Youtube Playlist Project\API\bin\Debug\net5.0\Google.Apis.Core.dll
+E:\Morgan\OneDrive\Discord Youtube Playlist Project\API\bin\Debug\net5.0\Google.Apis.YouTube.v3.dll
+E:\Morgan\OneDrive\Discord Youtube Playlist Project\API\bin\Debug\net5.0\Newtonsoft.Json.dll

@@ -9,6 +9,7 @@ namespace API.Interfaces {
         Task<bool> SaveAllAsync();
         Task<AppUser> GetUserByIdAsync(int id);
         Task<AppUser> GetUserByUsernameAsync(string username);
+        Task<AppUser> GetUserByDiscordIdAsync(long discordId);
         Task<IEnumerable<MemberDto>> GetUsersAsync();
     }
 }
