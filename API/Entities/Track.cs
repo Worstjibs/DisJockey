@@ -11,7 +11,9 @@ namespace API.Entities {
         public string Description { get; set; }
         public string ChannelTitle { get; set; }
         public DateTime CreatedOn { get; set; } = DateTime.UtcNow;
-        public string Thumbnail { get; set; }
+        public string SmallThumbnail { get; set; }
+        public string MediumThumbnail { get; set; }
+        public string LargeThumbnail { get; set; }
         public virtual ICollection<AppUserTrack> AppUsers { get; set; }
         public virtual ICollection<TrackLikes> Likes { get; set; }
     }

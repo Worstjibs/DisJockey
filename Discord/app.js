@@ -34,6 +34,11 @@ client.on("message", async message => {
     if (cmd.slice(prefix.length) == "play") {
         console.log("Play Command Used");
 
+        if (!content[1].includes("youtu")) {
+            console.log("Link must be a youtube url");
+            return;
+        }
+
         data = {
             url: content[1],
             user: {
@@ -46,7 +51,10 @@ client.on("message", async message => {
             if (response.status == 200) {
                 console.log("Track Added Successfully");
             }
-        });
+        })
+        .catch(error => {
+            console.log("Error with adding track");
+        })
 
         return;      
     }
@@ -64,7 +72,7 @@ client.on("message", async message => {
             discordId: author.id
         }
 
-        axios.post(baseUrl + "/account/register", data)
+        await axios.post(baseUrl + "/account/register", data)
             .then(response => {
                 if (response.status == 200) {
                     console.log("User Registered Successfully");
@@ -72,7 +80,9 @@ client.on("message", async message => {
             })
             .catch(error => {
                 console.log(error);
-            })  
+            });
+
+        return;
     }
 });
 

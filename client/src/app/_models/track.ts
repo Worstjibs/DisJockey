@@ -5,5 +5,11 @@ export interface Track {
     users: User[],
     createdOn: Date,
     likes: Number,
-    dislikes: Number
+    dislikes: Number,
+    title: string,
+    channelTitle: string,
+    description: string,
+    smallThumbnail: string,
+    mediumThumbnail: string,
+    largeThumbnail: string
 }

@@ -56,7 +56,9 @@ namespace API.Controllers {
                     Title = youtubeVideoDetails?.Title,
                     Description = youtubeVideoDetails?.Description,
                     ChannelTitle = youtubeVideoDetails?.ChannelTitle,
-                    Thumbnail =  youtubeVideoDetails?.Thumbnail
+                    SmallThumbnail = youtubeVideoDetails?.SmallThumbnail,
+                    MediumThumbnail = youtubeVideoDetails?.MediumThumbnail,
+                    LargeThumbnail = youtubeVideoDetails?.LargeThumbnail,
                 };
             }
 
@@ -123,7 +125,9 @@ namespace API.Controllers {
                     Title = youtubeVideo.Snippet.Title,
                     Description = youtubeVideo.Snippet.Description,
                     ChannelTitle = youtubeVideo.Snippet.ChannelTitle,
-                    Thumbnail = youtubeVideo.Snippet.Thumbnails.Medium.Url
+                    SmallThumbnail = youtubeVideo.Snippet.Thumbnails.Medium.Url,
+                    MediumThumbnail = youtubeVideo.Snippet.Thumbnails.High.Url,
+                    LargeThumbnail = youtubeVideo.Snippet.Thumbnails.Standard.Url
                 };
             }
 

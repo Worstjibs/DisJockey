@@ -45,12 +45,12 @@ namespace API.Controllers {
             };
         }
 
-        public async Task<bool> CheckUserExists(string username) {
+        private async Task<bool> CheckUserExists(string username) {
             // Query the DbContext to see if a user exists with the same username
             return await _context.Users.AnyAsync(user => user.UserName == username.ToLower());
         }
 
-        public async Task<bool> CheckDiscordUserExists(long discordId) {
+        private async Task<bool> CheckDiscordUserExists(long discordId) {
             // Query the DbContext to see if a user exists with the same DiscordId
             return await _context.Users.AnyAsync(user => user.DiscordId == discordId);
         }

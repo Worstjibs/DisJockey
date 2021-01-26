@@ -1,25 +1,28 @@
 <div class="container">
-    <div class="row mt-3" *ngFor="let track of tracks$ | async">
-        <div class="col-5">
-            <youtube-player 
+    <div class="row mt-3 border border-rounded border-dark" *ngFor="let track of tracks$ | async">
+        <div class="col my-3">
+            <img src="{{track.mediumThumbnail}}" alt="" class="img-fluid">
+            <!-- <youtube-player 
                 videoId="{{track.youtubeId}}" 
                 suggestedQuality="highres" 
-                [height]="250" 
-                [width]="400" 
-                [startSeconds]="4"
-                [endSeconds]="8">
-            </youtube-player>
+                [height]="220" 
+                [width]="400">
+            </youtube-player> -->
         </div>
-        <div class="col-6">
-            <p>First posted on {{track.createdOn}}</p>
+        <div class="col-7 my-3">
+            <h4>{{track.title}}</h4>
+            <h5>{{track.channelTitle}}</h5>
+            <hr>
+            <p>First posted on {{track.createdOn | date: 'dd MMMM yyyy'}}</p>
             <p>Posted By</p>
             <ul>
                 <li *ngFor="let user of track.users">{{user.username}}</li>
             </ul>
-            <div class="container">
-                <p>Likes: {{track.likes}}</p>
-                <p>Dislikes: {{track.dislikes}}</p>
+            <div class="d-flex justify-content-around w-25">
+                <span><i class="fas fa-thumbs-up"></i>   {{track.likes}}</span>
+                <span><i class="fas fa-thumbs-down"></i>   {{track.dislikes}}</span>
             </div>
         </div>
     </div>
+    <hr>
 </div>
