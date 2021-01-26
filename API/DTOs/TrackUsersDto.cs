@@ -10,5 +10,8 @@ namespace API.DTOs
         public ICollection<UserDto> Users { get; set; }
         public int Likes { get; set; }
         public int Dislikes { get; set; }
+        public string Title { get; set; }
+        public string Description { get; set; }
+        public string ChannelTitle { get; set; }
     }
 }

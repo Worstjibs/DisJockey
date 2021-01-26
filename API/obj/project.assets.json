@@ -1570,11 +1570,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "e:\\Morgan\\OneDrive\\Discord Youtube Playlist Project\\API\\API.csproj",
+      "projectUniqueName": "E:\\Morgan\\OneDrive\\Discord Youtube Playlist Project\\API\\API.csproj",
       "projectName": "API",
-      "projectPath": "e:\\Morgan\\OneDrive\\Discord Youtube Playlist Project\\API\\API.csproj",
+      "projectPath": "E:\\Morgan\\OneDrive\\Discord Youtube Playlist Project\\API\\API.csproj",
       "packagesPath": "C:\\Users\\Morgan\\.nuget\\packages\\",
-      "outputPath": "e:\\Morgan\\OneDrive\\Discord Youtube Playlist Project\\API\\obj\\",
+      "outputPath": "E:\\Morgan\\OneDrive\\Discord Youtube Playlist Project\\API\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\Morgan\\AppData\\Roaming\\NuGet\\NuGet.Config"

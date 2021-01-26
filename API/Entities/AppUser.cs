@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace API.Entities {
     public class AppUser {
@@ -8,6 +7,6 @@ namespace API.Entities {
         public DateTime CreatedOn { get; set; }
         public string UserName { get; set; }
         public long DiscordId { get; set; }
-        public virtual ICollection<Track> Tracks { get; set; }
+        public virtual ICollection<AppUserTrack> Tracks { get; set; }
     }
 }

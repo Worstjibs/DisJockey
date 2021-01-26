@@ -3,20 +3,13 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace API.Data.Migrations
 {
-    public partial class AddedCreatedOn : Migration
+    public partial class AddedCreatedOncolumn : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.AddColumn<DateTime>(
                 name: "CreatedOn",
-                table: "Users",
-                type: "TEXT",
-                nullable: false,
-                defaultValue: new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified));
-
-            migrationBuilder.AddColumn<DateTime>(
-                name: "CreatedOn",
-                table: "Tracks",
+                table: "UserTracks",
                 type: "TEXT",
                 nullable: false,
                 defaultValue: new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified));
@@ -26,11 +19,7 @@ namespace API.Data.Migrations
         {
             migrationBuilder.DropColumn(
                 name: "CreatedOn",
-                table: "Users");
-
-            migrationBuilder.DropColumn(
-                name: "CreatedOn",
-                table: "Tracks");
+                table: "UserTracks");
         }
     }
 }

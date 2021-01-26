@@ -9,8 +9,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace API.Data.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20201220140301_AddedTrackLikestoTrackEntity")]
-    partial class AddedTrackLikestoTrackEntity
+    [Migration("20210126110918_Added CreatedOn column")]
+    partial class AddedCreatedOncolumn
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -38,13 +38,43 @@ namespace API.Data.Migrations
                     b.ToTable("Users");
                 });
 
+            modelBuilder.Entity("API.Entities.AppUserTrack", b =>
+                {
+                    b.Property<int>("AppUserId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("TrackId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("AppUserId", "TrackId");
+
+                    b.HasIndex("TrackId");
+
+                    b.ToTable("UserTracks");
+                });
+
             modelBuilder.Entity("API.Entities.Track", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
+                    b.Property<string>("ChannelTitle")
+                        .HasColumnType("TEXT");
+
                     b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Thumbnail")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Title")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("YoutubeId")
@@ -79,19 +109,23 @@ namespace API.Data.Migrations
                     b.ToTable("TrackLikes");
                 });
 
-            modelBuilder.Entity("AppUserTrack", b =>
+            modelBuilder.Entity("API.Entities.AppUserTrack", b =>
                 {
-                    b.Property<int>("AppUsersId")
-                        .HasColumnType("INTEGER");
+                    b.HasOne("API.Entities.AppUser", "User")
+                        .WithMany("Tracks")
+                        .HasForeignKey("AppUserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                    b.Property<int>("TracksId")
-                        .HasColumnType("INTEGER");
+                    b.HasOne("API.Entities.Track", "Track")
+                        .WithMany("AppUsers")
+                        .HasForeignKey("TrackId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                    b.HasKey("AppUsersId", "TracksId");
+                    b.Navigation("Track");
 
-                    b.HasIndex("TracksId");
-
-                    b.ToTable("AppUserTrack");
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("API.Entities.TrackLikes", b =>
@@ -109,23 +143,15 @@ namespace API.Data.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("AppUserTrack", b =>
+            modelBuilder.Entity("API.Entities.AppUser", b =>
                 {
-                    b.HasOne("API.Entities.AppUser", null)
-                        .WithMany()
-                        .HasForeignKey("AppUsersId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("API.Entities.Track", null)
-                        .WithMany()
-                        .HasForeignKey("TracksId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                    b.Navigation("Tracks");
                 });
 
             modelBuilder.Entity("API.Entities.Track", b =>
                 {
+                    b.Navigation("AppUsers");
+
                     b.Navigation("Likes");
                 });
 #pragma warning restore 612, 618

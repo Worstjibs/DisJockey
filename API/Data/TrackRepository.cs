@@ -30,12 +30,12 @@ namespace API.Data {
         }
 
         public async Task<IEnumerable<TrackUsersDto>> GetTracksAsync() {
-            return await _context.Tracks
-                .Include(x => x.AppUsers)
-                .Include(x => x.Likes)
-                .OrderByDescending(x => x.CreatedOn)
+            var userTracks = await _context.Tracks
+                .Include(t => t.AppUsers).ThenInclude(ut => ut.User)
                 .ProjectTo<TrackUsersDto>(_mapper.ConfigurationProvider)
                 .ToListAsync();
+
+            return userTracks;
         }
 
         // public async Task<int> GetTrackLikes(Track track, bool liked) {

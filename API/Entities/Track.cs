@@ -7,8 +7,12 @@ namespace API.Entities {
     public class Track {
         public int Id { get; set; }
         public string YoutubeId { get; set; }
-        public DateTime CreatedOn { get; set; }
-        public virtual ICollection<AppUser> AppUsers { get; set; }
+        public string Title { get; set; }
+        public string Description { get; set; }
+        public string ChannelTitle { get; set; }
+        public DateTime CreatedOn { get; set; } = DateTime.UtcNow;
+        public string Thumbnail { get; set; }
+        public virtual ICollection<AppUserTrack> AppUsers { get; set; }
         public virtual ICollection<TrackLikes> Likes { get; set; }
     }
 }
