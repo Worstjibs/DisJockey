@@ -7,6 +7,6 @@ namespace API.Interfaces {
     public interface ITrackRepository {
         Task<Track> GetTrackByIdAsync(int id);
         Task<Track> GetTrackByYoutubeIdAsync(string youtubeId);
-        Task<IEnumerable<TrackUsersDto>> GetTracksAsync();
+        Task<IEnumerable<TrackDto>> GetTracksAsync();
     }
 }

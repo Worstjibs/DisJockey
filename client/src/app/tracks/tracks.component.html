@@ -1,13 +1,14 @@
 <div class="container">
     <div class="row mt-3 border border-rounded border-dark" *ngFor="let track of tracks$ | async">
         <div class="col my-3">
-            <img src="{{track.mediumThumbnail}}" alt="" class="img-fluid">
-            <!-- <youtube-player 
+            <img [hidden]="track.clicked" src="{{track.mediumThumbnail}}" alt="" class="img-fluid" (click)="track.clicked = true;">
+            <youtube-player 
+                [hidden]="!track.clicked"
                 videoId="{{track.youtubeId}}" 
                 suggestedQuality="highres" 
-                [height]="220" 
-                [width]="400">
-            </youtube-player> -->
+                [height]="320" 
+                [width]="430">
+            </youtube-player>
         </div>
         <div class="col-7 my-3">
             <h4>{{track.title}}</h4>
@@ -17,9 +18,9 @@
                 <span><i class="fas fa-thumbs-up fa-lg"></i>   {{track.likes}}</span>
                 <span><i class="fas fa-thumbs-down fa-lg"></i>   {{track.dislikes}}</span>
             </div>
-            <p>Posted By</p>
+            <p>Played By</p>
             <ul class="list-group">
-                <li class="list-group-item" *ngFor="let user of track.users">{{user.username}}</li>
+                <li class="list-group-item" *ngFor="let user of track.users">{{user.username | titlecase}}, played {{user.timesPlayed}} times</li>
             </ul>
         </div>
     </div>

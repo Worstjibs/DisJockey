@@ -1,8 +1,8 @@
-import { User } from "./user";
+import { TrackUser } from "./trackUser";
 
 export interface Track {
     youtubeId: string,
-    users: User[],
+    users: TrackUser[],
     createdOn: Date,
     likes: Number,
     dislikes: Number,
@@ -11,5 +11,6 @@ export interface Track {
     description: string,
     smallThumbnail: string,
     mediumThumbnail: string,
-    largeThumbnail: string
+    largeThumbnail: string,
+    clicked: boolean
 }

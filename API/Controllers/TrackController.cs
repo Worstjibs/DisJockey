@@ -54,35 +54,37 @@ namespace API.Controllers {
                 } catch (Exception e) {
                     return BadRequest(e.ToString());
                 }
-            } else {
-                // Check if the user has already posted the track
-                if (user.Tracks.FirstOrDefault(ut => ut.TrackId == track.Id) != null) {
-                    return BadRequest("User has already posted this track");
-                }
             }
 
-            var userTrack = new AppUserTrack {
-                AppUserId = user.Id,
-                User = user,
-                TrackId = track.Id,
-                Track = track
-            };
+            // Check if the user has already posted the track
+            var userTrack = user.Tracks.FirstOrDefault(ut => ut.TrackId == track.Id);
 
-            // Add the track to the user
-            user.Tracks.Add(userTrack);
+            if (userTrack != null) {
+                userTrack.TimesPlayed++;
+            } else {
+                userTrack = new AppUserTrack {
+                    AppUserId = user.Id,
+                    User = user,
+                    TrackId = track.Id,
+                    Track = track
+                };
 
-            await _unitOfWork.Complete();
+                // Add the track to the user
+                user.Tracks.Add(userTrack);
+            }
 
-            return Ok();
-        }
+            if (await _unitOfWork.Complete()) return Ok();
+
+            return BadRequest("Error adding track");
+        }  
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<TrackDto>> GetTrackById(int id) {
+        public async Task<ActionResult<MemberTrackDto>> GetTrackById(int id) {
             var track = await _unitOfWork._trackRepository.GetTrackByIdAsync(id);
 
             if (track == null) return BadRequest("Track does not exist");
 
-            TrackDto trackDto = new TrackDto {
+            MemberTrackDto trackDto = new MemberTrackDto {
                 YoutubeId = track.YoutubeId,
                 CreatedOn = track.CreatedOn
             };
@@ -91,7 +93,7 @@ namespace API.Controllers {
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<TrackUsersDto>>> GetTracks() {
+        public async Task<ActionResult<IEnumerable<TrackDto>>> GetTracks() {
             return Ok(await _unitOfWork._trackRepository.GetTracksAsync());
         }
 
