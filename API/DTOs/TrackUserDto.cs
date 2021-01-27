@@ -6,5 +6,6 @@ namespace API.DTOs {
         public long DiscordId { get; set; }
         public DateTime CreatedOn { get; set; }
         public int TimesPlayed { get; set; }
+        public DateTime LastPlayed { get; set; }
     }
 }

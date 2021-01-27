@@ -61,6 +61,7 @@ namespace API.Controllers {
 
             if (userTrack != null) {
                 userTrack.TimesPlayed++;
+                userTrack.LastPlayed = DateTime.UtcNow;
             } else {
                 userTrack = new AppUserTrack {
                     AppUserId = user.Id,

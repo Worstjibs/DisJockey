@@ -7,6 +7,7 @@ namespace API.Entities {
         public int TrackId { get; set; }
         public Track Track { get; set; }
         public DateTime CreatedOn { get; set; } = DateTime.UtcNow;
+        public DateTime LastPlayed { get; set; } = DateTime.UtcNow;
         public int TimesPlayed { get; set; } = 1;
     }
 }
