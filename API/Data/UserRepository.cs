@@ -26,10 +26,6 @@ namespace API.Data {
                 .FirstOrDefaultAsync(user => user.UserName == username);
         }
 
-        public async Task<bool> SaveAllAsync() {
-            return await _context.SaveChangesAsync() > 0;
-        }
-
         public async Task<AppUser> GetUserByDiscordIdAsync(long discordId) {
             return await _context.Users
                 .Include(x => x.Tracks)

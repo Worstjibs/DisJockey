@@ -12,16 +12,15 @@
         <div class="col-7 my-3">
             <h4>{{track.title}}</h4>
             <h5>{{track.channelTitle}}</h5>
-            <hr>
             <p>First posted on {{track.createdOn | date: 'dd MMMM yyyy'}}</p>
-            <p>Posted By</p>
-            <ul>
-                <li *ngFor="let user of track.users">{{user.username}}</li>
-            </ul>
-            <div class="d-flex justify-content-around w-25">
-                <span><i class="fas fa-thumbs-up"></i>   {{track.likes}}</span>
-                <span><i class="fas fa-thumbs-down"></i>   {{track.dislikes}}</span>
+            <div class="d-flex justify-content-around mb-2 w-25">
+                <span><i class="fas fa-thumbs-up fa-lg"></i>   {{track.likes}}</span>
+                <span><i class="fas fa-thumbs-down fa-lg"></i>   {{track.dislikes}}</span>
             </div>
+            <p>Posted By</p>
+            <ul class="list-group">
+                <li class="list-group-item" *ngFor="let user of track.users">{{user.username}}</li>
+            </ul>
         </div>
     </div>
     <hr>

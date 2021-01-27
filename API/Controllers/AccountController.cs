@@ -14,7 +14,7 @@ namespace API.Controllers {
         }
 
         [HttpPost("register")]
-        public async Task<ActionResult<UserDto>> Register(RegisterDto registerDto) {
+        public async Task<ActionResult> Register(RegisterDto registerDto) {
             var discordId = long.Parse(registerDto.DiscordId);
 
             // Check if the Discor duser is already registered
@@ -37,12 +37,7 @@ namespace API.Controllers {
             // Save changes asynchronously
             await _context.SaveChangesAsync();
 
-            // Return a new UserDto as the response
-            return new UserDto
-            {
-                Username = user.UserName,
-                DiscordId = user.DiscordId
-            };
+            return Ok();
         }
 
         private async Task<bool> CheckUserExists(string username) {

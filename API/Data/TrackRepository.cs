@@ -37,39 +37,5 @@ namespace API.Data {
 
             return userTracks;
         }
-
-        // public async Task<int> GetTrackLikes(Track track, bool liked) {
-        //     // var likes = _context.TrackLikes;
-            
-        //     // return await likes
-        //     //     .Where(x => x.Track == track && x.Liked == liked)
-        //     //     .CountAsync();
-
-        //     var track = await _context.Tracks
-        //         .Include(x => x.Likes)
-        //         .FirstOrDefaultAsync(x => x.)
-
-        //     return await _context.Track
-        // }
-
-        public async Task<bool> AddTrackLike(Track track, AppUser user, bool liked) {
-            // Get the TrackLike record
-            var trackLike = await _context.TrackLikes.FirstOrDefaultAsync(x => x.Track == track && x.User == user);
-
-            // If it doesn't exist, create a record
-            if (trackLike == null) {
-                trackLike = new TrackLikes {
-                    Track = track,
-                    User = user
-                };
-
-                _context.TrackLikes.Add(trackLike);
-            }
-
-            // Set the Liked field so it always writes to the DB
-            trackLike.Liked = liked;            
-
-            return await _context.SaveChangesAsync() > 0;
-        }
     }
 }

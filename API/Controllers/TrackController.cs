@@ -13,23 +13,20 @@ using Microsoft.AspNetCore.WebUtilities;
 
 namespace API.Controllers {
     public class TrackController : BaseApiController {
-        private readonly IUserRepository _userRepository;
-        private readonly ITrackRepository _trackRepository;
         private readonly YouTubeService _youTubeService;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public TrackController(IUserRepository userRepository, ITrackRepository trackRepository) {
+        public TrackController(IUnitOfWork unitOfWork) {
+            _unitOfWork = unitOfWork;
             _youTubeService = new YouTubeService(new BaseClientService.Initializer() {
                 ApiKey = "AIzaSyDBK_7dvolxDb4Jc0Am4V-DTuJPISr4Dew"
             });
-
-            _trackRepository = trackRepository;
-            _userRepository = userRepository;
         }
 
         [HttpPost]
         public async Task<ActionResult> AddTrack(TrackAddDto trackDto) {
             // Find the user using the UserDto in the TrackDto
-            var user = await _userRepository.GetUserByDiscordIdAsync(trackDto.DiscordId);
+            var user = await _unitOfWork._userRepository.GetUserByDiscordIdAsync(trackDto.DiscordId);
 
             // If the user doesn't exist, return a BadRequest
             if (user == null) return BadRequest("User does not exist");
@@ -39,27 +36,29 @@ namespace API.Controllers {
 
             // Get the YoutubeId
             var youtubeId = GetYouTubeId(trackDto.URL);
-            
+
             if (youtubeId == null) return BadRequest("Something is wrong with the URL");
 
             // See if the track already exists
-            var track = await _trackRepository.GetTrackByYoutubeIdAsync(youtubeId);
+            var track = await _unitOfWork._trackRepository.GetTrackByYoutubeIdAsync(youtubeId);
 
             // If it doesn't create a record for it
             if (track == null) {
-                // Query the YoutubeService for Video Details
-                YoutubeVideoDto youtubeVideoDetails = await GetVideoDetails(youtubeId);
-
                 track = new Track {
                     YoutubeId = youtubeId,
-                    CreatedOn = DateTime.UtcNow,
-                    Title = youtubeVideoDetails?.Title,
-                    Description = youtubeVideoDetails?.Description,
-                    ChannelTitle = youtubeVideoDetails?.ChannelTitle,
-                    SmallThumbnail = youtubeVideoDetails?.SmallThumbnail,
-                    MediumThumbnail = youtubeVideoDetails?.MediumThumbnail,
-                    LargeThumbnail = youtubeVideoDetails?.LargeThumbnail,
+                    CreatedOn = DateTime.UtcNow
                 };
+
+                try {
+                    await GetVideoDetails(track);
+                } catch (Exception e) {
+                    return BadRequest(e.ToString());
+                }
+            } else {
+                // Check if the user has already posted the track
+                if (user.Tracks.FirstOrDefault(ut => ut.TrackId == track.Id) != null) {
+                    return BadRequest("User has already posted this track");
+                }
             }
 
             var userTrack = new AppUserTrack {
@@ -72,19 +71,18 @@ namespace API.Controllers {
             // Add the track to the user
             user.Tracks.Add(userTrack);
 
-            await _userRepository.SaveAllAsync();
+            await _unitOfWork.Complete();
 
             return Ok();
         }
 
         [HttpGet("{id}")]
         public async Task<ActionResult<TrackDto>> GetTrackById(int id) {
-            var track = await _trackRepository.GetTrackByIdAsync(id);
+            var track = await _unitOfWork._trackRepository.GetTrackByIdAsync(id);
 
             if (track == null) return BadRequest("Track does not exist");
 
-            TrackDto trackDto = new TrackDto
-            {
+            TrackDto trackDto = new TrackDto {
                 YoutubeId = track.YoutubeId,
                 CreatedOn = track.CreatedOn
             };
@@ -94,44 +92,27 @@ namespace API.Controllers {
 
         [HttpGet]
         public async Task<ActionResult<IEnumerable<TrackUsersDto>>> GetTracks() {
-            return Ok(await _trackRepository.GetTracksAsync());
+            return Ok(await _unitOfWork._trackRepository.GetTracksAsync());
         }
 
-        [HttpPost("like")]
-        public async Task<ActionResult> LikeTrack(TrackLikeDto trackLikeDto) {
-            var user = await _userRepository.GetUserByUsernameAsync((trackLikeDto.Username));
-
-            if (user == null) return BadRequest("Invalid Username");
-
-            var track = await _trackRepository.GetTrackByYoutubeIdAsync(trackLikeDto.YoutubeId);
-
-            if (track == null) return BadRequest("Invalid Youtube Id");
-
-            return Ok(await _trackRepository.AddTrackLike(track, user, trackLikeDto.Liked));
-        }
-
-        private async Task<YoutubeVideoDto> GetVideoDetails(string youtubeId) {
-            YoutubeVideoDto youtubeVideoDto = null;
-
+        private async Task GetVideoDetails(Track track) {
             var searchRequest = _youTubeService.Videos.List("snippet");
-            searchRequest.Id = youtubeId;
+            searchRequest.Id = track.YoutubeId;
 
             var searchResponse = await searchRequest.ExecuteAsync();
 
             var youtubeVideo = searchResponse.Items.FirstOrDefault();
 
             if (youtubeVideo != null) {
-                youtubeVideoDto = new YoutubeVideoDto {
-                    Title = youtubeVideo.Snippet.Title,
-                    Description = youtubeVideo.Snippet.Description,
-                    ChannelTitle = youtubeVideo.Snippet.ChannelTitle,
-                    SmallThumbnail = youtubeVideo.Snippet.Thumbnails.Medium.Url,
-                    MediumThumbnail = youtubeVideo.Snippet.Thumbnails.High.Url,
-                    LargeThumbnail = youtubeVideo.Snippet.Thumbnails.Standard.Url
-                };
+                track.Title = youtubeVideo.Snippet.Title;
+                track.Description = youtubeVideo.Snippet.Description;
+                track.ChannelTitle = youtubeVideo.Snippet.ChannelTitle;
+                track.SmallThumbnail = youtubeVideo.Snippet.Thumbnails.Medium.Url;
+                track.MediumThumbnail = youtubeVideo.Snippet.Thumbnails.High.Url;
+                track.LargeThumbnail = youtubeVideo.Snippet.Thumbnails.Standard.Url;
             }
 
-            return youtubeVideoDto;
+            throw new Exception("Invalid Youtube Id");
         }
 
         public string GetYouTubeId(string url) {

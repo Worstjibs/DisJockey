@@ -1,4 +1,3 @@
-using System;
 using System.ComponentModel.DataAnnotations;
 
 namespace API.DTOs {
@@ -6,6 +5,7 @@ namespace API.DTOs {
 
         [Required]
         public string URL { get; set; }
+        [Required]
         public long DiscordId { get; set; }
     }
 }
