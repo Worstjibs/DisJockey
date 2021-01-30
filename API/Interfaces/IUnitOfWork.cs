@@ -2,8 +2,8 @@ using System.Threading.Tasks;
 
 namespace API.Interfaces {
     public interface IUnitOfWork {
-        IUserRepository _userRepository { get; }
-        ITrackRepository _trackRepository { get; }
+        IUserRepository UserRepository { get; }
+        ITrackRepository TrackRepository { get; }
         Task<bool> Complete();
         bool HasChanges();
     }

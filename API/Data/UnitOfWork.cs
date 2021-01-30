@@ -12,8 +12,8 @@ namespace API.Data {
             _context = context;
         }
 
-        public IUserRepository _userRepository => new UserRepository(_context, _mapper);
-        public ITrackRepository _trackRepository => new TrackRepository(_context, _mapper);
+        public IUserRepository UserRepository => new UserRepository(_context, _mapper);
+        public ITrackRepository TrackRepository => new TrackRepository(_context, _mapper);
 
         public async Task<bool> Complete() {
             return await _context.SaveChangesAsync() > 0;

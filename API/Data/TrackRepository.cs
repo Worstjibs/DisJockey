@@ -24,15 +24,16 @@ namespace API.Data {
 
         public async Task<Track> GetTrackByYoutubeIdAsync(string youtubeId) {
             return await _context.Tracks
+                .Include(x => x.Likes).ThenInclude(x => x.User)
                 .FirstOrDefaultAsync(x => x.YoutubeId == youtubeId);
         }
 
-        public async Task<IEnumerable<TrackDto>> GetTracksAsync() {
-            var userTracks = await _context.Tracks
+        public IQueryable<TrackDto> GetTracks() {
+            var userTracks = _context.Tracks
                 .Include(t => t.AppUsers).ThenInclude(ut => ut.User)
+                .Include(t => t.Likes).ThenInclude(tl => tl.User)
                 .ProjectTo<TrackDto>(_mapper.ConfigurationProvider)
-                .OrderByDescending(t => t.CreatedOn)
-                .ToListAsync();
+                .OrderByDescending(t => t.CreatedOn);
 
             return userTracks;
         }

@@ -1,3 +1,7 @@
 #welcome-msg {
     text-align: center;
 }
+
+#icon {
+    max-height: 300px;
+}

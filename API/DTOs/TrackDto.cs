@@ -6,6 +6,7 @@ namespace API.DTOs {
         public string YoutubeId { get; set; }
         public DateTime CreatedOn { get; set; }
         public ICollection<TrackUserDto> Users { get; set; }
+        public ICollection<TrackUserLikeDto> UserLikes { get; set; }
         public int Likes { get; set; }
         public int Dislikes { get; set; }
         public string Title { get; set; }

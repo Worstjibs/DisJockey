@@ -1,6 +1,7 @@
 using API.Data;
 using API.Helpers;
 using API.Interfaces;
+using API.Services;
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -11,7 +12,11 @@ namespace API.Extensions {
         public static IServiceCollection AddApplicationServices(this IServiceCollection services, IConfiguration config) {
             services.AddAutoMapper(typeof(AutoMapperProfiles).Assembly);
 
+            services.Configure<YoutubeSettings>(config.GetSection("YoutubeSettings"));
+
             services.AddScoped<IUnitOfWork, UnitOfWork>();
+            services.AddScoped<IVideoDetailService, VideoDetailService>();
+            services.AddScoped<ITokenService, TokenService>();
 
             services.AddDbContext<DataContext>(options => {
                 options.UseSqlite(config.GetConnectionString("DefaultConnection"));

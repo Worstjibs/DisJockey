@@ -1,4 +1,5 @@
 export interface TrackUser {
     username: string,
-    timesPlayed: number
+    timesPlayed: number,
+    lastPlayed: Date
 }
