@@ -23,25 +23,17 @@ namespace API.Controllers {
         }
 
         [HttpPost]
-        public async Task<ActionResult> AddTrack(TrackAddDto trackDto) {
-            // Find the user using the UserDto in the TrackDto
+        public async Task<ActionResult> AddTrack([FromBody] TrackAddDto trackDto) {
             var user = await _unitOfWork.UserRepository.GetUserByDiscordIdAsync(trackDto.DiscordId);
-
-            // If the user doesn't exist, return a BadRequest
             if (user == null) return BadRequest("User does not exist");
 
-            // Validate the URL before attempting to get the YoutubeId from it
             if (!trackDto.URL.Contains("youtu")) return BadRequest("Must be Youtube Link");
 
-            // Get the YoutubeId
             var youtubeId = GetYouTubeId(trackDto.URL);
-
             if (youtubeId == null) return BadRequest("Something is wrong with the URL");
 
-            // See if the track already exists
             var track = await _unitOfWork.TrackRepository.GetTrackByYoutubeIdAsync(youtubeId);
 
-            // If it doesn't create a record for it
             if (track == null) {
                 track = new Track {
                     YoutubeId = youtubeId,
@@ -69,7 +61,6 @@ namespace API.Controllers {
                     Track = track
                 };
 
-                // Add the track to the user
                 user.Tracks.Add(userTrack);
             }
 

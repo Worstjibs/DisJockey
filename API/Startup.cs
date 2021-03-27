@@ -1,4 +1,7 @@
+using System;
+using System.Net.Http;
 using API.Data;
+using API.Discord;
 using API.Extensions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -24,10 +27,9 @@ namespace API {
 
             services.AddIdentityServices(_config);
 
-            // services.AddSwaggerGen(c =>
-            // {
-            //     c.SwaggerDoc("v1", new OpenApiInfo { Title = "API", Version = "v1" });
-            // });
+            services.AddSingleton<HttpClient>();
+
+            services.AddHostedService<DiscordBot>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -47,8 +49,12 @@ namespace API {
             app.UseAuthentication();
             app.UseAuthorization();
 
+            app.UseDefaultFiles();
+            app.UseStaticFiles();
+
             app.UseEndpoints(endpoints => {
                 endpoints.MapControllers();
+                endpoints.MapFallbackToController("Index", "Fallback");
             });
         }
     }
