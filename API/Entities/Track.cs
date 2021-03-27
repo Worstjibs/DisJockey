@@ -14,7 +14,8 @@ namespace API.Entities {
         public string SmallThumbnail { get; set; }
         public string MediumThumbnail { get; set; }
         public string LargeThumbnail { get; set; }
-        public virtual ICollection<AppUserTrack> AppUsers { get; set; }
-        public virtual ICollection<TrackLike> Likes { get; set; }
+        public ICollection<AppUserTrack> AppUsers { get; set; }
+        public ICollection<TrackLike> Likes { get; set; }
+        public ICollection<PlaylistTrack> Playlists { get; set; }
     }
 }

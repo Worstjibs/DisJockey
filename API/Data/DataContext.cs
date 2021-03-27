@@ -33,7 +33,7 @@ namespace API.Data {
                 .OnDelete(DeleteBehavior.Cascade);
 
             // TrackLike configuration
-            // Add Pimrary key
+            // Add Primary key
             builder.Entity<TrackLike>()
                 .HasKey(k => new { k.UserId, k.TrackId });
             // Add Foreign keys for AppUser
@@ -47,6 +47,23 @@ namespace API.Data {
                 .HasOne(tl => tl.Track)
                 .WithMany(t => t.Likes)
                 .HasForeignKey(tl => tl.TrackId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            // Playlist configuration
+            // Add Primary key
+            builder.Entity<PlaylistTrack>()
+                .HasKey(k => new { k.TrackId, k.PlaylistId });
+            // Add Foreign keys to Track
+            builder.Entity<PlaylistTrack>()
+                .HasOne(pt => pt.Track)
+                .WithMany(t => t.Playlists)
+                .HasForeignKey(pt => pt.TrackId)
+                .OnDelete(DeleteBehavior.Cascade);
+            // Add Foreign keys to Playlist
+            builder.Entity<PlaylistTrack>()
+                .HasOne(pt => pt.Playlist)
+                .WithMany(p => p.Tracks)
+                .HasForeignKey(pt => pt.TrackId)
                 .OnDelete(DeleteBehavior.Cascade);
         }
     }
