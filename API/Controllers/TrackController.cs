@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using API.Discord;
 using API.DTOs;
 using API.Entities;
 using API.Extensions;
@@ -11,14 +12,21 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Hosting;
 
 namespace API.Controllers {
     public class TrackController : BaseApiController {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IVideoDetailService _videoService;
+        private readonly DiscordBot _discordBot;
 
-        public TrackController(IUnitOfWork unitOfWork, IVideoDetailService videoService) {
+        public TrackController(
+            IUnitOfWork unitOfWork, 
+            IVideoDetailService videoService,
+            DiscordBot discordBot
+        ) {
             _videoService = videoService;
+            _discordBot = discordBot;
             _unitOfWork = unitOfWork;
         }
 
@@ -90,6 +98,17 @@ namespace API.Controllers {
             var username = User.GetUsername();
 
             return Ok(await tracksQuery.ToListAsync());
+        }
+
+        [HttpGet("{id}/play")]
+        public async Task<ActionResult> PlayTrack(int id) {
+            var track = await _unitOfWork.TrackRepository.GetTrackByIdAsync(id);
+
+            if (track == null) return NotFound($"Track with Id {id} not found.");
+        
+            if (await _discordBot.PlayTrack(track.YoutubeId)) return Ok();
+
+            return BadRequest();
         }
 
         [Authorize]
