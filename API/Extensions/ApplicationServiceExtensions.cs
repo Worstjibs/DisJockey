@@ -19,7 +19,7 @@ namespace API.Extensions {
             services.AddScoped<ITokenService, TokenService>();
 
             services.AddDbContext<DataContext>(options => {
-                options.UseSqlite(config.GetConnectionString("DefaultConnection"));
+                options.UseSqlServer(config.GetConnectionString("DefaultConnection"));
             });
 
             return services;

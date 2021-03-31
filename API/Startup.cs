@@ -1,11 +1,8 @@
-using System;
 using System.Net.Http;
 using API.Data;
-using API.Discord;
 using API.Extensions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -29,11 +26,12 @@ namespace API {
 
             services.AddSingleton<HttpClient>();
 
-            services.AddHostedService<DiscordBot>();
+            services.AddDiscordServices(_config);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env) {
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, DataContext dataContext) {
+
             if (env.IsDevelopment()) {
                 app.UseDeveloperExceptionPage();
                 // app.UseSwagger();
