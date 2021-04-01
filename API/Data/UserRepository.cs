@@ -26,7 +26,7 @@ namespace API.Data {
                 .FirstOrDefaultAsync(user => user.UserName == username);
         }
 
-        public async Task<AppUser> GetUserByDiscordIdAsync(long discordId) {
+        public async Task<AppUser> GetUserByDiscordIdAsync(ulong discordId) {
             return await _context.Users
                 .Include(x => x.Tracks)
                 .FirstOrDefaultAsync(user => user.DiscordId == discordId);

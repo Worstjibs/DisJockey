@@ -5,6 +5,6 @@ namespace API.DTOs {
         [Required]
         public string Username { get; set; }
         [Required]
-        public long DiscordId { get; set; }
+        public ulong DiscordId { get; set; }
     }
 }

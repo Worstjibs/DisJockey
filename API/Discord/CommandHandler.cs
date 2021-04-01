@@ -10,7 +10,9 @@ namespace API.Discord {
         private readonly DiscordSocketClient _client;
         private readonly CommandService _commandService;
         private readonly IServiceProvider _services;
-        public CommandHandler(DiscordSocketClient client, CommandService commandService, IServiceProvider services) {
+        private readonly BotSettings _botSettings;
+        public CommandHandler(DiscordSocketClient client, CommandService commandService, IServiceProvider services, BotSettings botSettings) {
+            _botSettings = botSettings;
             _services = services;
             _commandService = commandService;
             _client = client;
@@ -18,31 +20,26 @@ namespace API.Discord {
 
         public async Task InitializeAsync() {
             await _commandService.AddModulesAsync(Assembly.GetEntryAssembly(), _services);
-            
+
+            _commandService.Log += LogAsync;
             _client.MessageReceived += MessageReceivedAsync;
         }
 
         private async Task MessageReceivedAsync(SocketMessage message) {
+            var argPos = 0;
+
             if (message.Author.IsBot)
                 return;
 
             var userMessage = message as SocketUserMessage;
+            if (userMessage is null)
+                return;
 
-            // if (message.Content.StartsWith("-playTest")) {
-            //     long discordId = (long)message.Author.Id;
-            //     string[] commands = message.Content.Split(" ");
+            if (!userMessage.HasCharPrefix(_botSettings.Prefix, ref argPos))
+                return;
 
-            //     string url = commands[1];
-
-            //     if (url.Contains("youtu.be") || url.Contains("youtube.com")) {
-            //         // await AddTrackAsync(discordId, url);
-            //     }
-            //     await message.Channel.SendMessageAsync("Track Played");
-            // }
-
-            if (message.Content.StartsWith("-hello")) {
-                await message.Channel.SendMessageAsync("Hello from Command Handler");
-            }
+            var context = new SocketCommandContext(_client, userMessage);
+            var result = await _commandService.ExecuteAsync(context, argPos, _services);
         }
 
         private Task LogAsync(LogMessage logMessage) {

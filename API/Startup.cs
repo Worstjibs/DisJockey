@@ -16,15 +16,13 @@ namespace API {
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services) {
-            // Add the DbContext implementation to the app 
+            // Add Main WebApp Services (DB, Unit of Work)
             services.AddApplicationServices(_config);
 
             services.AddControllers();
             services.AddCors();
 
             services.AddIdentityServices(_config);
-
-            services.AddSingleton<HttpClient>();
 
             services.AddDiscordServices(_config);
         }
@@ -37,8 +35,8 @@ namespace API {
                 // app.UseSwagger();
                 // app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "API v1"));
             }
-
-            // app.UseHttpsRedirection();
+            
+            app.UseHttpsRedirection();
 
             app.UseRouting();
 

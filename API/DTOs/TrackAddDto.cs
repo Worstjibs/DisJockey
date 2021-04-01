@@ -6,6 +6,6 @@ namespace API.DTOs {
         [Required]
         public string URL { get; set; }
         [Required]
-        public long DiscordId { get; set; }
+        public ulong DiscordId { get; set; }
     }
 }

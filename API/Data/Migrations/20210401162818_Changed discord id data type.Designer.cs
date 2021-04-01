@@ -4,14 +4,16 @@ using API.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace API.Data.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20210401162818_Changed discord id data type")]
+    partial class Changeddiscordiddatatype
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -51,14 +53,17 @@ namespace API.Data.Migrations
                     b.Property<DateTime>("CreatedOn")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("Id")
+                    b.Property<DateTime>("LastPlayed")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("TimesPlayed")
                         .HasColumnType("int");
 
                     b.HasKey("AppUserId", "TrackId");
 
                     b.HasIndex("TrackId");
 
-                    b.ToTable("TrackPlays");
+                    b.ToTable("UserTracks");
                 });
 
             modelBuilder.Entity("API.Entities.Playlist", b =>
