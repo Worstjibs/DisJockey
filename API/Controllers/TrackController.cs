@@ -18,15 +18,12 @@ namespace API.Controllers {
     public class TrackController : BaseApiController {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IVideoDetailService _videoService;
-        private readonly DiscordBot _discordBot;
 
         public TrackController(
             IUnitOfWork unitOfWork, 
-            IVideoDetailService videoService,
-            DiscordBot discordBot
+            IVideoDetailService videoService
         ) {
             _videoService = videoService;
-            _discordBot = discordBot;
             _unitOfWork = unitOfWork;
         }
 
@@ -55,22 +52,14 @@ namespace API.Controllers {
                 }
             }
 
-            // Check if the user has already posted the track
-            var userTrack = user.Tracks.FirstOrDefault(ut => ut.TrackId == track.Id);
+            var userTrack = new AppUserTrack {
+                AppUserId = user.Id,
+                User = user,
+                TrackId = track.Id,
+                Track = track
+            };
 
-            if (userTrack != null) {
-                userTrack.TimesPlayed++;
-                userTrack.LastPlayed = DateTime.UtcNow;
-            } else {
-                userTrack = new AppUserTrack {
-                    AppUserId = user.Id,
-                    User = user,
-                    TrackId = track.Id,
-                    Track = track
-                };
-
-                user.Tracks.Add(userTrack);
-            }
+            user.Tracks.Add(userTrack);
 
             if (await _unitOfWork.Complete()) return Ok();
 
@@ -98,17 +87,6 @@ namespace API.Controllers {
             var username = User.GetUsername();
 
             return Ok(await tracksQuery.ToListAsync());
-        }
-
-        [HttpGet("{id}/play")]
-        public async Task<ActionResult> PlayTrack(int id) {
-            var track = await _unitOfWork.TrackRepository.GetTrackByIdAsync(id);
-
-            if (track == null) return NotFound($"Track with Id {id} not found.");
-        
-            if (await _discordBot.PlayTrack(track.YoutubeId)) return Ok();
-
-            return BadRequest();
         }
 
         [Authorize]

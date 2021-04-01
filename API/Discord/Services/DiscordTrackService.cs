@@ -18,7 +18,7 @@ namespace API.Discord.Services {
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<AppUserTrack> AddTrackAsync(long discordId, string url) {
+        public async Task<AppUserTrack> AddTrackAsync(ulong discordId, string url) {
             var user = await _unitOfWork.UserRepository.GetUserByDiscordIdAsync(discordId);
             if (user == null) throw new UserNotFoundException($"User with discord Id {discordId} not registered");
 
@@ -41,23 +41,15 @@ namespace API.Discord.Services {
                     Console.WriteLine(e);
                 }
             }
+            
+            var userTrack = new AppUserTrack {
+                AppUserId = user.Id,
+                User = user,
+                TrackId = track.Id,
+                Track = track
+            };
 
-            // Check if the user has already posted the track
-            var userTrack = user.Tracks.FirstOrDefault(ut => ut.TrackId == track.Id);
-
-            if (userTrack != null) {
-                userTrack.TimesPlayed++;
-                userTrack.LastPlayed = DateTime.UtcNow;
-            } else {
-                userTrack = new AppUserTrack {
-                    AppUserId = user.Id,
-                    User = user,
-                    TrackId = track.Id,
-                    Track = track
-                };
-
-                user.Tracks.Add(userTrack);
-            }
+            user.Tracks.Add(userTrack);
 
             if (await _unitOfWork.Complete()) return userTrack;
 

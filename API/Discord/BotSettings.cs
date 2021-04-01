@@ -4,6 +4,8 @@ namespace API.Discord
     {
         public ulong OwnerId { get; set; }
         public string BotToken { get; set; }
-        public string Prefix { get; set; }
+        public char Prefix { get; set; }
+        public string LavalinkHost { get; set; }
+        public ushort LavalinkPort { get; set; }
     }
 }
