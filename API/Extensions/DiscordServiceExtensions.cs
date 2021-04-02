@@ -32,6 +32,7 @@ namespace API.Extensions {
                 x.SelfDeaf = true;
                 x.Hostname = botSettings.LavalinkHost;
                 x.Port = botSettings.LavalinkPort;
+                x.Authorization = botSettings.LavalinkPassword;                
             });
 
             services.AddSingleton<MusicService>();

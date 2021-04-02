@@ -10,5 +10,6 @@ namespace API.Interfaces {
         Task<AppUser> GetUserByUsernameAsync(string username);
         Task<AppUser> GetUserByDiscordIdAsync(ulong discordId);
         Task<IEnumerable<MemberDto>> GetUsersAsync();
+        void AddUser(AppUser user);
     }
 }

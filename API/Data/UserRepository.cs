@@ -37,5 +37,9 @@ namespace API.Data {
                 .ProjectTo<MemberDto>(_mapper.ConfigurationProvider)
                 .ToListAsync();
         }
+
+        public void AddUser(AppUser user) {
+            _context.Users.Add(user);
+        }
     }
 }
