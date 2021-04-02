@@ -1,9 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Claims;
 using System.Threading.Tasks;
-using API.Discord;
 using API.DTOs;
 using API.Entities;
 using API.Extensions;
@@ -12,7 +10,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Hosting;
 
 namespace API.Controllers {
     public class TrackController : BaseApiController {
@@ -25,45 +22,6 @@ namespace API.Controllers {
         ) {
             _videoService = videoService;
             _unitOfWork = unitOfWork;
-        }
-
-        [HttpPost]
-        public async Task<ActionResult> AddTrack([FromBody] TrackAddDto trackDto) {
-            var user = await _unitOfWork.UserRepository.GetUserByDiscordIdAsync(trackDto.DiscordId);
-            if (user == null) return BadRequest("User does not exist");
-
-            if (!trackDto.URL.Contains("youtu")) return BadRequest("Must be Youtube Link");
-
-            var youtubeId = GetYouTubeId(trackDto.URL);
-            if (youtubeId == null) return BadRequest("Something is wrong with the URL");
-
-            var track = await _unitOfWork.TrackRepository.GetTrackByYoutubeIdAsync(youtubeId);
-
-            if (track == null) {
-                track = new Track {
-                    YoutubeId = youtubeId,
-                    CreatedOn = DateTime.UtcNow
-                };
-
-                try {
-                    track = await _videoService.GetVideoDetails(track);
-                } catch (Exception e) {
-                    return BadRequest(e.ToString());
-                }
-            }
-
-            var userTrack = new AppUserTrack {
-                AppUserId = user.Id,
-                User = user,
-                TrackId = track.Id,
-                Track = track
-            };
-
-            user.Tracks.Add(userTrack);
-
-            if (await _unitOfWork.Complete()) return Ok();
-
-            return BadRequest("Error adding track");
         }
 
         [HttpGet("{id}")]

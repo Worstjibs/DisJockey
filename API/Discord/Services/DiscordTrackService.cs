@@ -20,7 +20,13 @@ namespace API.Discord.Services {
 
         public async Task<AppUserTrack> AddTrackAsync(ulong discordId, string url) {
             var user = await _unitOfWork.UserRepository.GetUserByDiscordIdAsync(discordId);
-            if (user == null) throw new UserNotFoundException($"User with discord Id {discordId} not registered");
+
+            if (user == null) {
+                user = new AppUser {
+                    DiscordId = discordId
+                };
+                _unitOfWork.UserRepository.AddUser(user);
+            }
 
             if (!url.Contains("youtu.be") && !url.Contains("youtube.com")) throw new InvalidUrlException("The link provided is invalid");
 
@@ -41,7 +47,7 @@ namespace API.Discord.Services {
                     Console.WriteLine(e);
                 }
             }
-            
+
             var userTrack = new AppUserTrack {
                 AppUserId = user.Id,
                 User = user,

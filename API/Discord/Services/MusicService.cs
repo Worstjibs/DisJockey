@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using API.Discord.Interfaces;
+using API.Exceptions;
 using Discord;
 using Microsoft.Extensions.DependencyInjection;
 using Victoria;
@@ -41,7 +42,13 @@ namespace API.Discord.Services {
                 try {
                     var discordTrackService = scope.ServiceProvider.GetService<IDiscordTrackService>();
 
-                    await discordTrackService.AddTrackAsync(discordId, track.Url);
+                    try {
+                        await discordTrackService.AddTrackAsync(discordId, track.Url);
+                    } catch (InvalidUrlException e) {
+                        returnMessage = e.ToString();
+                    } catch (DataContextException e) {
+                        returnMessage = e.ToString();
+                    }
                 } catch (Exception e) {
                     Console.WriteLine(e);
                 }
