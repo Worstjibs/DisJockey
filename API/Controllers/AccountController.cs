@@ -2,7 +2,7 @@ using System;
 using System.Threading.Tasks;
 using API.Data;
 using API.DTOs;
-using API.Entities;
+using API.Models;
 using API.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;

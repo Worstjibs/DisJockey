@@ -7,5 +7,6 @@ namespace API.DTOs {
         public string URL { get; set; }
         [Required]
         public ulong DiscordId { get; set; }
+        public string Username { get; set; }
     }
 }

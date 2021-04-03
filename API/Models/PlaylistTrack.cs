@@ -1,6 +1,6 @@
 using System;
 
-namespace API.Entities {
+namespace API.Models {
     public class PlaylistTrack {
         public int TrackId { get; set; }
         public Track Track { get; set; }

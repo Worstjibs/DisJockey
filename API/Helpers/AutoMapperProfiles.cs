@@ -1,6 +1,6 @@
 using System.Linq;
 using API.DTOs;
-using API.Entities;
+using API.Models;
 using AutoMapper;
 
 namespace API.Helpers {

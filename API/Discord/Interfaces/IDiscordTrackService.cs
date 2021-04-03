@@ -1,8 +1,8 @@
 using System.Threading.Tasks;
-using API.Entities;
+using API.Models;
 
 namespace API.Discord.Interfaces {
     public interface IDiscordTrackService {
-        Task<AppUserTrack> AddTrackAsync(ulong discordId, string url);
+        Task<bool> AddTrackAsync(ulong discordId, string username, string url);
     }
 }

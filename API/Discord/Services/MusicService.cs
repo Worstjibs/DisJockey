@@ -17,7 +17,7 @@ namespace API.Discord.Services {
             _lavaNode = lavaNode;
         }
 
-        public async Task<string> PlayTrack(string query, ulong discordId, IGuild guild) {
+        public async Task<string> PlayTrack(string query, ulong discordId, string username, IGuild guild) {
             var player = _lavaNode.GetPlayer(guild);
 
             var results = await _lavaNode.SearchYouTubeAsync(query);
@@ -43,7 +43,7 @@ namespace API.Discord.Services {
                     var discordTrackService = scope.ServiceProvider.GetService<IDiscordTrackService>();
 
                     try {
-                        await discordTrackService.AddTrackAsync(discordId, track.Url);
+                        await discordTrackService.AddTrackAsync(discordId, username, track.Url);
                     } catch (InvalidUrlException e) {
                         returnMessage = e.ToString();
                     } catch (DataContextException e) {

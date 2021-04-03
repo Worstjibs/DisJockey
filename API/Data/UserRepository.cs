@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using API.DTOs;
-using API.Entities;
+using API.Models;
 using API.Interfaces;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
@@ -40,6 +40,10 @@ namespace API.Data {
 
         public void AddUser(AppUser user) {
             _context.Users.Add(user);
+        }
+
+        public bool HasChanges() {
+            return _context.ChangeTracker.HasChanges();
         }
     }
 }

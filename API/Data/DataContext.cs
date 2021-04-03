@@ -1,5 +1,5 @@
 using System;
-using API.Entities;
+using API.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -20,9 +20,6 @@ namespace API.Data {
             base.OnModelCreating(builder);
 
             // AppUserTrack configuration:
-            // Add Primary key
-            builder.Entity<AppUserTrack>()
-                .HasKey(k => new { k.AppUserId, k.TrackId });
             // Add Foreign keys for AppUser
             builder.Entity<AppUserTrack>()
                 .HasOne(ut => ut.User)

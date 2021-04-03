@@ -77,8 +77,9 @@ namespace API.Discord.Modules {
             // }
 
             var userId = Context.User.Id;
+            var username = Context.User.Username;
 
-            var response = await _musicService.PlayTrack(query, userId, Context.Guild);
+            var response = await _musicService.PlayTrack(query, userId, username, Context.Guild);
             await ReplyAsync(response);
         }
 

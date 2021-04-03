@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace API.Data.Migrations
 {
-    public partial class InitialSQLServerMigration : Migration
+    public partial class RemovedPrimarykeyonAppUserTrack : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -48,7 +48,7 @@ namespace API.Data.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     CreatedOn = table.Column<DateTime>(type: "datetime2", nullable: false),
                     UserName = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    DiscordId = table.Column<long>(type: "bigint", nullable: false)
+                    DiscordId = table.Column<decimal>(type: "decimal(20,0)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -113,26 +113,26 @@ namespace API.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "UserTracks",
+                name: "TrackPlays",
                 columns: table => new
                 {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     AppUserId = table.Column<int>(type: "int", nullable: false),
                     TrackId = table.Column<int>(type: "int", nullable: false),
-                    CreatedOn = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    LastPlayed = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    TimesPlayed = table.Column<int>(type: "int", nullable: false)
+                    CreatedOn = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_UserTracks", x => new { x.AppUserId, x.TrackId });
+                    table.PrimaryKey("PK_TrackPlays", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_UserTracks_Tracks_TrackId",
+                        name: "FK_TrackPlays_Tracks_TrackId",
                         column: x => x.TrackId,
                         principalTable: "Tracks",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_UserTracks_Users_AppUserId",
+                        name: "FK_TrackPlays_Users_AppUserId",
                         column: x => x.AppUserId,
                         principalTable: "Users",
                         principalColumn: "Id",
@@ -150,8 +150,13 @@ namespace API.Data.Migrations
                 column: "TrackId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_UserTracks_TrackId",
-                table: "UserTracks",
+                name: "IX_TrackPlays_AppUserId",
+                table: "TrackPlays",
+                column: "AppUserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_TrackPlays_TrackId",
+                table: "TrackPlays",
                 column: "TrackId");
         }
 
@@ -164,7 +169,7 @@ namespace API.Data.Migrations
                 name: "TrackLikes");
 
             migrationBuilder.DropTable(
-                name: "UserTracks");
+                name: "TrackPlays");
 
             migrationBuilder.DropTable(
                 name: "Playlist");

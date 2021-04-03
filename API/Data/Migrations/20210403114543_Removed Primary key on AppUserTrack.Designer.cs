@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace API.Data.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20210401220921_Changed DB Table name")]
-    partial class ChangedDBTablename
+    [Migration("20210403114543_Removed Primary key on AppUserTrack")]
+    partial class RemovedPrimarykeyonAppUserTrack
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -21,7 +21,7 @@ namespace API.Data.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("ProductVersion", "5.0.4");
 
-            modelBuilder.Entity("API.Entities.AppUser", b =>
+            modelBuilder.Entity("API.Models.AppUser", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -42,28 +42,32 @@ namespace API.Data.Migrations
                     b.ToTable("Users");
                 });
 
-            modelBuilder.Entity("API.Entities.AppUserTrack", b =>
+            modelBuilder.Entity("API.Models.AppUserTrack", b =>
                 {
-                    b.Property<int>("AppUserId")
-                        .HasColumnType("int");
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .UseIdentityColumn();
 
-                    b.Property<int>("TrackId")
+                    b.Property<int>("AppUserId")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("CreatedOn")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("Id")
+                    b.Property<int>("TrackId")
                         .HasColumnType("int");
 
-                    b.HasKey("AppUserId", "TrackId");
+                    b.HasKey("Id");
+
+                    b.HasIndex("AppUserId");
 
                     b.HasIndex("TrackId");
 
                     b.ToTable("TrackPlays");
                 });
 
-            modelBuilder.Entity("API.Entities.Playlist", b =>
+            modelBuilder.Entity("API.Models.Playlist", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -78,7 +82,7 @@ namespace API.Data.Migrations
                     b.ToTable("Playlist");
                 });
 
-            modelBuilder.Entity("API.Entities.PlaylistTrack", b =>
+            modelBuilder.Entity("API.Models.PlaylistTrack", b =>
                 {
                     b.Property<int>("TrackId")
                         .HasColumnType("int");
@@ -99,7 +103,7 @@ namespace API.Data.Migrations
                     b.ToTable("PlaylistTrack");
                 });
 
-            modelBuilder.Entity("API.Entities.Track", b =>
+            modelBuilder.Entity("API.Models.Track", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -135,7 +139,7 @@ namespace API.Data.Migrations
                     b.ToTable("Tracks");
                 });
 
-            modelBuilder.Entity("API.Entities.TrackLike", b =>
+            modelBuilder.Entity("API.Models.TrackLike", b =>
                 {
                     b.Property<int>("UserId")
                         .HasColumnType("int");
@@ -153,15 +157,15 @@ namespace API.Data.Migrations
                     b.ToTable("TrackLikes");
                 });
 
-            modelBuilder.Entity("API.Entities.AppUserTrack", b =>
+            modelBuilder.Entity("API.Models.AppUserTrack", b =>
                 {
-                    b.HasOne("API.Entities.AppUser", "User")
+                    b.HasOne("API.Models.AppUser", "User")
                         .WithMany("Tracks")
                         .HasForeignKey("AppUserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("API.Entities.Track", "Track")
+                    b.HasOne("API.Models.Track", "Track")
                         .WithMany("AppUsers")
                         .HasForeignKey("TrackId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -172,19 +176,19 @@ namespace API.Data.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("API.Entities.PlaylistTrack", b =>
+            modelBuilder.Entity("API.Models.PlaylistTrack", b =>
                 {
-                    b.HasOne("API.Entities.AppUser", "CreatedBy")
+                    b.HasOne("API.Models.AppUser", "CreatedBy")
                         .WithMany()
                         .HasForeignKey("CreatedById");
 
-                    b.HasOne("API.Entities.Playlist", "Playlist")
+                    b.HasOne("API.Models.Playlist", "Playlist")
                         .WithMany("Tracks")
                         .HasForeignKey("TrackId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("API.Entities.Track", "Track")
+                    b.HasOne("API.Models.Track", "Track")
                         .WithMany("Playlists")
                         .HasForeignKey("TrackId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -197,15 +201,15 @@ namespace API.Data.Migrations
                     b.Navigation("Track");
                 });
 
-            modelBuilder.Entity("API.Entities.TrackLike", b =>
+            modelBuilder.Entity("API.Models.TrackLike", b =>
                 {
-                    b.HasOne("API.Entities.Track", "Track")
+                    b.HasOne("API.Models.Track", "Track")
                         .WithMany("Likes")
                         .HasForeignKey("TrackId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("API.Entities.AppUser", "User")
+                    b.HasOne("API.Models.AppUser", "User")
                         .WithMany("Likes")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -216,19 +220,19 @@ namespace API.Data.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("API.Entities.AppUser", b =>
+            modelBuilder.Entity("API.Models.AppUser", b =>
                 {
                     b.Navigation("Likes");
 
                     b.Navigation("Tracks");
                 });
 
-            modelBuilder.Entity("API.Entities.Playlist", b =>
+            modelBuilder.Entity("API.Models.Playlist", b =>
                 {
                     b.Navigation("Tracks");
                 });
 
-            modelBuilder.Entity("API.Entities.Track", b =>
+            modelBuilder.Entity("API.Models.Track", b =>
                 {
                     b.Navigation("AppUsers");
 
