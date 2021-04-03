@@ -41,9 +41,5 @@ namespace API.Data {
         public void AddUser(AppUser user) {
             _context.Users.Add(user);
         }
-
-        public bool HasChanges() {
-            return _context.ChangeTracker.HasChanges();
-        }
     }
 }

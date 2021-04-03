@@ -31,7 +31,7 @@ namespace API.Discord.Services {
                 user.UserName = username;
             }
 
-            if(_unitOfWork.UserRepository.HasChanges()) {
+            if(_unitOfWork.HasChanges()) {
                 if(!await _unitOfWork.Complete()) 
                     throw new DataContextException("Something went wrong saving the user.");
             }
