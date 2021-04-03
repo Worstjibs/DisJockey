@@ -1,5 +1,5 @@
 using System.Threading.Tasks;
-using API.Entities;
+using API.Models;
 
 namespace API.Interfaces {
     public interface ITokenService {

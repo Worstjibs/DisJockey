@@ -21,7 +21,7 @@
             <p>Played By</p>
             <ul class="list-group">
                 <li class="list-group-item" *ngFor="let user of track.users">
-                    {{user.username | titlecase}}, played {{user.timesPlayed}} times, last played {{user.lastPlayed | timeago}}
+                    {{user.username}}, played {{user.timesPlayed}} times, last played {{user.lastPlayed | timeago}}
                 </li>
             </ul>
         </div>

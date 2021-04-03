@@ -1,5 +1,5 @@
 namespace API.DTOs {
-    public class TrackLikeDto {
+    public class TrackLikeAddDto {
         public string YoutubeId { get; set; }
         public bool Liked { get; set; }
     }

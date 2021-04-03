@@ -1,7 +1,7 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using API.Entities;
+using API.Models;
 using API.Helpers;
 using API.Interfaces;
 using Google.Apis.Services;

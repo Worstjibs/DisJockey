@@ -1,7 +1,7 @@
 using System;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace API.Entities {
+namespace API.Models {
     [Table("TrackPlays")]
     public class AppUserTrack {
         public int Id { get; set; }

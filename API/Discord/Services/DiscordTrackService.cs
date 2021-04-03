@@ -3,7 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using API.Exceptions;
 using API.Discord.Interfaces;
-using API.Entities;
+using API.Models;
 using API.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.WebUtilities;
@@ -18,14 +18,22 @@ namespace API.Discord.Services {
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<AppUserTrack> AddTrackAsync(ulong discordId, string url) {
+        public async Task<bool> AddTrackAsync(ulong discordId, string username, string url) {
             var user = await _unitOfWork.UserRepository.GetUserByDiscordIdAsync(discordId);
 
             if (user == null) {
                 user = new AppUser {
-                    DiscordId = discordId
+                    DiscordId = discordId,
+                    UserName = username
                 };
                 _unitOfWork.UserRepository.AddUser(user);
+            } else if (user.UserName != username) {
+                user.UserName = username;
+            }
+
+            if(_unitOfWork.UserRepository.HasChanges()) {
+                if(!await _unitOfWork.Complete()) 
+                    throw new DataContextException("Something went wrong saving the user.");
             }
 
             if (!url.Contains("youtu.be") && !url.Contains("youtube.com")) throw new InvalidUrlException("The link provided is invalid");
@@ -37,8 +45,7 @@ namespace API.Discord.Services {
 
             if (track == null) {
                 track = new Track {
-                    YoutubeId = youtubeId,
-                    CreatedOn = DateTime.UtcNow
+                    YoutubeId = youtubeId
                 };
 
                 try {
@@ -46,6 +53,10 @@ namespace API.Discord.Services {
                 } catch (Exception e) {
                     Console.WriteLine(e);
                 }
+
+                _unitOfWork.TrackRepository.AddTrack(track);
+
+                if (!await _unitOfWork.Complete()) throw new DataContextException("Something went wrong saving the Track.");
             }
 
             var userTrack = new AppUserTrack {
@@ -57,9 +68,9 @@ namespace API.Discord.Services {
 
             user.Tracks.Add(userTrack);
 
-            if (await _unitOfWork.Complete()) return userTrack;
-
-            throw new DataContextException("Something went wrong saving the Track.");
+            if (!await _unitOfWork.Complete()) throw new DataContextException("Something went wrong saving the AppUserTrack.");
+            
+            return true;            
         }
 
         public string GetYouTubeId(string url) {

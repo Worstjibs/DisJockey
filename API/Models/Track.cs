@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace API.Entities {
+namespace API.Models {
     [Table("Tracks")]
     public class Track {
         public int Id { get; set; }

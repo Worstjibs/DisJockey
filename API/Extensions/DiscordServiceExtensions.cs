@@ -30,6 +30,7 @@ namespace API.Extensions {
 
             services.AddLavaNode(x => {
                 x.SelfDeaf = true;
+                x.IsSSL = true;
                 x.Hostname = botSettings.LavalinkHost;
                 x.Port = botSettings.LavalinkPort;
                 x.Authorization = botSettings.LavalinkPassword;                

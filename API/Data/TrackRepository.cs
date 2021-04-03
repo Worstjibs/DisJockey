@@ -1,12 +1,14 @@
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using API.DTOs;
-using API.Entities;
+using API.Models;
 using API.Interfaces;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using Microsoft.EntityFrameworkCore;
+using System.Collections;
+using System.Collections.Generic;
+using System;
 
 namespace API.Data {
     public class TrackRepository : ITrackRepository {
@@ -30,12 +32,17 @@ namespace API.Data {
 
         public IQueryable<TrackDto> GetTracks() {
             var userTracks = _context.Tracks
-                .Include(t => t.AppUsers).ThenInclude(ut => ut.User)
+                .Include(t => t.AppUsers)
+                .ThenInclude(ut => ut.User)
                 .Include(t => t.Likes).ThenInclude(tl => tl.User)
                 .ProjectTo<TrackDto>(_mapper.ConfigurationProvider)
                 .OrderByDescending(t => t.CreatedOn);
 
             return userTracks;
         }
+
+        public void AddTrack(Track track) {
+            _context.Tracks.Add(track);
+        }    
     }
 }
