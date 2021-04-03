@@ -11,6 +11,5 @@ namespace API.Interfaces {
         Task<AppUser> GetUserByDiscordIdAsync(ulong discordId);
         Task<IEnumerable<MemberDto>> GetUsersAsync();
         void AddUser(AppUser user);
-        bool HasChanges();
     }
 }
