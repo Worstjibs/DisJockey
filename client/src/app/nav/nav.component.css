@@ -1,6 +1,11 @@
-img {
+#logo {
     max-height: 20px;
     margin-bottom: 5%;
+}
+
+#avatar {
+    max-height: 30px;
+    border-radius: 50%;
 }
 
 .dropdown-toggle, .dropdown-item {

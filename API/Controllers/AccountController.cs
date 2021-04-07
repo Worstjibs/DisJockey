@@ -65,6 +65,11 @@ namespace API.Controllers {
             var challenge = Challenge(new AuthenticationProperties { RedirectUri = "/tracks" }, DiscordAuthenticationDefaults.AuthenticationScheme );
             return challenge;
         }
+        
+        [HttpGet("claims")]
+        public ActionResult GetClaims() {
+            return Ok(User.Identity);
+        }
 
         private async Task<bool> CheckUserExists(string username) {
             // Query the DbContext to see if a user exists with the same username
