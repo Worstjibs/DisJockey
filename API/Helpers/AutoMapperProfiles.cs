@@ -16,6 +16,13 @@ namespace API.Helpers {
 
             CreateMap<Track, TrackDto>()
                 .ForMember(dest => dest.Users, opt => opt.MapFrom(src => src.AppUsers))
+                    // .GroupBy(x => new {x.User.DiscordId, x.User.UserName}).Select(t => new TrackUserDto {
+                    //     CreatedOn = t.Min(x => x.CreatedOn),
+                    //     LastPlayed =  t.Max(x => x.CreatedOn),
+                    //     TimesPlayed = t.Count(),
+                    //     DiscordId = t.Key.DiscordId,
+                    //     Username = t.Key.UserName    
+                    // })))
                 .ForMember(dest => dest.UserLikes, opt => opt.MapFrom(src => src.Likes))
                 .ForMember(dest => dest.Likes, opt => opt.MapFrom(src => src.Likes.Where(x => x.Liked == true).Count()))
                 .ForMember(dest => dest.Dislikes, opt => opt.MapFrom(src => src.Likes.Where(x => x.Liked == false).Count()));

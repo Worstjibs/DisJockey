@@ -6,6 +6,8 @@ using API.Models;
 using API.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authentication;
+using AspNet.Security.OAuth.Discord;
 
 namespace API.Controllers {
     public class AccountController : BaseApiController {
@@ -56,6 +58,12 @@ namespace API.Controllers {
             };
 
             return userDto;
+        }
+
+        [HttpGet("login")]
+        public ActionResult Login() {
+            var challenge = Challenge(new AuthenticationProperties { RedirectUri = "/tracks" }, DiscordAuthenticationDefaults.AuthenticationScheme );
+            return challenge;
         }
 
         private async Task<bool> CheckUserExists(string username) {

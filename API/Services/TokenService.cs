@@ -8,12 +8,13 @@ using API.Models;
 using API.Interfaces;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
+using API.Helpers;
 
 namespace API.Services {
     public class TokenService : ITokenService {
         private readonly SymmetricSecurityKey _key;
-        public TokenService(IConfiguration config) {
-            _key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config.GetValue<string>("TokenKey")));
+        public TokenService(AuthenticationSettings settings) {
+            _key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(settings.JwtTokenKey));
         }
 
         public string CreateTokenAsync(AppUser user) {

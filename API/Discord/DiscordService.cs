@@ -1,4 +1,5 @@
 using System;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using API.Discord.Interfaces;
@@ -11,7 +12,7 @@ using Microsoft.Extensions.Hosting;
 using Victoria;
 
 namespace API.Discord {
-    public class DiscordBot : BackgroundService {
+    public class DiscordService : BackgroundService {
         private readonly IConfiguration _config;
         private readonly IServiceScopeFactory _serviceScopeFactory;
         private readonly BotSettings _botSettings;
@@ -20,16 +21,13 @@ namespace API.Discord {
         private readonly IServiceProvider _services;
         private readonly LavaNode _lavaNode;
 
-        public DiscordBot(
-            IConfiguration config, 
-            IServiceScopeFactory serviceScopeFactory,
-            DiscordSocketClient client,
-            BotSettings botSettings,
-            CommandService cmdService,
-            IServiceProvider services,
-            LavaNode lavaNode
-        ) {
-
+        public DiscordService(IConfiguration config,
+                              IServiceScopeFactory serviceScopeFactory,
+                              DiscordSocketClient client,
+                              BotSettings botSettings,
+                              CommandService cmdService,
+                              IServiceProvider services,
+                              LavaNode lavaNode) {
             _cmdService = cmdService;
             _services = services;
             _client = client;
@@ -49,10 +47,28 @@ namespace API.Discord {
             await _client.LoginAsync(TokenType.Bot, _botSettings.BotToken);
             await _client.StartAsync();
 
-            var cmdHandler = new CommandHandler(_client, _cmdService, _services, _botSettings);
-            await cmdHandler.InitializeAsync();
+            await _cmdService.AddModulesAsync(Assembly.GetEntryAssembly(), _services);
 
             _client.Ready += ReadyAsync;
+            _cmdService.Log += LogAsync;
+            _client.MessageReceived += MessageReceivedAsync;
+        }
+
+        private async Task MessageReceivedAsync(SocketMessage message) {
+            var argPos = 0;
+
+            if (message.Author.IsBot)
+                return;
+
+            var userMessage = message as SocketUserMessage;
+            if (userMessage is null)
+                return;
+
+            if (!userMessage.HasCharPrefix(_botSettings.Prefix, ref argPos))
+                return;
+
+            var context = new SocketCommandContext(_client, userMessage);
+            var result = await _cmdService.ExecuteAsync(context, argPos, _services);
         }
 
         private Task LogAsync(LogMessage msg) {

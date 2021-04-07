@@ -38,8 +38,8 @@ namespace API.Extensions {
 
             services.AddSingleton<MusicService>();
 
-            services.AddSingleton<DiscordBot>();
-            services.AddHostedService<DiscordBot>(provider => provider.GetService<DiscordBot>());
+            services.AddSingleton<DiscordService>();
+            services.AddHostedService<DiscordService>(provider => provider.GetService<DiscordService>());
 
             return services;
         }

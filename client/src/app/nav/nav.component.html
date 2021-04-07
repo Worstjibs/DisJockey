@@ -13,10 +13,13 @@
 
         <div class="dropdown" dropdown>
             <a class="dropdown-toggle" style="text-decoration: none!important; color: inherit;" dropdownToggle>Welcome</a>
-            <div class="dropdown-menu mt-3" *dropdownMenu> 
+            <!-- <div class="dropdown-menu mt-3" *dropdownMenu> 
                 <a class="dropdown-item" routerLinkActive="active">Edit Profile</a>
                 <div class="dropdown-divider"></div>
                 <a class="dropdown-item">Logout</a>
+            </div> -->
+            <div class="dropdown-menu mt-3" *dropdownMenu>
+                <a class="dropdown-item" href="{{baseUrl}}account/login">Login</a>
             </div>
         </div>
     </div>
