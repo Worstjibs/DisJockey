@@ -1,8 +1,9 @@
 using System.Threading.Tasks;
 using API.Models;
+using Discord.WebSocket;
 
 namespace API.Discord.Interfaces {
     public interface IDiscordTrackService {
-        Task<bool> AddTrackAsync(ulong discordId, string username, string url);
+        Task<bool> AddTrackAsync(SocketUser discordUser, string url);
     }
 }

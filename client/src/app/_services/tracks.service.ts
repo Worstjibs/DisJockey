@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { environment } from 'src/environments/environment';
-import { map } from 'rxjs/operators';
+import { map, take } from 'rxjs/operators';
 import { Track } from '../_models/track';
 import { of } from 'rxjs';
 
@@ -34,14 +34,19 @@ export class TracksService {
         return this.http.post(this.baseUrl + 'track/like', trackLikeDto).subscribe(() => {
             if (track.likedByUser !== liked && track.likedByUser !== null) {
                 if (liked) {
-                    track.likes++;
                     track.dislikes--;
                 } else {
                     track.likes--;
-                    track.dislikes++;
-                }                
-                track.likedByUser = liked;
-            }           
+                }
+            }
+
+            if (liked) {
+                track.likes++;
+            } else {
+                track.dislikes++;
+            }
+            
+            track.likedByUser = liked;    
         });
     }
 }

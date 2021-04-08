@@ -9,6 +9,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authentication;
 using AspNet.Security.OAuth.Discord;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authorization;
+using API.Extensions;
 
 namespace API.Controllers {
     public class AccountController : BaseApiController {
@@ -45,22 +47,6 @@ namespace API.Controllers {
             return Ok();
         }
 
-        [HttpPost("login")]
-        public async Task<ActionResult<UserDto>> Login(LoginDto loginDto) {
-            var user = await _context.Users.FirstOrDefaultAsync(u => u.DiscordId == loginDto.DiscordId);
-
-            if (user == null) return BadRequest("Invalid Credentials");
-
-            var token = _tokenService.CreateTokenAsync(user);
-
-            var userDto = new UserDto {
-                Username = user.UserName,
-                Token = token
-            };
-
-            return userDto;
-        }
-
         [HttpGet("login")]
         public ActionResult Login() {
             var redirectUri = "/tracks";
@@ -79,8 +65,26 @@ namespace API.Controllers {
         }
         
         [HttpGet("claims")]
-        public ActionResult GetClaims() {
-            return Ok(User.Identity);
+        public ActionResult<UserDto> GetUserInfo() {
+            var discordIdStr = User.GetDiscordId();
+
+            if (discordIdStr != null) {
+                var username = User.GetUsername();
+                var avatarUrl = User.GetAvatarUrl();
+
+                ulong discordId;
+                UInt64.TryParse(discordIdStr, out discordId);
+
+                var userDto = new UserDto {
+                    AvatarUrl = avatarUrl,
+                    DiscordId = discordId,
+                    Username = username
+                };
+
+                return Ok(userDto);
+            }
+
+            return Ok(null);
         }
 
         private async Task<bool> CheckUserExists(string username) {

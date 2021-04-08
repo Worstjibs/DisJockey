@@ -2,7 +2,7 @@
     <div class="container">
         <a class="navbar-brand" routerLink="/"><img id="logo" src="./assets/icon.png" alt=""> DisJockey</a>
 
-        <ul class="navbar-nav mr-auto">
+        <ul class="navbar-nav mr-auto" *ngIf="accountService.currentUser$ | async">
             <li class="nav-item">
                 <a class="nav-link" routerLinkActive="active" routerLink="/users">Users</a>
             </li>
@@ -17,9 +17,9 @@
                 {{user.username}}
             </a>
             <div class="dropdown-menu mt-3" *dropdownMenu> 
-                <a class="dropdown-item" routerLinkActive="active">Edit Profile</a>
-                <div class="dropdown-divider"></div>
-                <a class="dropdown-item" href="{{baseUrl}}account/logout">Logout</a>
+                <!-- <a class="dropdown-item" routerLinkActive="active">Edit Profile</a>
+                <div class="dropdown-divider"></div> -->
+                <div class="dropdown-item" (click)="logout()">Logout</div>
             </div>
         </div>
         <div class="dropdown" dropdown *ngIf="(accountService.currentUser$ | async) == null">

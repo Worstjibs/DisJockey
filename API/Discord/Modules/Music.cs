@@ -58,28 +58,7 @@ namespace API.Discord.Modules {
                 return;
             }
 
-            // var player = _lavaNode.GetPlayer(Context.Guild);
-
-            // var results = await _lavaNode.SearchYouTubeAsync(query);
-
-            // if (results.LoadStatus == LoadStatus.LoadFailed || results.LoadStatus == LoadStatus.NoMatches) {
-            //     await ReplyAsync("No matches found");
-            // }
-
-            // var track = results.Tracks.FirstOrDefault();
-
-            // if (player.PlayerState == PlayerState.Playing) {
-            //     player.Queue.Enqueue(track);
-            //     await ReplyAsync($"Track {track.Title} is queued");
-            // } else {
-            //     await player.PlayAsync(track);
-            //     await ReplyAsync($"Track {track.Title} is now playing");
-            // }
-
-            var userId = Context.User.Id;
-            var username = Context.User.Username;
-
-            var response = await _musicService.PlayTrack(query, userId, username, Context.Guild);
+            var response = await _musicService.PlayTrack(query, Context.User, Context.Guild);
             await ReplyAsync(response);
         }
 

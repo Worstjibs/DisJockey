@@ -8,6 +8,7 @@ using API.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.WebUtilities;
 using System.Data.Common;
+using Discord.WebSocket;
 
 namespace API.Discord.Services {
     public class DiscordTrackService : IDiscordTrackService {
@@ -18,17 +19,24 @@ namespace API.Discord.Services {
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<bool> AddTrackAsync(ulong discordId, string username, string url) {
-            var user = await _unitOfWork.UserRepository.GetUserByDiscordIdAsync(discordId);
+        public async Task<bool> AddTrackAsync(SocketUser discordUser, string url) {
+            var user = await _unitOfWork.UserRepository.GetUserByDiscordIdAsync(discordUser.Id);
 
             if (user == null) {
                 user = new AppUser {
-                    DiscordId = discordId,
-                    UserName = username
+                    DiscordId = discordUser.Id,
+                    UserName = discordUser.Username,
+                    AvatarUrl = discordUser.GetAvatarUrl()
                 };
                 _unitOfWork.UserRepository.AddUser(user);
-            } else if (user.UserName != username) {
-                user.UserName = username;
+            }
+            
+            if (user.UserName != discordUser.Username) {
+                user.UserName = discordUser.Username;
+            }
+
+            if (user.AvatarUrl != discordUser.GetAvatarUrl()) {
+                user.AvatarUrl = discordUser.GetAvatarUrl();
             }
 
             if(_unitOfWork.HasChanges()) {

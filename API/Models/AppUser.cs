@@ -7,6 +7,7 @@ namespace API.Models {
         public DateTime CreatedOn { get; set; } = DateTime.UtcNow;
         public string UserName { get; set; }
         public ulong DiscordId { get; set; }
+        public string AvatarUrl { get; set; }
         public ICollection<AppUserTrack> Tracks { get; set; }
         public ICollection<TrackLike> Likes { get; set; }
     }

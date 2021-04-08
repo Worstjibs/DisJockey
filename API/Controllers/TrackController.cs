@@ -55,6 +55,8 @@ namespace API.Controllers {
 
             UInt64.TryParse(discordIdStr, out discordId);
 
+            // Doing grouping "client-side" here
+            // TODO figure out how to do it during projection
             foreach(var track in tracks) {
                 track.Users = (from user in track.Users
                     group user by new { user.DiscordId, user.Username } into grouping
@@ -104,14 +106,14 @@ namespace API.Controllers {
             return BadRequest("Error saving like");
         }
 
-        [HttpPost]
-        public async Task<ActionResult> AddTrack(TrackAddDto trackAddDto) {
-            try {
-                return Ok(await _discordTrackService.AddTrackAsync(trackAddDto.DiscordId, trackAddDto.Username, trackAddDto.URL));
-            } catch (Exception e) {
-                return BadRequest(e);
-            }
-        }
+        // [HttpPost]
+        // public async Task<ActionResult> AddTrack(TrackAddDto trackAddDto) {
+        //     try {
+        //         return Ok(await _discordTrackService.AddTrackAsync(trackAddDto.DiscordId, trackAddDto.Username, trackAddDto.URL));
+        //     } catch (Exception e) {
+        //         return BadRequest(e);
+        //     }
+        // }
 
         public string GetYouTubeId(string url) {
             try {

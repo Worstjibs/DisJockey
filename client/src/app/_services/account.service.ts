@@ -1,10 +1,9 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { CookieService } from 'ngx-cookie-service';
+import { Router } from '@angular/router';
 import { ReplaySubject } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
-import { ClaimsIdentity } from '../_models/claimsIdentity';
 import { CurrentUser } from '../_models/currentUser';
 
 @Injectable({
@@ -15,7 +14,7 @@ export class AccountService {
     private currentUserSource = new ReplaySubject<CurrentUser>(1);
     currentUser$ = this.currentUserSource.asObservable();
 
-    constructor(private http: HttpClient, private cookieService: CookieService) { }
+    constructor(private http: HttpClient, private router: Router) { }
 
     // login(model: any) {
     //     return this.http.post(this.baseUrl + 'account/login', model).pipe(
@@ -31,22 +30,24 @@ export class AccountService {
     // }
 
     getClaims() {
-        this.http.get(this.baseUrl + 'account/claims').subscribe((response: ClaimsIdentity) => {
-            let claims = response.claims;
+        const user: CurrentUser = JSON.parse(localStorage.getItem('user'));
 
-            if (claims.length > 0) {
-                const discordId: number = claims.find(claim => claim.type === "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier").value || "";
-                const username: string = claims.find(claim => claim.type === "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name").value || 0;
-                const avatarUrl: string = claims.find(claim => claim.type === "urn:discord:avatar:url").value || "";
-
-                const user: CurrentUser = {
-                    avatarUrl,
-                    discordId,
-                    username
+        if (user) {
+            this.currentUserSource.next(user);
+        } else {
+            this.http.get(this.baseUrl + 'account/claims').subscribe((response: any) => {
+                if (response) {
+                    localStorage.setItem('user', JSON.stringify(response));                
+                    this.currentUserSource.next(response);
                 }
+            });
+        }
+    }
 
-                this.currentUserSource.next(user);
-            }
-        });
+    logout() {
+        localStorage.removeItem('user');
+        this.currentUserSource.next(null);
+
+        window.location.href = this.baseUrl + 'account/logout';
     }
 }

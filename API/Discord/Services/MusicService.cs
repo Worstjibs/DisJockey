@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using API.Discord.Interfaces;
 using API.Exceptions;
 using Discord;
+using Discord.WebSocket;
 using Microsoft.Extensions.DependencyInjection;
 using Victoria;
 using Victoria.Enums;
@@ -17,7 +18,7 @@ namespace API.Discord.Services {
             _lavaNode = lavaNode;
         }
 
-        public async Task<string> PlayTrack(string query, ulong discordId, string username, IGuild guild) {
+        public async Task<string> PlayTrack(string query, SocketUser user, IGuild guild) {
             var player = _lavaNode.GetPlayer(guild);
 
             var results = await _lavaNode.SearchYouTubeAsync(query);
@@ -43,7 +44,7 @@ namespace API.Discord.Services {
                     var discordTrackService = scope.ServiceProvider.GetService<IDiscordTrackService>();
 
                     try {
-                        await discordTrackService.AddTrackAsync(discordId, username, track.Url);
+                        await discordTrackService.AddTrackAsync(user, track.Url);
                     } catch (InvalidUrlException e) {
                         returnMessage = e.ToString();
                     } catch (DataContextException e) {

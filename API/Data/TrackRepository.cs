@@ -35,8 +35,8 @@ namespace API.Data {
                 .Include(t => t.AppUsers)
                 .ThenInclude(ut => ut.User)
                 .Include(t => t.Likes).ThenInclude(tl => tl.User)
-                .ProjectTo<TrackDto>(_mapper.ConfigurationProvider)
-                .OrderByDescending(t => t.CreatedOn);
+                .OrderByDescending(t => t.AppUsers.Max(tp => tp.CreatedOn))
+                .ProjectTo<TrackDto>(_mapper.ConfigurationProvider);
 
             return userTracks;
         }

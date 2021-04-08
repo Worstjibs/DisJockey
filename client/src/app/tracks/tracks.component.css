@@ -6,6 +6,14 @@
     color: red;
 }
 
+.liked-by-user {
+    color: white !important;
+}
+
+.like-num {
+    color: #a5a5a5;
+}
+
 .like-icon {
     transform: scale(1);
     transition: all .2s ease-in-out;

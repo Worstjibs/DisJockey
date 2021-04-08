@@ -19,4 +19,8 @@ export class NavComponent implements OnInit {
         this.baseUrl = environment.apiUrl;
     }
 
+    logout() {
+        this.accountService.logout();
+    }
+
 }
