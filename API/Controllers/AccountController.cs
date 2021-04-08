@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authentication;
 using AspNet.Security.OAuth.Discord;
+using Microsoft.AspNetCore.Authentication.Cookies;
 
 namespace API.Controllers {
     public class AccountController : BaseApiController {
@@ -62,8 +63,19 @@ namespace API.Controllers {
 
         [HttpGet("login")]
         public ActionResult Login() {
-            var challenge = Challenge(new AuthenticationProperties { RedirectUri = "/tracks" }, DiscordAuthenticationDefaults.AuthenticationScheme );
+            var redirectUri = "/tracks";
+
+            // if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Development") redirectUri = "https://localhost:4200" + redirectUri;
+
+            var challenge = Challenge(new AuthenticationProperties { RedirectUri = redirectUri }, DiscordAuthenticationDefaults.AuthenticationScheme );
             return challenge;
+        }
+
+        [HttpGet("logout")]
+        public async Task<ActionResult> Logout() {
+            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+
+            return Redirect("/");
         }
         
         [HttpGet("claims")]

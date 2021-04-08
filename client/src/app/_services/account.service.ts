@@ -1,5 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { CookieService } from 'ngx-cookie-service';
 import { ReplaySubject } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
@@ -14,7 +15,7 @@ export class AccountService {
     private currentUserSource = new ReplaySubject<CurrentUser>(1);
     currentUser$ = this.currentUserSource.asObservable();
 
-    constructor(private http: HttpClient) { }
+    constructor(private http: HttpClient, private cookieService: CookieService) { }
 
     // login(model: any) {
     //     return this.http.post(this.baseUrl + 'account/login', model).pipe(
@@ -31,11 +32,6 @@ export class AccountService {
 
     getClaims() {
         this.http.get(this.baseUrl + 'account/claims').subscribe((response: ClaimsIdentity) => {
-            // const claimsIdentity: ClaimsIdentity = {
-            //     claims: response.claims,
-            //     isAuthenticated: response.isAuthenticated,
-            //     name: response.name
-            // };
             let claims = response.claims;
 
             if (claims.length > 0) {
@@ -49,14 +45,8 @@ export class AccountService {
                     username
                 }
 
-                console.log(user);
-
                 this.currentUserSource.next(user);
             }
-
-            
-
-            
         });
     }
 }

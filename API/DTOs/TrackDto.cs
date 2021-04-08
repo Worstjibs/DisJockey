@@ -9,6 +9,7 @@ namespace API.DTOs {
         public ICollection<TrackUserLikeDto> UserLikes { get; set; }
         public int Likes { get; set; }
         public int Dislikes { get; set; }
+        public bool? LikedByUser { get; set; } = null;
         public string Title { get; set; }
         public string Description { get; set; }
         public string ChannelTitle { get; set; }

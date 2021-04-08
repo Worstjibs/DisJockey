@@ -50,6 +50,11 @@ namespace API.Controllers {
 
             var tracks = await tracksQuery.ToListAsync();
 
+            var discordIdStr = User.GetDiscordId();
+            ulong discordId;
+
+            UInt64.TryParse(discordIdStr, out discordId);
+
             foreach(var track in tracks) {
                 track.Users = (from user in track.Users
                     group user by new { user.DiscordId, user.Username } into grouping
@@ -60,6 +65,8 @@ namespace API.Controllers {
                         CreatedOn = grouping.Min(x => x.CreatedOn),
                         LastPlayed = grouping.Max(x => x.CreatedOn)
                     }).ToList();
+
+                track.LikedByUser = track.UserLikes.FirstOrDefault(user => user.DiscordId == discordId)?.Liked;;
             }
 
             return Ok(tracks);

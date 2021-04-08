@@ -43,26 +43,6 @@ namespace API.Extensions {
                     }
                 };
             });
-            // .AddOAuth("Discord", options => {
-            //     // Add configuration for Discord Authentication
-            //     options.AuthorizationEndpoint = "https://discord.com/api/oauth2/authorize";
-
-            //     // Add identify scope to access the Discord Id of the user
-            //     options.Scope.Add("identify");
-
-            //     options.CallbackPath = new PathString("/account/discord");
-
-            //     // Add Client Id and Secret from Discord Application
-            //     options.ClientId = config.GetValue<string>("Discord:ClientId");
-            //     options.ClientSecret = config.GetValue<string>("Discord:ClientSecret");
-
-            //     // Add Endpoints from Discord application
-            //     options.TokenEndpoint = "https://discord.com/api/oauth2/token";
-            //     options.UserInformationEndpoint = "https://discord.com/api/users/@me";
-
-            //     options.ClaimActions.MapJsonKey(ClaimTypes.NameIdentifier, "id");
-            //     options.ClaimActions.MapJsonKey(ClaimTypes.Name, "username");
-            // });
             
             return services;
         }

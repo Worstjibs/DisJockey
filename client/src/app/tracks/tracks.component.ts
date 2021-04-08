@@ -16,4 +16,16 @@ export class TracksComponent implements OnInit {
     ngOnInit(): void {
         this.tracks$ = this.tracksService.getTracks();
     }
+
+    likeTrack(track: Track) {
+        if (track.likedByUser !== true) {
+            this.tracksService.postTrackLike(track, true);
+        }        
+    }
+
+    dislikeTrack(track: Track) {
+        if (track.likedByUser !== false) {
+            this.tracksService.postTrackLike(track, false);
+        }
+    }
 }

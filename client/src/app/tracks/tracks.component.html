@@ -15,8 +15,8 @@
             <h5>{{track.channelTitle}}</h5>
             <p>First posted on {{track.createdOn | date: 'dd MMMM yyyy'}}</p>
             <div class="d-flex justify-content-around mb-2 w-25">
-                <span><i class="fas fa-thumbs-up fa-lg"></i>   {{track.likes}}</span>
-                <span><i class="fas fa-thumbs-down fa-lg"></i>   {{track.dislikes}}</span>
+                <span><i class="fas fa-thumbs-up fa-lg shake like-icon" (click)="likeTrack(track)"></i>{{track.likes}}</span>
+                <span><i class="fas fa-thumbs-down fa-lg shake like-icon" (click)="dislikeTrack(track)"></i>{{track.dislikes}}</span>
             </div>
             <p>Played By</p>
             <ul class="list-group">

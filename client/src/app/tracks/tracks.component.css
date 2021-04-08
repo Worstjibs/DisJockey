@@ -5,3 +5,14 @@
 .fa-thumbs-down {
     color: red;
 }
+
+.like-icon {
+    transform: scale(1);
+    transition: all .2s ease-in-out;
+    margin-right: 8px;
+}
+
+.like-icon:hover {
+    transform: scale(1.5);
+    transition: all .5s ease-in-out;
+}

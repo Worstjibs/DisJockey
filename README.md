@@ -14,6 +14,12 @@ You'll also need access to a LavaLink server (https://github.com/Frederikam/Lava
 
 I've included a skeleton `appsettings.json` file in the root pf the repo, you'll need to populate each of the empty properties with corresponding values and put it in the API folder.
 
+# Running
+
+You can launch the app by running `dotnet run` from inside the API folder. I've also included vscode launch options so you can debug through that.
+
+To make changes to Angular, you'll need to run `ng build` inside the client folder, as the API needs to serve static HTML files for Discord Authentication to work (this might be possible with `ng serve` but I haven't managed it). You can use the argument `--watch` to automatically build the Angular solution when you make changes to it.
+
 # Contributing
 
 Currently, the project as a whole is still in early stages, but I'm fairly new to .NET and still learning! If you would like to contribute or have any tips, I'm all ears.

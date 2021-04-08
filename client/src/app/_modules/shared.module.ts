@@ -4,6 +4,7 @@ import { BsDropdownModule } from 'ngx-bootstrap/dropdown';
 import { TimeagoModule } from 'ngx-timeago';
 import { NgxSpinnerModule } from 'ngx-spinner';
 import { YouTubePlayerModule } from '@angular/youtube-player';
+import { ToastrModule } from 'ngx-toastr';
 
 @NgModule({
     declarations: [],
@@ -12,13 +13,17 @@ import { YouTubePlayerModule } from '@angular/youtube-player';
         TimeagoModule.forRoot(),
         BsDropdownModule.forRoot(),
         NgxSpinnerModule,
-        YouTubePlayerModule
+        YouTubePlayerModule,
+        ToastrModule.forRoot({
+            positionClass: 'toast-bottom-right'
+        })
     ],
     exports: [
         TimeagoModule,
         BsDropdownModule,
         NgxSpinnerModule,
-        YouTubePlayerModule
+        YouTubePlayerModule,
+        ToastrModule
     ]
 })
 export class SharedModule { }

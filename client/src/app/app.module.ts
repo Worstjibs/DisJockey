@@ -10,6 +10,8 @@ import { UsersComponent } from './users/users.component';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { LoadingInterceptor } from './_interceptors/loading.interceptor';
 import { SharedModule } from './_modules/shared.module';
+import { CookieService } from 'ngx-cookie-service';
+import { ErrorInterceptor } from './_interceptors/error.interceptor';
 
 
 @NgModule({
@@ -28,7 +30,9 @@ import { SharedModule } from './_modules/shared.module';
         SharedModule
     ],
     providers: [
-        { provide : HTTP_INTERCEPTORS, useClass: LoadingInterceptor, multi: true }
+        { provide : HTTP_INTERCEPTORS, useClass: LoadingInterceptor, multi: true },
+        { provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true },
+        CookieService
     ],
     bootstrap: [AppComponent]
 })

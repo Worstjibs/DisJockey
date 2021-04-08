@@ -4,8 +4,9 @@ export interface Track {
     youtubeId: string,
     users: TrackUser[],
     createdOn: Date,
-    likes: Number,
-    dislikes: Number,
+    likes: number,
+    dislikes: number,
+    likedByUser?: boolean
     title: string,
     channelTitle: string,
     description: string,

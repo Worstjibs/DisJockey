@@ -19,7 +19,7 @@
             <div class="dropdown-menu mt-3" *dropdownMenu> 
                 <a class="dropdown-item" routerLinkActive="active">Edit Profile</a>
                 <div class="dropdown-divider"></div>
-                <a class="dropdown-item">Logout</a>
+                <a class="dropdown-item" href="{{baseUrl}}account/logout">Logout</a>
             </div>
         </div>
         <div class="dropdown" dropdown *ngIf="(accountService.currentUser$ | async) == null">
