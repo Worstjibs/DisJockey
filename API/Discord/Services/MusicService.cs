@@ -8,6 +8,7 @@ using Discord.WebSocket;
 using Microsoft.Extensions.DependencyInjection;
 using Victoria;
 using Victoria.Enums;
+using Victoria.EventArgs;
 
 namespace API.Discord.Services {
     public class MusicService {
@@ -16,6 +17,8 @@ namespace API.Discord.Services {
         public MusicService(LavaNode lavaNode, IServiceScopeFactory serviceScope) {
             _serviceScope = serviceScope;
             _lavaNode = lavaNode;
+
+            _lavaNode.OnTrackEnded += OnTrackEnded;
         }
 
         public async Task<string> PlayTrack(string query, SocketUser user, IGuild guild) {
@@ -56,6 +59,21 @@ namespace API.Discord.Services {
             }
 
             return returnMessage;
+        }    
+
+        private async Task OnTrackEnded(TrackEndedEventArgs args) {
+            var player = args.Player;
+
+            if (!player.Queue.TryDequeue(out var queueable)) {
+                return;
+            }
+
+            if (!(queueable is LavaTrack track)) {
+                await player.TextChannel.SendMessageAsync("Something wrong with the next track");
+                return;
+            }
+
+            await args.Player.PlayAsync(track);
         }
     }
 }

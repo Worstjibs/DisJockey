@@ -12,7 +12,9 @@ First, setup a google cloud application with access to the YouTube API, which is
 
 You'll also need access to a LavaLink server (https://github.com/Frederikam/Lavalink). You can host one on your local machine using the latest jar files, run it Docker Container or I found a Github repo that does One click hosting to Heroku for free (https://github.com/karyeet/heroku-lavalink).
 
-I've included a skeleton `appsettings.json` file in the root pf the repo, you'll need to populate each of the empty properties with corresponding values and put it in the API folder.
+I've included a skeleton `appsettings.json` file in the root of the repo, you'll need to populate each of the empty properties with corresponding values and put it in the API folder.
+
+Finally, you need to add `https://localhost:5001/signin-discord` to the redirect URLs for your Discord Application, which is to ensure Discord Auth is successful.
 
 # Running
 
