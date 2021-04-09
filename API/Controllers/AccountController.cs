@@ -72,6 +72,8 @@ namespace API.Controllers {
                 var username = User.GetUsername();
                 var avatarUrl = User.GetAvatarUrl();
 
+                var identity = User.Identity;
+
                 ulong discordId;
                 UInt64.TryParse(discordIdStr, out discordId);
 

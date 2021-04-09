@@ -1,0 +1,31 @@
+.fa-thumbs-up {
+    color: green;
+}
+
+.fa-thumbs-down {
+    color: red;
+}
+
+.liked-by-user {
+    color: white !important;
+}
+
+.like-num {
+    color: #a5a5a5;
+}
+
+.like-icon {
+    transform: scale(1);
+    transition: all .2s ease-in-out;
+    margin-right: 8px;
+}
+
+.like-icon:hover {
+    transform: scale(1.5);
+    transition: all .5s ease-in-out;
+}
+
+.like-icon:active {
+    transform: scale(1.7);
+    transition: all .1s ease-out;
+}

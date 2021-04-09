@@ -17,15 +17,11 @@ export class TracksComponent implements OnInit {
         this.tracks$ = this.tracksService.getTracks();
     }
 
-    likeTrack(track: Track) {
-        if (track.likedByUser !== true) {
-            this.tracksService.postTrackLike(track, true);
-        }        
-    }
+    likeTrack(event) {
+        var track: Track = event.track;
 
-    dislikeTrack(track: Track) {
-        if (track.likedByUser !== false) {
-            this.tracksService.postTrackLike(track, false);
+        if (event.liked != track.likedByUser) {
+            this.tracksService.postTrackLike(event.track, event.liked);
         }
     }
 }

@@ -12,6 +12,7 @@ import { LoadingInterceptor } from './_interceptors/loading.interceptor';
 import { SharedModule } from './_modules/shared.module';
 import { CookieService } from 'ngx-cookie-service';
 import { ErrorInterceptor } from './_interceptors/error.interceptor';
+import { TrackItemComponent } from './tracks/track-item/track-item.component';
 
 
 @NgModule({
@@ -20,7 +21,8 @@ import { ErrorInterceptor } from './_interceptors/error.interceptor';
         NavComponent,
         HomeComponent,
         TracksComponent,
-        UsersComponent
+        UsersComponent,
+        TrackItemComponent
     ],
     imports: [
         BrowserModule,
