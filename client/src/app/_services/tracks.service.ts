@@ -49,4 +49,10 @@ export class TracksService {
             track.likedByUser = liked;    
         });
     }
+
+    playTrack(track: Track) {
+        return this.http.post(this.baseUrl + 'track/play', {'YoutubeId': track.youtubeId}).subscribe(response => {
+            console.log(response);
+        });
+    }
 }

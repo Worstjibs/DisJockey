@@ -24,7 +24,7 @@
             <div>
                 <span><i class="fas fa-thumbs-down fa-lg like-icon" (click)="dislikeTrack(track)"></i><span class="like-num" [class.liked-by-user]="track.likedByUser === false">{{track.dislikes}}</span></span>
             </div>            
-            <button class="btn btn-primary">Play Now</button>
+            <button class="btn btn-primary" (click)="playTrack(track)">Play Now</button>
         </div>
 
         <p>Played By</p>

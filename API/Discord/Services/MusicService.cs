@@ -23,7 +23,7 @@ namespace API.Discord.Services {
             _pulledTrack = null;
         }
 
-        public async Task<string> PlayTrack(string query, SocketUser user, IGuild guild) {
+        public async Task<string> PlayTrack(string query, SocketUser user, IGuild guild, bool skipQueue) {
             var player = _lavaNode.GetPlayer(guild);
 
             var results = await _lavaNode.SearchYouTubeAsync(query);
@@ -36,7 +36,7 @@ namespace API.Discord.Services {
 
             string returnMessage = "";
 
-            if (player.PlayerState == PlayerState.Playing) {
+            if (player.PlayerState == PlayerState.Playing && !skipQueue) {
                 player.Queue.Enqueue(track);
                 returnMessage = $"Track {track.Title} is queued";
             } else {

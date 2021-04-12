@@ -15,7 +15,9 @@ namespace API.Discord.Services {
     public class DiscordTrackService : IDiscordTrackService {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IVideoDetailService _videoService;
-        public DiscordTrackService(IUnitOfWork unitOfWork, IVideoDetailService videoService) {
+        private readonly MusicService _musicService;
+        public DiscordTrackService(IUnitOfWork unitOfWork, IVideoDetailService videoService, MusicService musicService) {
+            _musicService = musicService;
             _videoService = videoService;
             _unitOfWork = unitOfWork;
         }
@@ -104,12 +106,16 @@ namespace API.Discord.Services {
 
             track.PullUps.Add(pullUp);
 
-            if (! await _unitOfWork.Complete()) {
+            if (!await _unitOfWork.Complete()) {
                 throw new DataContextException("Something went wrong saving the PullUp");
             }
         }
 
-        private void CreateAppUser(SocketUser discordUser) {            
+        public Task PlayTrackAsync(SocketUser discordUser, string youtubeId) {
+            throw new NotImplementedException();
+        }
+
+        private void CreateAppUser(SocketUser discordUser) {
             var user = new AppUser {
                 DiscordId = discordUser.Id,
                 UserName = discordUser.Username,

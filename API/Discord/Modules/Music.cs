@@ -59,7 +59,7 @@ namespace API.Discord.Modules {
             }
 
             // TODO: Join Channel before playing
-            var response = await _musicService.PlayTrack(query, Context.User, Context.Guild);
+            var response = await _musicService.PlayTrack(query, Context.User, Context.Guild, false);
             await ReplyAsync(response);
         }
 

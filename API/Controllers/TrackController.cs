@@ -12,21 +12,22 @@ using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.EntityFrameworkCore;
 using API.Discord.Interfaces;
 using System.Collections;
+using Discord.WebSocket;
+using API.Discord.Services;
 
 namespace API.Controllers {
     public class TrackController : BaseApiController {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IVideoDetailService _videoService;
-        private readonly IDiscordTrackService _discordTrackService;
+        private readonly DiscordSocketClient _client;
+        private readonly MusicService _musicService;
 
-        public TrackController(
-            IUnitOfWork unitOfWork, 
-            IVideoDetailService videoService,
-            IDiscordTrackService discordTrackService
-        ) {
+        public TrackController(IUnitOfWork unitOfWork, IVideoDetailService videoService, DiscordSocketClient client,
+            MusicService musicService) {
+            _musicService = musicService;
             _videoService = videoService;
             _unitOfWork = unitOfWork;
-            _discordTrackService = discordTrackService;
+            _client = client;
         }
 
         [HttpGet("{id}")]
@@ -43,7 +44,7 @@ namespace API.Controllers {
             return Ok(trackDto);
         }
 
-        // [Authorize]
+        [Authorize]
         [HttpGet]
         public async Task<ActionResult<IEnumerable>> GetTracks() {
             var tracksQuery = _unitOfWork.TrackRepository.GetTracks();
@@ -57,18 +58,18 @@ namespace API.Controllers {
 
             // Doing grouping "client-side" here
             // TODO figure out how to do it during projection
-            foreach(var track in tracks) {
+            foreach (var track in tracks) {
                 track.Users = (from user in track.Users
-                    group user by new { user.DiscordId, user.Username } into grouping
-                    select new TrackUserDto {
-                        DiscordId = grouping.Key.DiscordId,
-                        Username = grouping.Key.Username,
-                        TimesPlayed = grouping.Count(),
-                        CreatedOn = grouping.Min(x => x.CreatedOn),
-                        LastPlayed = grouping.Max(x => x.CreatedOn)
-                    }).ToList();
+                               group user by new { user.DiscordId, user.Username } into grouping
+                               select new TrackUserDto {
+                                   DiscordId = grouping.Key.DiscordId,
+                                   Username = grouping.Key.Username,
+                                   TimesPlayed = grouping.Count(),
+                                   CreatedOn = grouping.Min(x => x.CreatedOn),
+                                   LastPlayed = grouping.Max(x => x.CreatedOn)
+                               }).ToList();
 
-                track.LikedByUser = track.UserLikes.FirstOrDefault(user => user.DiscordId == discordId)?.Liked;;
+                track.LikedByUser = track.UserLikes.FirstOrDefault(user => user.DiscordId == discordId)?.Liked; ;
             }
 
             return Ok(tracks);
@@ -94,8 +95,8 @@ namespace API.Controllers {
                     UserId = user.Id,
                     TrackId = track.Id
                 };
-            } else if (trackLike.Liked == trackLikeDto.Liked) 
-                return BadRequest("You already like this track");            
+            } else if (trackLike.Liked == trackLikeDto.Liked)
+                return BadRequest("You already like this track");
 
             trackLike.Liked = trackLikeDto.Liked;
 
@@ -106,14 +107,26 @@ namespace API.Controllers {
             return BadRequest("Error saving like");
         }
 
-        // [HttpPost]
-        // public async Task<ActionResult> AddTrack(TrackAddDto trackAddDto) {
-        //     try {
-        //         return Ok(await _discordTrackService.AddTrackAsync(trackAddDto.DiscordId, trackAddDto.Username, trackAddDto.URL));
-        //     } catch (Exception e) {
-        //         return BadRequest(e);
-        //     }
-        // }
+        [Authorize]
+        [HttpPost("play")]
+        public async Task<ActionResult> PlayTrack(TrackPlayDto trackPlayDto) {
+            var track = await _unitOfWork.TrackRepository.GetTrackByYoutubeIdAsync(trackPlayDto.YoutubeId);
+
+            if (track == null) return NotFound("Track with YoutubeId " + trackPlayDto.YoutubeId + "Not Found");
+
+            ulong discordId;
+            ulong.TryParse(User.GetDiscordId(), out discordId);
+
+            var user = _client.GetUser(discordId);
+
+            if (user != null) {
+                var guild = user.MutualGuilds.FirstOrDefault();
+
+                await _musicService.PlayTrack("https://youtu.be/" + track.YoutubeId, user, guild, true);
+            }
+
+            return Ok();
+        }
 
         public string GetYouTubeId(string url) {
             try {

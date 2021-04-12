@@ -10,6 +10,7 @@ import { Track } from 'src/app/_models/track';
 export class TrackItemComponent implements OnInit {
     @Input() track: Track;
     @Output() trackLiked = new EventEmitter<{track: Track, liked: boolean}>();
+    @Output() trackPlayed = new EventEmitter<Track>();
 
     constructor() { }
 
@@ -22,6 +23,10 @@ export class TrackItemComponent implements OnInit {
 
     dislikeTrack(track: Track) {
         this.trackLiked.emit({track, liked: false});
+    }
+
+    playTrack(track: Track) {
+        this.trackPlayed.emit(track);
     }
 
 }

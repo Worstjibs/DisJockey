@@ -24,4 +24,10 @@ export class TracksComponent implements OnInit {
             this.tracksService.postTrackLike(event.track, event.liked);
         }
     }
+
+    playTrack(event: Track) {
+        if (event.youtubeId) {
+            this.tracksService.playTrack(event);
+        }
+    }
 }
