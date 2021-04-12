@@ -14,11 +14,13 @@ namespace API.Discord.Services {
     public class MusicService {
         private readonly LavaNode _lavaNode;
         private readonly IServiceScopeFactory _serviceScope;
+        private LavaTrack _pulledTrack;        
         public MusicService(LavaNode lavaNode, IServiceScopeFactory serviceScope) {
             _serviceScope = serviceScope;
             _lavaNode = lavaNode;
 
             _lavaNode.OnTrackEnded += OnTrackEnded;
+            _pulledTrack = null;
         }
 
         public async Task<string> PlayTrack(string query, SocketUser user, IGuild guild) {
@@ -61,41 +63,51 @@ namespace API.Discord.Services {
             return returnMessage;
         }
 
-        // public async Task<string> PullUpTrack(LavaPlayer player, LavaTrack track, SocketUser user) {
-        //     LavaTrack wheelUpSound;
-        //     try {
-        //         wheelUpSound = await GetWheelUpSoundAsync();
-        //     } catch {
-        //         return "Something went wrong getting the Wheel Up Sound";
-        //     }
+        public async Task<string> PullUpTrack(LavaPlayer player, LavaTrack track, SocketUser user) {
+            LavaTrack wheelUpSound;
+            try {
+                wheelUpSound = await GetWheelUpSoundAsync();
+            } catch {
+                return "Something went wrong getting the Wheel Up Sound";
+            }
 
-        //     string returnMessage = "";
+            string returnMessage = "";
 
-        //     await player.PlayAsync(wheelUpSound);
-        //     player.Queue.Enqueue(track);
+            
+            await player.PlayAsync(wheelUpSound);
+            _pulledTrack = track;
 
+            // using (var scope = _serviceScope.CreateScope()) {
+            //     try {
+            //         var discordTrackService = scope.ServiceProvider.GetService<IDiscordTrackService>();
 
-        //     using (var scope = _serviceScope.CreateScope()) {
-        //         try {
-        //             var discordTrackService = scope.ServiceProvider.GetService<IDiscordTrackService>();
+            //         try {
+            //             await discordTrackService.PullUpTrackAsync(user, track.Url);
+            //         } catch (InvalidUrlException e) {
+            //             returnMessage = e.ToString();
+            //         } catch (DataContextException e) {
+            //             returnMessage = e.ToString();
+            //         }
+            //     } catch (Exception e) {
+            //         Console.WriteLine(e);
+            //     }
+            // }
 
-        //             try {
-        //                 await discordTrackService.PullUpTrackAsync(user, track.Url);
-        //             } catch (InvalidUrlException e) {
-        //                 returnMessage = e.ToString();
-        //             } catch (DataContextException e) {
-        //                 returnMessage = e.ToString();
-        //             }
-        //         } catch (Exception e) {
-        //             Console.WriteLine(e);
-        //         }
-        //     }
-
-        //     return returnMessage;
-        // }
+            return returnMessage;
+        }
 
         private async Task OnTrackEnded(TrackEndedEventArgs args) {
+            if (!args.Reason.ShouldPlayNext()) {
+                return;
+            }
+
             var player = args.Player;
+
+            if (_pulledTrack != null) {
+                await player.PlayAsync(_pulledTrack);
+                _pulledTrack = null;
+                return;
+            }
 
             if (!player.Queue.TryDequeue(out var queueable)) {
                 return;
@@ -106,7 +118,7 @@ namespace API.Discord.Services {
                 return;
             }
 
-            await args.Player.PlayAsync(track);
+            await player.PlayAsync(track);
         }       
 
         public async Task<LavaTrack> GetWheelUpSoundAsync() {

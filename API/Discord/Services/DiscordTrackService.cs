@@ -30,7 +30,7 @@ namespace API.Discord.Services {
                 };
                 _unitOfWork.UserRepository.AddUser(user);
             }
-            
+
             if (user.UserName != discordUser.Username) {
                 user.UserName = discordUser.Username;
             }
@@ -39,8 +39,8 @@ namespace API.Discord.Services {
                 user.AvatarUrl = discordUser.GetAvatarUrl();
             }
 
-            if(_unitOfWork.HasChanges()) {
-                if(!await _unitOfWork.Complete()) 
+            if (_unitOfWork.HasChanges()) {
+                if (!await _unitOfWork.Complete())
                     throw new DataContextException("Something went wrong saving the user.");
             }
 
@@ -77,8 +77,12 @@ namespace API.Discord.Services {
             user.Tracks.Add(userTrack);
 
             if (!await _unitOfWork.Complete()) throw new DataContextException("Something went wrong saving the AppUserTrack.");
-            
-            return true;            
+
+            return true;
+        }
+
+        public Task<bool> PullUpTrackAsync(SocketUser discordUser, string url) {
+            throw new NotImplementedException();
         }
 
         public string GetYouTubeId(string url) {

@@ -10,7 +10,6 @@ import { UsersComponent } from './users/users.component';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { LoadingInterceptor } from './_interceptors/loading.interceptor';
 import { SharedModule } from './_modules/shared.module';
-import { CookieService } from 'ngx-cookie-service';
 import { ErrorInterceptor } from './_interceptors/error.interceptor';
 import { TrackItemComponent } from './tracks/track-item/track-item.component';
 
@@ -33,8 +32,7 @@ import { TrackItemComponent } from './tracks/track-item/track-item.component';
     ],
     providers: [
         { provide : HTTP_INTERCEPTORS, useClass: LoadingInterceptor, multi: true },
-        { provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true },
-        CookieService
+        { provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true }
     ],
     bootstrap: [AppComponent]
 })
