@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace API.Data.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20210408154555_Added avatar url to AppUser")]
-    partial class AddedavatarurltoAppUser
+    [Migration("20210412105457_Initial Migration")]
+    partial class InitialMigration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -104,6 +104,34 @@ namespace API.Data.Migrations
                     b.HasIndex("CreatedById");
 
                     b.ToTable("PlaylistTrack");
+                });
+
+            modelBuilder.Entity("API.Models.PullUp", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .UseIdentityColumn();
+
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<decimal>("TimePulled")
+                        .HasColumnType("decimal(20,0)");
+
+                    b.Property<int>("TrackId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TrackId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("PullUps");
                 });
 
             modelBuilder.Entity("API.Models.Track", b =>
@@ -204,6 +232,25 @@ namespace API.Data.Migrations
                     b.Navigation("Track");
                 });
 
+            modelBuilder.Entity("API.Models.PullUp", b =>
+                {
+                    b.HasOne("API.Models.Track", "Track")
+                        .WithMany("PullUps")
+                        .HasForeignKey("TrackId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("API.Models.AppUser", "User")
+                        .WithMany("PullUps")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Track");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("API.Models.TrackLike", b =>
                 {
                     b.HasOne("API.Models.Track", "Track")
@@ -227,6 +274,8 @@ namespace API.Data.Migrations
                 {
                     b.Navigation("Likes");
 
+                    b.Navigation("PullUps");
+
                     b.Navigation("Tracks");
                 });
 
@@ -242,6 +291,8 @@ namespace API.Data.Migrations
                     b.Navigation("Likes");
 
                     b.Navigation("Playlists");
+
+                    b.Navigation("PullUps");
                 });
 #pragma warning restore 612, 618
         }

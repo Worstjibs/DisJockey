@@ -73,25 +73,26 @@ namespace API.Discord.Services {
 
             string returnMessage = "";
 
-            
+            var currentPosition = track.Position.TotalSeconds;
+
             await player.PlayAsync(wheelUpSound);
             _pulledTrack = track;
 
-            // using (var scope = _serviceScope.CreateScope()) {
-            //     try {
-            //         var discordTrackService = scope.ServiceProvider.GetService<IDiscordTrackService>();
+            using (var scope = _serviceScope.CreateScope()) {
+                try {
+                    var discordTrackService = scope.ServiceProvider.GetService<IDiscordTrackService>();
 
-            //         try {
-            //             await discordTrackService.PullUpTrackAsync(user, track.Url);
-            //         } catch (InvalidUrlException e) {
-            //             returnMessage = e.ToString();
-            //         } catch (DataContextException e) {
-            //             returnMessage = e.ToString();
-            //         }
-            //     } catch (Exception e) {
-            //         Console.WriteLine(e);
-            //     }
-            // }
+                    try {
+                        await discordTrackService.PullUpTrackAsync(user, track.Url, currentPosition);
+                    } catch (InvalidUrlException e) {
+                        returnMessage = e.ToString();
+                    } catch (DataContextException e) {
+                        returnMessage = e.ToString();
+                    }
+                } catch (Exception e) {
+                    Console.WriteLine(e);
+                }
+            }
 
             return returnMessage;
         }

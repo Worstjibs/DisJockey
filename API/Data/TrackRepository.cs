@@ -27,6 +27,7 @@ namespace API.Data {
         public async Task<Track> GetTrackByYoutubeIdAsync(string youtubeId) {
             return await _context.Tracks
                 .Include(x => x.Likes).ThenInclude(x => x.User)
+                .Include(x => x.PullUps)
                 .FirstOrDefaultAsync(x => x.YoutubeId == youtubeId);
         }
 

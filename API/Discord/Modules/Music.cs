@@ -104,22 +104,5 @@ namespace API.Discord.Modules {
             await _musicService.PullUpTrack(player, player.Track, Context.User);
             await ReplyAsync("Wheel that one up");
         }
-
-        // [Command("PullIt")]
-        // public async Task PullIt() {            
-        //     var player = _lavaNode.GetPlayer(Context.Guild);
-
-        //     if (player.PlayerState != PlayerState.Playing) {
-        //         await ReplyAsync("I am not playing anything");
-        //         return;
-        //     }
-
-        //     var playingTrackUrl = player.Track.Url;
-
-        //     await _musicService.PlayTrack("https://youtu.be/LfbJs4uoHF0", Context.User, Context.Guild);
-        //     await player.SkipAsync();
-        //     await ReplyAsync("Wheel that one up");
-        //     await _musicService.PlayTrack(playingTrackUrl, Context.User, Context.Guild);
-        // }
     }
 }

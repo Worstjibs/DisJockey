@@ -29,9 +29,9 @@ namespace API.Services {
                 track.Title = youtubeVideo.Snippet.Title;
                 track.Description = youtubeVideo.Snippet.Description;
                 track.ChannelTitle = youtubeVideo.Snippet.ChannelTitle;
-                track.SmallThumbnail = youtubeVideo.Snippet.Thumbnails.Medium.Url;
-                track.MediumThumbnail = youtubeVideo.Snippet.Thumbnails.High.Url;
-                track.LargeThumbnail = youtubeVideo.Snippet.Thumbnails.Standard.Url;
+                track.SmallThumbnail = youtubeVideo.Snippet.Thumbnails.Medium?.Url;
+                track.MediumThumbnail = youtubeVideo.Snippet.Thumbnails.High?.Url;
+                track.LargeThumbnail = youtubeVideo.Snippet.Thumbnails.Standard?.Url;
 
                 return track;
             }

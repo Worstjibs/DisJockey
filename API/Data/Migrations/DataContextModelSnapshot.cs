@@ -114,8 +114,8 @@ namespace API.Data.Migrations
                     b.Property<DateTime>("CreatedOn")
                         .HasColumnType("datetime2");
 
-                    b.Property<decimal>("TimePulled")
-                        .HasColumnType("decimal(20,0)");
+                    b.Property<double>("TimePulled")
+                        .HasColumnType("float");
 
                     b.Property<int>("TrackId")
                         .HasColumnType("int");

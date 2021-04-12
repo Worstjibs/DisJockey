@@ -10,6 +10,6 @@ namespace API.Models {
         public int TrackId { get; set; }
         public Track Track { get; set; }
         public DateTime CreatedOn { get; set; } = DateTime.UtcNow;
-        public ulong TimePulled { get; set; }
+        public double TimePulled { get; set; }
     }
 }

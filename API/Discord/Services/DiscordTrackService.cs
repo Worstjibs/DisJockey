@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.WebUtilities;
 using System.Data.Common;
 using Discord.WebSocket;
+using API.Extensions;
 
 namespace API.Discord.Services {
     public class DiscordTrackService : IDiscordTrackService {
@@ -19,24 +20,13 @@ namespace API.Discord.Services {
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<bool> AddTrackAsync(SocketUser discordUser, string url) {
+        public async Task AddTrackAsync(SocketUser discordUser, string url) {
             var user = await _unitOfWork.UserRepository.GetUserByDiscordIdAsync(discordUser.Id);
 
             if (user == null) {
-                user = new AppUser {
-                    DiscordId = discordUser.Id,
-                    UserName = discordUser.Username,
-                    AvatarUrl = discordUser.GetAvatarUrl()
-                };
-                _unitOfWork.UserRepository.AddUser(user);
-            }
-
-            if (user.UserName != discordUser.Username) {
-                user.UserName = discordUser.Username;
-            }
-
-            if (user.AvatarUrl != discordUser.GetAvatarUrl()) {
-                user.AvatarUrl = discordUser.GetAvatarUrl();
+                CreateAppUser(discordUser);
+            } else {
+                user.UpdateAppUser(discordUser);
             }
 
             if (_unitOfWork.HasChanges()) {
@@ -77,12 +67,55 @@ namespace API.Discord.Services {
             user.Tracks.Add(userTrack);
 
             if (!await _unitOfWork.Complete()) throw new DataContextException("Something went wrong saving the AppUserTrack.");
-
-            return true;
         }
 
-        public Task<bool> PullUpTrackAsync(SocketUser discordUser, string url) {
-            throw new NotImplementedException();
+        public async Task PullUpTrackAsync(SocketUser discordUser, string url, double currentPosition) {
+            var user = await _unitOfWork.UserRepository.GetUserByDiscordIdAsync(discordUser.Id);
+
+            if (user == null) {
+                CreateAppUser(discordUser);
+            } else {
+                user.UpdateAppUser(discordUser);
+            }
+
+            if (_unitOfWork.HasChanges()) {
+                if (!await _unitOfWork.Complete())
+                    throw new DataContextException("Something went wrong saving the user.");
+            }
+
+            if (!url.Contains("youtu.be") && !url.Contains("youtube.com")) throw new InvalidUrlException("The link provided is invalid");
+
+            var youtubeId = GetYouTubeId(url);
+            if (youtubeId == null) throw new InvalidUrlException("Something is wrong with the URL provided");
+
+            var track = await _unitOfWork.TrackRepository.GetTrackByYoutubeIdAsync(youtubeId);
+
+            if (track == null) {
+                throw new Exception("Cannot find the track with Youtube Id " + youtubeId);
+            }
+
+            var pullUp = new PullUp {
+                TrackId = track.Id,
+                Track = track,
+                UserId = user.Id,
+                User = user,
+                TimePulled = currentPosition
+            };
+
+            track.PullUps.Add(pullUp);
+
+            if (! await _unitOfWork.Complete()) {
+                throw new DataContextException("Something went wrong saving the PullUp");
+            }
+        }
+
+        private void CreateAppUser(SocketUser discordUser) {            
+            var user = new AppUser {
+                DiscordId = discordUser.Id,
+                UserName = discordUser.Username,
+                AvatarUrl = discordUser.GetAvatarUrl()
+            };
+            _unitOfWork.UserRepository.AddUser(user);
         }
 
         public string GetYouTubeId(string url) {

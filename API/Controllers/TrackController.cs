@@ -43,7 +43,7 @@ namespace API.Controllers {
             return Ok(trackDto);
         }
 
-        [Authorize]
+        // [Authorize]
         [HttpGet]
         public async Task<ActionResult<IEnumerable>> GetTracks() {
             var tracksQuery = _unitOfWork.TrackRepository.GetTracks();

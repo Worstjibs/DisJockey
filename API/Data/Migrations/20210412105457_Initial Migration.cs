@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace API.Data.Migrations
 {
-    public partial class RemovedPrimarykeyonAppUserTrack : Migration
+    public partial class InitialMigration : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -48,7 +48,8 @@ namespace API.Data.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     CreatedOn = table.Column<DateTime>(type: "datetime2", nullable: false),
                     UserName = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    DiscordId = table.Column<decimal>(type: "decimal(20,0)", nullable: false)
+                    DiscordId = table.Column<decimal>(type: "decimal(20,0)", nullable: false),
+                    AvatarUrl = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -85,6 +86,34 @@ namespace API.Data.Migrations
                         principalTable: "Users",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "PullUps",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    UserId = table.Column<int>(type: "int", nullable: false),
+                    TrackId = table.Column<int>(type: "int", nullable: false),
+                    CreatedOn = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    TimePulled = table.Column<decimal>(type: "decimal(20,0)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_PullUps", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_PullUps_Tracks_TrackId",
+                        column: x => x.TrackId,
+                        principalTable: "Tracks",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_PullUps_Users_UserId",
+                        column: x => x.UserId,
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -145,6 +174,16 @@ namespace API.Data.Migrations
                 column: "CreatedById");
 
             migrationBuilder.CreateIndex(
+                name: "IX_PullUps_TrackId",
+                table: "PullUps",
+                column: "TrackId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_PullUps_UserId",
+                table: "PullUps",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_TrackLikes_TrackId",
                 table: "TrackLikes",
                 column: "TrackId");
@@ -164,6 +203,9 @@ namespace API.Data.Migrations
         {
             migrationBuilder.DropTable(
                 name: "PlaylistTrack");
+
+            migrationBuilder.DropTable(
+                name: "PullUps");
 
             migrationBuilder.DropTable(
                 name: "TrackLikes");

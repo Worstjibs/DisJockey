@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace API.Data.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20210410121612_Added PullUps")]
-    partial class AddedPullUps
+    [Migration("20210412114041_Changed TimePulled to double")]
+    partial class ChangedTimePulledtodouble
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -116,8 +116,8 @@ namespace API.Data.Migrations
                     b.Property<DateTime>("CreatedOn")
                         .HasColumnType("datetime2");
 
-                    b.Property<decimal>("TimePulled")
-                        .HasColumnType("decimal(20,0)");
+                    b.Property<double>("TimePulled")
+                        .HasColumnType("float");
 
                     b.Property<int>("TrackId")
                         .HasColumnType("int");
