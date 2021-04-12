@@ -12,6 +12,7 @@ import { LoadingInterceptor } from './_interceptors/loading.interceptor';
 import { SharedModule } from './_modules/shared.module';
 import { ErrorInterceptor } from './_interceptors/error.interceptor';
 import { TrackItemComponent } from './tracks/track-item/track-item.component';
+import { NotFoundComponent } from './errors/not-found/not-found.component';
 
 
 @NgModule({
@@ -21,7 +22,8 @@ import { TrackItemComponent } from './tracks/track-item/track-item.component';
         HomeComponent,
         TracksComponent,
         UsersComponent,
-        TrackItemComponent
+        TrackItemComponent,
+        NotFoundComponent
     ],
     imports: [
         BrowserModule,
