@@ -59,7 +59,40 @@ namespace API.Discord.Services {
             }
 
             return returnMessage;
-        }    
+        }
+
+        // public async Task<string> PullUpTrack(LavaPlayer player, LavaTrack track, SocketUser user) {
+        //     LavaTrack wheelUpSound;
+        //     try {
+        //         wheelUpSound = await GetWheelUpSoundAsync();
+        //     } catch {
+        //         return "Something went wrong getting the Wheel Up Sound";
+        //     }
+
+        //     string returnMessage = "";
+
+        //     await player.PlayAsync(wheelUpSound);
+        //     player.Queue.Enqueue(track);
+
+
+        //     using (var scope = _serviceScope.CreateScope()) {
+        //         try {
+        //             var discordTrackService = scope.ServiceProvider.GetService<IDiscordTrackService>();
+
+        //             try {
+        //                 await discordTrackService.PullUpTrackAsync(user, track.Url);
+        //             } catch (InvalidUrlException e) {
+        //                 returnMessage = e.ToString();
+        //             } catch (DataContextException e) {
+        //                 returnMessage = e.ToString();
+        //             }
+        //         } catch (Exception e) {
+        //             Console.WriteLine(e);
+        //         }
+        //     }
+
+        //     return returnMessage;
+        // }
 
         private async Task OnTrackEnded(TrackEndedEventArgs args) {
             var player = args.Player;
@@ -74,6 +107,20 @@ namespace API.Discord.Services {
             }
 
             await args.Player.PlayAsync(track);
+        }       
+
+        public async Task<LavaTrack> GetWheelUpSoundAsync() {
+            return await SearchForTrackAsync("https://youtu.be/LfbJs4uoHF0");
+        }
+
+        private async Task<LavaTrack> SearchForTrackAsync(string query) {
+            var results = await _lavaNode.SearchYouTubeAsync(query);
+
+            if (results.LoadStatus == LoadStatus.LoadFailed || results.LoadStatus == LoadStatus.NoMatches) {
+                throw new Exception("Something went wrong with the search");
+            }
+
+            return results.Tracks.First();
         }
     }
 }

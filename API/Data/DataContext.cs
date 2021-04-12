@@ -67,6 +67,17 @@ namespace API.Data {
                 .HasForeignKey(pt => pt.TrackId)
                 .OnDelete(DeleteBehavior.Cascade);
 
+            // PullUp configuration
+            builder.Entity<PullUp>()
+                .HasOne(pu => pu.Track)
+                .WithMany(t => t.PullUps)
+                .HasForeignKey(pu => pu.TrackId);
+
+            builder.Entity<PullUp>()
+                .HasOne(pu => pu.User)
+                .WithMany(u => u.PullUps)
+                .HasForeignKey(pu => pu.UserId);
+
             builder.ApplyUtcDateTimeConverter();
         }
 

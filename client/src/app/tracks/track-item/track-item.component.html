@@ -1,4 +1,4 @@
-<div class="row mt-3 border border-rounded border-dark">
+<div id="track-item-container" class="row mt-3 border border-rounded border-dark">
     <!-- <div class="col my-3">
         <img [hidden]="track.clicked" src="{{track.mediumThumbnail}}" alt="" class="img-fluid" (click)="track.clicked = true;">
         <youtube-player 
@@ -10,25 +10,28 @@
         </youtube-player>
     </div> -->
     <div class="col-4 my-3">
-        <img [hidden]="track.clicked" src="{{track.mediumThumbnail}}" alt="" class="img-fluid" (click)="track.clicked = true;">
+        <img [hidden]="track.clicked" src="{{track.mediumThumbnail}}" alt="" class="img-fluid">
     </div>
     <div class="col-8 my-3">
         <h4>{{track.title}}</h4>
         <h5>{{track.channelTitle}}</h5>
         <p>First posted on {{track.createdOn | date: 'dd MMMM yyyy'}}</p>
 
-        <div class="d-flex justify-content-around my-3 w-25">
-            <span><i class="fas fa-thumbs-up fa-lg like-icon" (click)="likeTrack(track)"></i><span class="like-num" [class.liked-by-user]="track.likedByUser">{{track.likes}}</span></span>
-            <span><i class="fas fa-thumbs-down fa-lg like-icon" (click)="dislikeTrack(track)"></i><span class="like-num" [class.liked-by-user]="track.likedByUser === false">{{track.dislikes}}</span></span>
+        <div class="d-flex justify-content-around align-items-center my-2 w-50">
+            <div>
+                <span><i class="fas fa-thumbs-up fa-lg like-icon" (click)="likeTrack(track)"></i><span class="like-num" [class.liked-by-user]="track.likedByUser">{{track.likes}}</span></span>
+            </div>
+            <div>
+                <span><i class="fas fa-thumbs-down fa-lg like-icon" (click)="dislikeTrack(track)"></i><span class="like-num" [class.liked-by-user]="track.likedByUser === false">{{track.dislikes}}</span></span>
+            </div>            
+            <button class="btn btn-primary">Play Now</button>
         </div>
 
-        <button class="btn btn-primary">Play Now</button>
-
-        <!-- <p>Played By</p>
+        <p>Played By</p>
         <ul class="list-group">
             <li class="list-group-item" *ngFor="let user of track.users">
                 {{user.username}}, played {{user.timesPlayed}} times, last played {{user.lastPlayed | timeago}}
             </li>
-        </ul> -->
+        </ul>
     </div>
 </div>

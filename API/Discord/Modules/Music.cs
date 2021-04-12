@@ -71,12 +71,12 @@ namespace API.Discord.Modules {
                 return;
             }
 
-            if (!player.Queue.Any()) {
+            if (!player.Queue.TryDequeue(out var queueable)) {                
                 await ReplyAsync("There is nothing in the queue");
                 return;
             }
-
-            await player.SkipAsync();
+            
+            await player.PlayAsync(queueable);
         }
 
         [Command("Stop")]
@@ -90,6 +90,19 @@ namespace API.Discord.Modules {
 
             await player.StopAsync();
         }
+
+        // [Command("PullIt")]
+        // public async Task PullIt() {            
+        //     var player = _lavaNode.GetPlayer(Context.Guild);
+
+        //     if (player.PlayerState != PlayerState.Playing) {
+        //         await ReplyAsync("I am not playing anything");
+        //         return;
+        //     }
+
+        //     await _musicService.PullUpTrack(player, player.Track, Context.User);
+        //     await ReplyAsync("Wheel that one up");
+        // }
 
         [Command("PullIt")]
         public async Task PullIt() {            

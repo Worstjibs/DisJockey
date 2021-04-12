@@ -17,5 +17,6 @@ namespace API.Models {
         public ICollection<AppUserTrack> AppUsers { get; set; }
         public ICollection<TrackLike> Likes { get; set; }
         public ICollection<PlaylistTrack> Playlists { get; set; }
+        public ICollection<PullUp> PullUps { get; set; }
     }
 }

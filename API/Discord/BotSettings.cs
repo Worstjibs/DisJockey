@@ -8,5 +8,6 @@ namespace API.Discord
         public string LavalinkHost { get; set; }
         public ushort LavalinkPort { get; set; }
         public string LavalinkPassword { get; set; }
+        public bool LavalinkIsSSL { get; set; }
     }
 }

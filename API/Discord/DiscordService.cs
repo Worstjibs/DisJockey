@@ -3,6 +3,7 @@ using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using API.Discord.Interfaces;
+using API.Discord.Services;
 using Discord;
 using Discord.Commands;
 using Discord.WebSocket;
@@ -21,13 +22,9 @@ namespace API.Discord {
         private readonly IServiceProvider _services;
         private readonly LavaNode _lavaNode;
 
-        public DiscordService(IConfiguration config,
-                              IServiceScopeFactory serviceScopeFactory,
-                              DiscordSocketClient client,
-                              BotSettings botSettings,
-                              CommandService cmdService,
-                              IServiceProvider services,
-                              LavaNode lavaNode) {
+        public DiscordService(IConfiguration config, IServiceScopeFactory serviceScopeFactory,
+                              DiscordSocketClient client, BotSettings botSettings, CommandService cmdService,
+                              IServiceProvider services, LavaNode lavaNode) {
             _cmdService = cmdService;
             _services = services;
             _client = client;

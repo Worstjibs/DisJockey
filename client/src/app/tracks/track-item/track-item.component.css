@@ -16,7 +16,7 @@
 
 .like-icon {
     transform: scale(1);
-    transition: all .2s ease-in-out;
+    transition: all .5s ease-in-out;
     margin-right: 8px;
 }
 
@@ -28,4 +28,8 @@
 .like-icon:active {
     transform: scale(1.7);
     transition: all .1s ease-out;
+}
+
+#track-item-container:hover {
+    background-color: #363636;
 }
