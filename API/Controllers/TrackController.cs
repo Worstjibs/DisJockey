@@ -14,6 +14,7 @@ using API.Discord.Interfaces;
 using System.Collections;
 using Discord.WebSocket;
 using API.Discord.Services;
+using Discord;
 
 namespace API.Controllers {
     public class TrackController : BaseApiController {
@@ -123,9 +124,10 @@ namespace API.Controllers {
                 var guild = user.MutualGuilds.FirstOrDefault();
 
                 await _musicService.PlayTrack("https://youtu.be/" + track.YoutubeId, user, guild, true);
-            }
-
-            return Ok();
+                return Ok();
+            } else {
+                return BadRequest("You must be connected to a Voice channel to play a track");
+            }            
         }
 
         public string GetYouTubeId(string url) {

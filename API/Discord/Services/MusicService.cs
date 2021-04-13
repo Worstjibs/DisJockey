@@ -23,7 +23,10 @@ namespace API.Discord.Services {
             _pulledTrack = null;
         }
 
-        public async Task<string> PlayTrack(string query, SocketUser user, IGuild guild, bool skipQueue) {
+        public async Task<string> PlayTrack(string query, SocketUser user, SocketGuild guild, bool skipQueue) {
+            if (!_lavaNode.HasPlayer(guild)) {
+                await ConnectToChannelAsync(user, guild);
+            }
             var player = _lavaNode.GetPlayer(guild);
 
             var results = await _lavaNode.SearchYouTubeAsync(query);
@@ -120,9 +123,17 @@ namespace API.Discord.Services {
             }
 
             await player.PlayAsync(track);
-        }       
+        }
 
-        public async Task<LavaTrack> GetWheelUpSoundAsync() {
+        private async Task ConnectToChannelAsync(SocketUser user, SocketGuild guild) {
+            var voiceChannel = guild.VoiceChannels.FirstOrDefault(x => x.Users.FirstOrDefault(u => u.Id == user.Id) != null);
+
+            if (voiceChannel == null) throw new Exception("You must be connected to a Voice Channel to play a track");
+
+            await _lavaNode.JoinAsync(voiceChannel, guild.DefaultChannel);
+        }
+
+        private async Task<LavaTrack> GetWheelUpSoundAsync() {
             return await SearchForTrackAsync("https://youtu.be/LfbJs4uoHF0");
         }
 

@@ -27,10 +27,7 @@ namespace API.Extensions {
             //         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(authenticationSettings.JwtTokenKey))
             //     };
             // })
-            .AddCookie(options => {
-                options.LoginPath = "/signin";
-                options.ExpireTimeSpan = new System.TimeSpan(7, 0, 0, 0);
-            })
+            .AddCookie()
             .AddDiscord(options => {
                 options.ClientId = authenticationSettings.DiscordClientId;
                 options.ClientSecret = authenticationSettings.DiscordClientSecret;
