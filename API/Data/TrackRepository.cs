@@ -9,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Collections;
 using System.Collections.Generic;
 using System;
+using API.Helpers;
 
 namespace API.Data {
     public class TrackRepository : ITrackRepository {
@@ -31,7 +32,7 @@ namespace API.Data {
                 .FirstOrDefaultAsync(x => x.YoutubeId == youtubeId);
         }
 
-        public IQueryable<TrackDto> GetTracks() {
+        public async Task<PagedList<TrackDto>> GetTracks(PaginationParams paginationParams) {
             var userTracks = _context.Tracks
                 .Include(t => t.AppUsers)
                 .ThenInclude(ut => ut.User)
@@ -39,7 +40,7 @@ namespace API.Data {
                 .OrderByDescending(t => t.AppUsers.Max(tp => tp.CreatedOn))
                 .ProjectTo<TrackDto>(_mapper.ConfigurationProvider);
 
-            return userTracks;
+            return await PagedList<TrackDto>.CreateAsync(userTracks, paginationParams.PageNumber, paginationParams.PageSize);
         }
 
         public void AddTrack(Track track) {

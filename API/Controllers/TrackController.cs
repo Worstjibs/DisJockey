@@ -15,6 +15,7 @@ using System.Collections;
 using Discord.WebSocket;
 using API.Discord.Services;
 using Discord;
+using API.Helpers;
 
 namespace API.Controllers {
     public class TrackController : BaseApiController {
@@ -45,12 +46,10 @@ namespace API.Controllers {
             return Ok(trackDto);
         }
 
-        [Authorize]
+        // [Authorize]
         [HttpGet]
-        public async Task<ActionResult<IEnumerable>> GetTracks() {
-            var tracksQuery = _unitOfWork.TrackRepository.GetTracks();
-
-            var tracks = await tracksQuery.ToListAsync();
+        public async Task<ActionResult<IEnumerable>> GetTracks([FromQuery] PaginationParams paginationParams) {
+            var tracks = await _unitOfWork.TrackRepository.GetTracks(paginationParams);
 
             var discordIdStr = User.GetDiscordId();
             ulong discordId;
@@ -72,6 +71,8 @@ namespace API.Controllers {
 
                 track.LikedByUser = track.UserLikes.FirstOrDefault(user => user.DiscordId == discordId)?.Liked; ;
             }
+
+            Response.AddPaginationHeader(tracks.CurrentPage, tracks.PageSize, tracks.TotalPages, tracks.TotalCount);
 
             return Ok(tracks);
         }
