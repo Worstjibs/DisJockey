@@ -39,9 +39,9 @@ export class TracksComponent implements OnInit {
         }
     }
 
-    playTrack(event: Track) {
-        if (event.youtubeId) {
-            this.tracksService.playTrack(event);
+    playTrack(event) {
+        if (event.track) {
+            this.tracksService.playTrack(event.track, event.playNow);
         }
     }
 }

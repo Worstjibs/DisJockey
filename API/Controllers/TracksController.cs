@@ -18,13 +18,13 @@ using Discord;
 using API.Helpers;
 
 namespace API.Controllers {
-    public class TrackController : BaseApiController {
+    public class TracksController : BaseApiController {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IVideoDetailService _videoService;
         private readonly DiscordSocketClient _client;
         private readonly MusicService _musicService;
 
-        public TrackController(IUnitOfWork unitOfWork, IVideoDetailService videoService, DiscordSocketClient client,
+        public TracksController(IUnitOfWork unitOfWork, IVideoDetailService videoService, DiscordSocketClient client,
             MusicService musicService) {
             _musicService = musicService;
             _videoService = videoService;
@@ -124,7 +124,7 @@ namespace API.Controllers {
             if (user != null) {
                 var guild = user.MutualGuilds.FirstOrDefault();
 
-                await _musicService.PlayTrack("https://youtu.be/" + track.YoutubeId, user, guild, true);
+                await _musicService.PlayTrack("https://youtu.be/" + track.YoutubeId, user, guild, trackPlayDto.PlayNow);
                 return Ok();
             } else {
                 return BadRequest("You must be connected to a Voice channel to play a track");

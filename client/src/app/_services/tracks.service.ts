@@ -12,7 +12,7 @@ import { PaginatedResult } from '../_models/pagination';
     providedIn: 'root'
 })
 export class TracksService {
-    baseUrl = environment.apiUrl;
+    baseUrl = environment.apiUrl + 'tracks';
     tracks: Track[] = [];
     userParams : UserParams;
 
@@ -25,7 +25,7 @@ export class TracksService {
 
         let params = getPaginationHeaders(userParams.pageNumber, userParams.pageSize);
 
-        return getPaginatedResult<Track[]>(this.baseUrl + 'track', params, this.http);
+        return getPaginatedResult<Track[]>(this.baseUrl, params, this.http);
 
         // return this.http.get<Track[]>(this.baseUrl + 'track').pipe(
         //     map(tracks => {
@@ -41,7 +41,7 @@ export class TracksService {
             liked: liked
         }
 
-        return this.http.post(this.baseUrl + 'track/like', trackLikeDto).subscribe(() => {
+        return this.http.post(this.baseUrl + '/like', trackLikeDto).subscribe(() => {
             if (track.likedByUser !== liked && track.likedByUser !== null) {
                 if (liked) {
                     track.dislikes--;
@@ -60,8 +60,13 @@ export class TracksService {
         });
     }
 
-    playTrack(track: Track) {
-        return this.http.post(this.baseUrl + 'track/play', {'YoutubeId': track.youtubeId}).subscribe(response => {
+    playTrack(track: Track, playNow: boolean) {
+        let trackPlayDto = {
+            'YoutubeId': track.youtubeId,
+            'PlayNow': playNow
+        }
+
+        return this.http.post(this.baseUrl + '/play', trackPlayDto).subscribe(response => {
             console.log(response);
         });
     }
