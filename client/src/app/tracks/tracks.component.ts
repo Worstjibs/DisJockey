@@ -2,6 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { Observable } from 'rxjs';
 import { TracksService } from '../_services/tracks.service';
 import { Track } from '../_models/track';
+import { UserParams } from '../_models/userParams';
+import { Pagination } from '../_models/pagination';
 
 @Component({
     selector: 'app-tracks',
@@ -9,12 +11,24 @@ import { Track } from '../_models/track';
     styleUrls: ['./tracks.component.css']
 })
 export class TracksComponent implements OnInit {
-    tracks$: Observable<Track[]>;
+    // tracks$: Observable<Track[]>;
+    tracks: Track[];
+    userParams: UserParams;
+    pagination: Pagination;
 
-    constructor(private tracksService: TracksService) { }
+    constructor(private tracksService: TracksService) { 
+        this.userParams = tracksService.getUserParams();
+    }
 
     ngOnInit(): void {
-        this.tracks$ = this.tracksService.getTracks();
+        this.getTracks();
+    }
+
+    getTracks() {
+        this.tracksService.getTracks(this.userParams).subscribe(response => {
+            this.pagination = response.pagination;
+            this.tracks = response.result;
+        });
     }
 
     likeTrack(event) {

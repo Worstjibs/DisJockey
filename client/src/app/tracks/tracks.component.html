@@ -1,5 +1,5 @@
 <div class="container">
-    <div *ngFor="let track of tracks$ | async">
+    <div *ngFor="let track of tracks">
         <app-track-item
             [track]="track"
             (trackLiked)="likeTrack($event)"
