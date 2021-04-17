@@ -7,6 +7,9 @@ MIT
 @angular/core
 MIT
 
+@angular/forms
+MIT
+
 @angular/platform-browser
 MIT
 
@@ -179,6 +182,8 @@ SOFTWARE.
 
 
 ngx-bootstrap/datepicker
+
+ngx-bootstrap/pagination
 
 ngx-spinner
 MIT

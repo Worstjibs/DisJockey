@@ -72,7 +72,7 @@ namespace API.Controllers {
                 track.LikedByUser = track.UserLikes.FirstOrDefault(user => user.DiscordId == discordId)?.Liked; ;
             }
 
-            Response.AddPaginationHeader(tracks.CurrentPage, tracks.PageSize, tracks.TotalPages, tracks.TotalCount);
+            Response.AddPaginationHeader(tracks.CurrentPage, tracks.ItemsPerPage, tracks.TotalPages, tracks.TotalCount);
 
             return Ok(tracks);
         }
