@@ -18,6 +18,7 @@ export class TracksComponent implements OnInit {
 
     constructor(private tracksService: TracksService) { 
         this.userParams = tracksService.getUserParams();
+        console.log(this.userParams);
     }
 
     ngOnInit(): void {
@@ -43,5 +44,13 @@ export class TracksComponent implements OnInit {
         if (event.track) {
             this.tracksService.playTrack(event.track, event.playNow);
         }
+    }
+
+    pageChanged(event) {
+        this.userParams = {
+            pageNumber: event.page,
+            pageSize: event.itemsPerPage
+        };
+        this.getTracks();
     }
 }

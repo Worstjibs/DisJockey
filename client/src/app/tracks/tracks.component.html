@@ -7,4 +7,11 @@
         </app-track-item>
         <hr>
     </div>
+    <div class="d-flex justify-content-center" *ngIf="pagination">
+        <pagination
+            [itemsPerPage]="pagination.itemsPerPage"
+            [totalItems]="pagination.totalItems"
+            (pageChanged)="pageChanged($event)"
+            [(ngModel)]="pagination.currentPage"></pagination>
+    </div>    
 </div>
