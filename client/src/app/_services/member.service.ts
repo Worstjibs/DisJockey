@@ -13,7 +13,7 @@ export class MemberService {
     constructor(private http: HttpClient) { }
 
     getMembers() {
-        return this.http.get(this.baseUrl + "user").pipe(
+        return this.http.get(this.baseUrl + "members").pipe(
             map(members => {
                 this.members$ = members;
                 return members;

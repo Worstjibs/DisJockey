@@ -6,13 +6,14 @@ using AutoMapper;
 namespace API.Helpers {
     public class AutoMapperProfiles : Profile {
         public AutoMapperProfiles() {
-            CreateMap<AppUser, MemberDto>();
+            CreateMap<AppUser, MemberDto>()
+                .ForMember(dest => dest.DateJoined, opt => opt.MapFrom(src => src.CreatedOn));
 
             CreateMap<AppUser, TrackUserDto>();
 
-            CreateMap<Track, MemberTrackDto>()
-                .ForMember(dest => dest.Likes, opt => opt.MapFrom(src => src.Likes.Where(x => x.Liked == true).Count()))
-                .ForMember(dest => dest.Dislikes, opt => opt.MapFrom(src => src.Likes.Where(x => x.Liked == false).Count()));
+            CreateMap<Track, MemberTrackDto>();
+                // .ForMember(dest => dest.Likes, opt => opt.MapFrom(src => src.Likes.Where(x => x.Liked == true).Count()))
+                // .ForMember(dest => dest.Dislikes, opt => opt.MapFrom(src => src.Likes.Where(x => x.Liked == false).Count()));
 
             CreateMap<Track, TrackDto>()
                 .ForMember(dest => dest.Users, opt => opt.MapFrom(src => src.AppUsers))
@@ -33,8 +34,9 @@ namespace API.Helpers {
                 .ForMember(dest => dest.DiscordId, opt => opt.MapFrom(src => src.User.DiscordId));
 
             CreateMap<AppUserTrack, MemberTrackDto>()
-                .ForMember(dest => dest.CreatedOn, opt => opt.MapFrom(src => src.Track.CreatedOn))
-                .ForMember(dest => dest.YoutubeId, opt => opt.MapFrom(src => src.Track.YoutubeId));
+                .ForMember(dest => dest.YoutubeId, opt => opt.MapFrom(src => src.Track.YoutubeId))
+                .ForMember(dest => dest.FirstPlayed, opt => opt.MapFrom(src => src.Track.CreatedOn))
+                .ForMember(dest => dest.LastPlayed, opt => opt.MapFrom(src => src.Track.CreatedOn));
 
             // Mappings for TrackUserLike
             CreateMap<TrackLike, TrackUserLikeDto>()

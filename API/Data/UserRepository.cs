@@ -32,7 +32,7 @@ namespace API.Data {
                 .FirstOrDefaultAsync(user => user.DiscordId == discordId);
         }
 
-        public async Task<IEnumerable<MemberDto>> GetUsersAsync() {
+        public async Task<IEnumerable<MemberDto>> GetMembersAsync() {
             return await _context.Users
                 .ProjectTo<MemberDto>(_mapper.ConfigurationProvider)
                 .ToListAsync();

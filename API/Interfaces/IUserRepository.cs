@@ -9,7 +9,7 @@ namespace API.Interfaces {
         Task<AppUser> GetUserByIdAsync(int id);
         Task<AppUser> GetUserByUsernameAsync(string username);
         Task<AppUser> GetUserByDiscordIdAsync(ulong discordId);
-        Task<IEnumerable<MemberDto>> GetUsersAsync();
+        Task<IEnumerable<MemberDto>> GetMembersAsync();
         void AddUser(AppUser user);
     }
 }

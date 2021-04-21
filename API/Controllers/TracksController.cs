@@ -32,19 +32,19 @@ namespace API.Controllers {
             _client = client;
         }
 
-        [HttpGet("{id}")]
-        public async Task<ActionResult<MemberTrackDto>> GetTrackById(int id) {
-            var track = await _unitOfWork.TrackRepository.GetTrackByIdAsync(id);
+        // [HttpGet("{id}")]
+        // public async Task<ActionResult<MemberTrackDto>> GetTrackById(int id) {
+        //     var track = await _unitOfWork.TrackRepository.GetTrackByIdAsync(id);
 
-            if (track == null) return BadRequest("Track does not exist");
+        //     if (track == null) return BadRequest("Track does not exist");
 
-            MemberTrackDto trackDto = new MemberTrackDto {
-                YoutubeId = track.YoutubeId,
-                CreatedOn = track.CreatedOn
-            };
+        //     MemberTrackDto trackDto = new MemberTrackDto {
+        //         YoutubeId = track.YoutubeId,
+        //         CreatedOn = track.CreatedOn
+        //     };
 
-            return Ok(trackDto);
-        }
+        //     return Ok(trackDto);
+        // }
 
         // [Authorize]
         [HttpGet]

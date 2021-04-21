@@ -3,8 +3,8 @@ using System;
 namespace API.DTOs {
     public class MemberTrackDto {
         public string YoutubeId { get; set; }
-        public DateTime CreatedOn { get; set; }
-        public int Likes { get; set; }
-        public int Dislikes { get; set; }
+        public DateTime FirstPlayed { get; set; }
+        public DateTime LastPlayed { get; set; }
+        public int TimesPlayed { get; set; }
     }
 }

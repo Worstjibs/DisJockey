@@ -33,10 +33,10 @@ namespace API.Data {
         }
 
         public async Task<PagedList<TrackDto>> GetTracks(PaginationParams paginationParams) {
-            var userTracks = _context.Tracks
-                .Include(t => t.AppUsers)
-                .ThenInclude(ut => ut.User)
-                .Include(t => t.Likes).ThenInclude(tl => tl.User)
+            var userTracks = _context.Tracks.AsQueryable()
+                // .Include(t => t.AppUsers)
+                // .ThenInclude(ut => ut.User)
+                // .Include(t => t.Likes).ThenInclude(tl => tl.User)
                 .OrderByDescending(t => t.AppUsers.Max(tp => tp.CreatedOn))
                 .ProjectTo<TrackDto>(_mapper.ConfigurationProvider);
 
