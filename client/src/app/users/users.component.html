@@ -1,8 +1,0 @@
-<div *ngFor="let member of members$ | async">
-    <div class="card">
-        <p>{{member.username}}</p>
-        <div *ngFor="let track of member.tracks">
-            <p>{{track.youtubeId}}</p>
-        </div>
-    </div>
-</div>

@@ -6,7 +6,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { NavComponent } from './nav/nav.component';
 import { HomeComponent } from './home/home.component';
 import { TracksComponent } from './tracks/tracks.component';
-import { UsersComponent } from './users/users.component';
+import { MembersComponent } from './members/members.component';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { LoadingInterceptor } from './_interceptors/loading.interceptor';
 import { SharedModule } from './_modules/shared.module';
@@ -22,7 +22,7 @@ import { ServerErrorComponent } from './errors/server-error/server-error.compone
         NavComponent,
         HomeComponent,
         TracksComponent,
-        UsersComponent,
+        MembersComponent,
         TrackItemComponent,
         NotFoundComponent,
         ServerErrorComponent

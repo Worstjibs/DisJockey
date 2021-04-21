@@ -4,7 +4,7 @@ import { NotFoundComponent } from './errors/not-found/not-found.component';
 import { ServerErrorComponent } from './errors/server-error/server-error.component';
 import { HomeComponent } from './home/home.component';
 import { TracksComponent } from './tracks/tracks.component';
-import { UsersComponent } from './users/users.component';
+import { MembersComponent } from './members/members.component';
 
 const routes: Routes = [
     {
@@ -17,7 +17,7 @@ const routes: Routes = [
     },
     {
         path: 'users',
-        component: UsersComponent
+        component: MembersComponent
     },
     {
         path: 'not-found',

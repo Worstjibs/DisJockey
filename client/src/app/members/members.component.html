@@ -1,0 +1,15 @@
+<div class="row">
+    <div *ngFor="let member of members$ | async" class="col-4">
+        <div class="card">
+            <img src="https://via.placeholder.com/340x120/FFB6C1/000000" alt="placeholder" class="card-img-top">
+            <div class="card-body text-center">
+                <img src="{{member.avatarUrl}}" style="width:120px;margin-top:-75px" alt="User" class="img-fluid img-thumbnail rounded-circle border-0 mb-3">
+                <h5 class="card-title">{{member.username}}</h5>
+                <p>Date Joined: {{member.dateJoined | date: 'dd MM yyyy'}}</p>
+                <div *ngFor="let track of member.tracks">
+                    <p>{{track.youtubeId}}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -3,10 +3,10 @@ import { MemberService } from '../_services/member.service';
 
 @Component({
     selector: 'app-users',
-    templateUrl: './users.component.html',
-    styleUrls: ['./users.component.css']
+    templateUrl: './members.component.html',
+    styleUrls: ['./members.component.css']
 })
-export class UsersComponent implements OnInit {
+export class MembersComponent implements OnInit {
     members$: any;
 
     constructor(private memberService: MemberService) { }
