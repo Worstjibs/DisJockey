@@ -1,4 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import { Observable } from 'rxjs';
+import { Member } from '../_models/member';
 import { MemberService } from '../_services/member.service';
 
 @Component({
@@ -7,7 +9,7 @@ import { MemberService } from '../_services/member.service';
     styleUrls: ['./members.component.css']
 })
 export class MembersComponent implements OnInit {
-    members$: any;
+    members$: Observable<Member[]>;
 
     constructor(private memberService: MemberService) { }
 
