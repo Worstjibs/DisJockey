@@ -12,5 +12,7 @@ namespace API.Interfaces {
         Task<Track> GetTrackByYoutubeIdAsync(string youtubeId);
         Task<PagedList<TrackDto>> GetTracks(PaginationParams paginationParams);
         void AddTrack(Track track);
+        Task AddMissingTracks(IList<PlaylistTrack> playlistTracks);
+        Task AddPlaylist(Playlist playlist);
     }
 }

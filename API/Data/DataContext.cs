@@ -15,9 +15,17 @@ namespace API.Data {
         public DbSet<Track> Tracks { get; set; }
         public DbSet<AppUserTrack> UserTracks { get; set; }
         public DbSet<TrackLike> TrackLikes { get; set; }
+        public DbSet<Playlist> Playlists { get; set; }
+        public DbSet<PlaylistTrack> PlaylistTracks { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder) {
             base.OnModelCreating(builder);
+
+            // Track configuration
+            builder.Entity<Track>()
+                .HasMany(t => t.Playlists)
+                .WithOne(tp => tp.Track)
+                .HasForeignKey(tp => tp.TrackId);
 
             // AppUserTrack configuration:
             // Add Foreign keys for AppUser
@@ -64,7 +72,7 @@ namespace API.Data {
             builder.Entity<PlaylistTrack>()
                 .HasOne(pt => pt.Playlist)
                 .WithMany(p => p.Tracks)
-                .HasForeignKey(pt => pt.TrackId)
+                .HasForeignKey(pt => pt.PlaylistId)
                 .OnDelete(DeleteBehavior.Cascade);
 
             // PullUp configuration

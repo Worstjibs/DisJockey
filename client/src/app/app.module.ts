@@ -14,6 +14,7 @@ import { ErrorInterceptor } from './_interceptors/error.interceptor';
 import { TrackItemComponent } from './tracks/track-item/track-item.component';
 import { NotFoundComponent } from './errors/not-found/not-found.component';
 import { ServerErrorComponent } from './errors/server-error/server-error.component';
+import { MemberDetailComponent } from './members/member-detail/member-detail.component';
 
 
 @NgModule({
@@ -25,7 +26,8 @@ import { ServerErrorComponent } from './errors/server-error/server-error.compone
         MembersComponent,
         TrackItemComponent,
         NotFoundComponent,
-        ServerErrorComponent
+        ServerErrorComponent,
+        MemberDetailComponent
     ],
     imports: [
         BrowserModule,

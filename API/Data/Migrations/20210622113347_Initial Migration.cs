@@ -8,7 +8,7 @@ namespace API.Data.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "Playlist",
+                name: "Playlists",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
@@ -17,7 +17,7 @@ namespace API.Data.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Playlist", x => x.Id);
+                    table.PrimaryKey("PK_Playlists", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -57,7 +57,7 @@ namespace API.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "PlaylistTrack",
+                name: "PlaylistTracks",
                 columns: table => new
                 {
                     TrackId = table.Column<int>(type: "int", nullable: false),
@@ -67,21 +67,21 @@ namespace API.Data.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_PlaylistTrack", x => new { x.TrackId, x.PlaylistId });
+                    table.PrimaryKey("PK_PlaylistTracks", x => new { x.TrackId, x.PlaylistId });
                     table.ForeignKey(
-                        name: "FK_PlaylistTrack_Playlist_TrackId",
-                        column: x => x.TrackId,
-                        principalTable: "Playlist",
+                        name: "FK_PlaylistTracks_Playlists_PlaylistId",
+                        column: x => x.PlaylistId,
+                        principalTable: "Playlists",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_PlaylistTrack_Tracks_TrackId",
+                        name: "FK_PlaylistTracks_Tracks_TrackId",
                         column: x => x.TrackId,
                         principalTable: "Tracks",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_PlaylistTrack_Users_CreatedById",
+                        name: "FK_PlaylistTracks_Users_CreatedById",
                         column: x => x.CreatedById,
                         principalTable: "Users",
                         principalColumn: "Id",
@@ -97,7 +97,7 @@ namespace API.Data.Migrations
                     UserId = table.Column<int>(type: "int", nullable: false),
                     TrackId = table.Column<int>(type: "int", nullable: false),
                     CreatedOn = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    TimePulled = table.Column<decimal>(type: "decimal(20,0)", nullable: false)
+                    TimePulled = table.Column<double>(type: "float", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -169,9 +169,14 @@ namespace API.Data.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_PlaylistTrack_CreatedById",
-                table: "PlaylistTrack",
+                name: "IX_PlaylistTracks_CreatedById",
+                table: "PlaylistTracks",
                 column: "CreatedById");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_PlaylistTracks_PlaylistId",
+                table: "PlaylistTracks",
+                column: "PlaylistId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_PullUps_TrackId",
@@ -202,7 +207,7 @@ namespace API.Data.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "PlaylistTrack");
+                name: "PlaylistTracks");
 
             migrationBuilder.DropTable(
                 name: "PullUps");
@@ -214,7 +219,7 @@ namespace API.Data.Migrations
                 name: "TrackPlays");
 
             migrationBuilder.DropTable(
-                name: "Playlist");
+                name: "Playlists");
 
             migrationBuilder.DropTable(
                 name: "Tracks");

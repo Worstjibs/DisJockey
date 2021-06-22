@@ -58,7 +58,6 @@ namespace API.Discord.Modules {
                 return;
             }
 
-            // TODO: Join Channel before playing
             var response = await _musicService.PlayTrack(query, Context.User, Context.Guild, false);
             await ReplyAsync(response);
         }
@@ -93,10 +92,12 @@ namespace API.Discord.Modules {
         }
 
         [Command("PullIt")]
-        public async Task PullIt() {            
-            var player = _lavaNode.GetPlayer(Context.Guild);
+        public async Task PullIt() {
+            LavaPlayer player;
 
-            if (player.PlayerState != PlayerState.Playing) {
+            _lavaNode.TryGetPlayer(Context.Guild, out player);
+
+            if (player?.PlayerState != PlayerState.Playing) {
                 await ReplyAsync("I am not playing anything");
                 return;
             }

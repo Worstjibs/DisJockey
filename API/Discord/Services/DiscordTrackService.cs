@@ -10,6 +10,8 @@ using Microsoft.AspNetCore.WebUtilities;
 using System.Data.Common;
 using Discord.WebSocket;
 using API.Extensions;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 
 namespace API.Discord.Services {
     public class DiscordTrackService : IDiscordTrackService {
@@ -26,7 +28,8 @@ namespace API.Discord.Services {
             var user = await _unitOfWork.UserRepository.GetUserByDiscordIdAsync(discordUser.Id);
 
             if (user == null) {
-                CreateAppUser(discordUser);
+                user = CreateAppUser(discordUser);
+                _unitOfWork.UserRepository.AddUser(user);
             } else {
                 user.UpdateAppUser(discordUser);
             }
@@ -75,7 +78,8 @@ namespace API.Discord.Services {
             var user = await _unitOfWork.UserRepository.GetUserByDiscordIdAsync(discordUser.Id);
 
             if (user == null) {
-                CreateAppUser(discordUser);
+                user = CreateAppUser(discordUser);
+                _unitOfWork.UserRepository.AddUser(user);
             } else {
                 user.UpdateAppUser(discordUser);
             }
@@ -109,19 +113,16 @@ namespace API.Discord.Services {
             if (!await _unitOfWork.Complete()) {
                 throw new DataContextException("Something went wrong saving the PullUp");
             }
-        }
+        }               
 
-        public Task PlayTrackAsync(SocketUser discordUser, string youtubeId) {
-            throw new NotImplementedException();
-        }
-
-        private void CreateAppUser(SocketUser discordUser) {
+        private AppUser CreateAppUser(SocketUser discordUser) {
             var user = new AppUser {
                 DiscordId = discordUser.Id,
                 UserName = discordUser.Username,
-                AvatarUrl = discordUser.GetAvatarUrl()
+                AvatarUrl = discordUser.GetAvatarUrl(),
+                Tracks = new List<AppUserTrack>()
             };
-            _unitOfWork.UserRepository.AddUser(user);
+            return user;
         }
 
         public string GetYouTubeId(string url) {

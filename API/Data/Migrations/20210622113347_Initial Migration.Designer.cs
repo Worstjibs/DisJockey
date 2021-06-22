@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace API.Data.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20210412105457_Initial Migration")]
+    [Migration("20210622113347_Initial Migration")]
     partial class InitialMigration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -82,7 +82,7 @@ namespace API.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Playlist");
+                    b.ToTable("Playlists");
                 });
 
             modelBuilder.Entity("API.Models.PlaylistTrack", b =>
@@ -103,7 +103,9 @@ namespace API.Data.Migrations
 
                     b.HasIndex("CreatedById");
 
-                    b.ToTable("PlaylistTrack");
+                    b.HasIndex("PlaylistId");
+
+                    b.ToTable("PlaylistTracks");
                 });
 
             modelBuilder.Entity("API.Models.PullUp", b =>
@@ -116,8 +118,8 @@ namespace API.Data.Migrations
                     b.Property<DateTime>("CreatedOn")
                         .HasColumnType("datetime2");
 
-                    b.Property<decimal>("TimePulled")
-                        .HasColumnType("decimal(20,0)");
+                    b.Property<double>("TimePulled")
+                        .HasColumnType("float");
 
                     b.Property<int>("TrackId")
                         .HasColumnType("int");
@@ -215,7 +217,7 @@ namespace API.Data.Migrations
 
                     b.HasOne("API.Models.Playlist", "Playlist")
                         .WithMany("Tracks")
-                        .HasForeignKey("TrackId")
+                        .HasForeignKey("PlaylistId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 

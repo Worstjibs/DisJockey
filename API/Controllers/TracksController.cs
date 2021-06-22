@@ -24,27 +24,13 @@ namespace API.Controllers {
         private readonly DiscordSocketClient _client;
         private readonly MusicService _musicService;
 
-        public TracksController(IUnitOfWork unitOfWork, IVideoDetailService videoService, DiscordSocketClient client,
+        public TracksController(IUnitOfWork unitOfWork, IVideoDetailService videoDetailService, DiscordSocketClient client,
             MusicService musicService) {
             _musicService = musicService;
-            _videoService = videoService;
+            _videoService = videoDetailService;
             _unitOfWork = unitOfWork;
             _client = client;
         }
-
-        // [HttpGet("{id}")]
-        // public async Task<ActionResult<MemberTrackDto>> GetTrackById(int id) {
-        //     var track = await _unitOfWork.TrackRepository.GetTrackByIdAsync(id);
-
-        //     if (track == null) return BadRequest("Track does not exist");
-
-        //     MemberTrackDto trackDto = new MemberTrackDto {
-        //         YoutubeId = track.YoutubeId,
-        //         CreatedOn = track.CreatedOn
-        //     };
-
-        //     return Ok(trackDto);
-        // }
 
         // [Authorize]
         [HttpGet]
@@ -131,26 +117,21 @@ namespace API.Controllers {
             }            
         }
 
-        public string GetYouTubeId(string url) {
-            try {
-                Uri uri = new Uri(url);
+        [HttpPost("playlist")]
+        public async Task<ActionResult> AddPlayList(PlaylistDto playlistDto) {
+            var playlist = await _videoService.GetPlaylistDetails(playlistDto.PlaylistId);
 
-                if (uri == null) return null;
+            if (playlist == null) return NotFound("Playlist Id Invalid");
 
-                string youtubeId = null;
+            if (playlist.Tracks.Count == 0) return BadRequest("No Tracks in Playlist");
 
-                if (url.Contains("youtube.com")) {
-                    var queryString = QueryHelpers.ParseQuery(uri.Query);
+            await _unitOfWork.TrackRepository.AddMissingTracks(playlist.Tracks);
 
-                    if (queryString.ContainsKey("v")) youtubeId = queryString["v"];
-                } else if (url.Contains("youtu.be")) {
-                    youtubeId = uri.Segments[1];
-                }
+            await _unitOfWork.TrackRepository.AddPlaylist(playlist);
 
-                return youtubeId;
-            } catch {
-                throw new Exception("Something went wrong");
-            }
+            await _unitOfWork.Complete();
+
+            return Ok();
         }
     }
 }

@@ -80,7 +80,7 @@ namespace API.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Playlist");
+                    b.ToTable("Playlists");
                 });
 
             modelBuilder.Entity("API.Models.PlaylistTrack", b =>
@@ -101,7 +101,9 @@ namespace API.Data.Migrations
 
                     b.HasIndex("CreatedById");
 
-                    b.ToTable("PlaylistTrack");
+                    b.HasIndex("PlaylistId");
+
+                    b.ToTable("PlaylistTracks");
                 });
 
             modelBuilder.Entity("API.Models.PullUp", b =>
@@ -213,7 +215,7 @@ namespace API.Data.Migrations
 
                     b.HasOne("API.Models.Playlist", "Playlist")
                         .WithMany("Tracks")
-                        .HasForeignKey("TrackId")
+                        .HasForeignKey("PlaylistId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 

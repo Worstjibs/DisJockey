@@ -1,20 +1,20 @@
+.card-img-wrapper {
+    height: 250px;
+}
+
 .card:hover img {
     transform: scale(1.2, 1.2);
     transition: transform 0.5s ease-in-out;
+    opacity: 0.8;
 }
 
-img {
+.card img {
     transform: scale(1.1, 1.1);
     transition: transform 0.5s ease-in-out;
-    height: 128px;
-    width: 128px;
+    opacity: 1;
 }
 
-.img-thumbnail {
+.card-img-wrapper {
     overflow: hidden;
-}
-
-.card-img-top {
-    background-color: #4b4b4b;
-    height: 160px;
+    position: relative;
 }

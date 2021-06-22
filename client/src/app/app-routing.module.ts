@@ -5,6 +5,7 @@ import { ServerErrorComponent } from './errors/server-error/server-error.compone
 import { HomeComponent } from './home/home.component';
 import { TracksComponent } from './tracks/tracks.component';
 import { MembersComponent } from './members/members.component';
+import { MemberDetailComponent } from './members/member-detail/member-detail.component';
 
 const routes: Routes = [
     {
@@ -18,6 +19,10 @@ const routes: Routes = [
     {
         path: 'users',
         component: MembersComponent
+    },
+    {
+        path: 'users/:username',
+        component: MemberDetailComponent
     },
     {
         path: 'not-found',

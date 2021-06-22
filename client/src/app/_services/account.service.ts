@@ -30,22 +30,22 @@ export class AccountService {
     // }
 
     getClaims() {
-        const user: CurrentUser = JSON.parse(localStorage.getItem('user'));
+        // const user: CurrentUser = JSON.parse(localStorage.getItem('user'));
 
-        if (user) {
-            this.currentUserSource.next(user);
-        } else {
+        // if (user) {
+        //     this.currentUserSource.next(user);
+        // } else {
             this.http.get(this.baseUrl + 'account/claims').subscribe((response: any) => {
                 if (response) {
                     localStorage.setItem('user', JSON.stringify(response));                
                     this.currentUserSource.next(response);
                 }
             });
-        }
+        // }
     }
 
     logout() {
-        localStorage.removeItem('user');
+        // localStorage.removeItem('user');
         this.currentUserSource.next(null);
 
         window.location.href = this.baseUrl + 'account/logout';
