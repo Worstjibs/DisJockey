@@ -34,7 +34,7 @@ namespace API.Controllers {
 
         // [Authorize]
         [HttpGet]
-        public async Task<ActionResult<IEnumerable>> GetTracks([FromQuery] PaginationParams paginationParams) {
+        public async Task<ActionResult<IEnumerable<TrackDto>>> GetTracks([FromQuery] PaginationParams paginationParams) {
             var tracks = await _unitOfWork.TrackRepository.GetTracks(paginationParams);
 
             var discordIdStr = User.GetDiscordId();
@@ -42,19 +42,8 @@ namespace API.Controllers {
 
             UInt64.TryParse(discordIdStr, out discordId);
 
-            // Doing grouping "client-side" here
-            // TODO figure out how to do it during projection
+            // Set Liked Flag on Tracks
             foreach (var track in tracks) {
-                track.Users = (from user in track.Users
-                               group user by new { user.DiscordId, user.Username } into grouping
-                               select new TrackUserDto {
-                                   DiscordId = grouping.Key.DiscordId,
-                                   Username = grouping.Key.Username,
-                                   TimesPlayed = grouping.Count(),
-                                   CreatedOn = grouping.Min(x => x.CreatedOn),
-                                   LastPlayed = grouping.Max(x => x.CreatedOn)
-                               }).ToList();
-
                 track.LikedByUser = track.UserLikes.FirstOrDefault(user => user.DiscordId == discordId)?.Liked; ;
             }
 
@@ -97,7 +86,7 @@ namespace API.Controllers {
 
         [Authorize]
         [HttpPost("play")]
-        public async Task<ActionResult> PlayTrack(TrackPlayDto trackPlayDto) {
+        public async Task<ActionResult> PlayTrack(TrackPlayRequestDto trackPlayDto) {
             var track = await _unitOfWork.TrackRepository.GetTrackByYoutubeIdAsync(trackPlayDto.YoutubeId);
 
             if (track == null) return NotFound("Track with YoutubeId " + trackPlayDto.YoutubeId + "Not Found");
