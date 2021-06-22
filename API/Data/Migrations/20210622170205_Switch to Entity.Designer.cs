@@ -4,14 +4,16 @@ using API.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace API.Data.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20210622170205_Switch to Entity")]
+    partial class SwitchtoEntity
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -78,7 +80,7 @@ namespace API.Data.Migrations
 
                     b.HasIndex("PlaylistId");
 
-                    b.ToTable("PlaylistTracks");
+                    b.ToTable("PlaylistTrack");
                 });
 
             modelBuilder.Entity("API.Entities.PullUp", b =>
@@ -188,26 +190,6 @@ namespace API.Data.Migrations
                     b.ToTable("TrackPlays");
                 });
 
-            modelBuilder.Entity("API.Entities.TrackPlayHistory", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .UseIdentityColumn();
-
-                    b.Property<DateTime>("CreatedOn")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int?>("TrackPlayId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("TrackPlayId");
-
-                    b.ToTable("TrackPlayHistory");
-                });
-
             modelBuilder.Entity("API.Entities.PlaylistTrack", b =>
                 {
                     b.HasOne("API.Entities.AppUser", "CreatedBy")
@@ -280,7 +262,7 @@ namespace API.Data.Migrations
                         .IsRequired();
 
                     b.HasOne("API.Entities.Track", "Track")
-                        .WithMany("TrackPlays")
+                        .WithMany("AppUsers")
                         .HasForeignKey("TrackId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -288,15 +270,6 @@ namespace API.Data.Migrations
                     b.Navigation("Track");
 
                     b.Navigation("User");
-                });
-
-            modelBuilder.Entity("API.Entities.TrackPlayHistory", b =>
-                {
-                    b.HasOne("API.Entities.TrackPlay", "TrackPlay")
-                        .WithMany("TrackPlayHistory")
-                        .HasForeignKey("TrackPlayId");
-
-                    b.Navigation("TrackPlay");
                 });
 
             modelBuilder.Entity("API.Entities.AppUser", b =>
@@ -315,18 +288,13 @@ namespace API.Data.Migrations
 
             modelBuilder.Entity("API.Entities.Track", b =>
                 {
+                    b.Navigation("AppUsers");
+
                     b.Navigation("Likes");
 
                     b.Navigation("Playlists");
 
                     b.Navigation("PullUps");
-
-                    b.Navigation("TrackPlays");
-                });
-
-            modelBuilder.Entity("API.Entities.TrackPlay", b =>
-                {
-                    b.Navigation("TrackPlayHistory");
                 });
 #pragma warning restore 612, 618
         }

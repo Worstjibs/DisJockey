@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace API.Models {
+namespace API.Entities {
 
     [Table("TrackLikes")]
     public class TrackLike {

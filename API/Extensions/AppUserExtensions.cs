@@ -1,4 +1,4 @@
-using API.Models;
+using API.Entities;
 using Discord.WebSocket;
 
 namespace API.Extensions {

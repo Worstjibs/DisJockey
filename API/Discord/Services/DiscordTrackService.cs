@@ -3,7 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using API.Exceptions;
 using API.Discord.Interfaces;
-using API.Models;
+using API.Entities;
 using API.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.WebUtilities;
@@ -48,7 +48,9 @@ namespace API.Discord.Services {
 
             if (track == null) {
                 track = new Track {
-                    YoutubeId = youtubeId
+                    YoutubeId = youtubeId,
+                    CreatedOn = DateTime.UtcNow,
+                    TrackPlays = new List<TrackPlay>()
                 };
 
                 try {
@@ -62,14 +64,23 @@ namespace API.Discord.Services {
                 if (!await _unitOfWork.Complete()) throw new DataContextException("Something went wrong saving the Track.");
             }
 
-            var userTrack = new AppUserTrack {
-                AppUserId = user.Id,
-                User = user,
-                TrackId = track.Id,
-                Track = track
-            };
+            var trackPlay = track.TrackPlays.FirstOrDefault(x => x.AppUserId == user.Id);
 
-            user.Tracks.Add(userTrack);
+            if (trackPlay == null) {
+                trackPlay = new TrackPlay {
+                    AppUserId = user.Id,
+                    User = user,
+                    TrackId = track.Id,
+                    Track = track,
+                    TrackPlayHistory = new List<TrackPlayHistory>()
+                };
+                track.TrackPlays.Add(trackPlay);
+            }
+
+            trackPlay.TrackPlayHistory.Add(new TrackPlayHistory {
+                CreatedOn = DateTime.UtcNow,
+                TrackPlay = trackPlay
+            });
 
             if (!await _unitOfWork.Complete()) throw new DataContextException("Something went wrong saving the AppUserTrack.");
         }
@@ -113,14 +124,14 @@ namespace API.Discord.Services {
             if (!await _unitOfWork.Complete()) {
                 throw new DataContextException("Something went wrong saving the PullUp");
             }
-        }               
+        }
 
         private AppUser CreateAppUser(SocketUser discordUser) {
             var user = new AppUser {
                 DiscordId = discordUser.Id,
                 UserName = discordUser.Username,
                 AvatarUrl = discordUser.GetAvatarUrl(),
-                Tracks = new List<AppUserTrack>()
+                Tracks = new List<TrackPlay>()
             };
             return user;
         }

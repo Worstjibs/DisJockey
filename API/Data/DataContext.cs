@@ -1,5 +1,5 @@
 using System;
-using API.Models;
+using API.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -13,7 +13,7 @@ namespace API.Data {
 
         public DbSet<AppUser> Users { get; set; }
         public DbSet<Track> Tracks { get; set; }
-        public DbSet<AppUserTrack> UserTracks { get; set; }
+        public DbSet<TrackPlay> UserTracks { get; set; }
         public DbSet<TrackLike> TrackLikes { get; set; }
         public DbSet<Playlist> Playlists { get; set; }
         public DbSet<PlaylistTrack> PlaylistTracks { get; set; }
@@ -29,15 +29,15 @@ namespace API.Data {
 
             // AppUserTrack configuration:
             // Add Foreign keys for AppUser
-            builder.Entity<AppUserTrack>()
+            builder.Entity<TrackPlay>()
                 .HasOne(ut => ut.User)
                 .WithMany(u => u.Tracks)
                 .HasForeignKey(ut => ut.AppUserId)
                 .OnDelete(DeleteBehavior.Cascade);
             // Add Foreign keys for Track
-            builder.Entity<AppUserTrack>()
+            builder.Entity<TrackPlay>()
                 .HasOne(ut => ut.Track)
-                .WithMany(u => u.AppUsers)
+                .WithMany(u => u.TrackPlays)
                 .HasForeignKey(ut => ut.TrackId)
                 .OnDelete(DeleteBehavior.Cascade);
 

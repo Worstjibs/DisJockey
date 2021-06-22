@@ -1,6 +1,8 @@
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 
-namespace API.Models {
+namespace API.Entities {
+    [Table("Playlists")]
     public class Playlist {
         public int Id { get; set; }
         public string Name { get; set; }

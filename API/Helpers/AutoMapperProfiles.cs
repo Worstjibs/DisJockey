@@ -1,6 +1,6 @@
 using System.Linq;
 using API.DTOs;
-using API.Models;
+using API.Entities;
 using AutoMapper;
 
 namespace API.Helpers {
@@ -16,7 +16,7 @@ namespace API.Helpers {
                 // .ForMember(dest => dest.Dislikes, opt => opt.MapFrom(src => src.Likes.Where(x => x.Liked == false).Count()));
 
             CreateMap<Track, TrackDto>()
-                .ForMember(dest => dest.Users, opt => opt.MapFrom(src => src.AppUsers))
+                .ForMember(dest => dest.Users, opt => opt.MapFrom(src => src.TrackPlays))
                     // .GroupBy(x => new {x.User.DiscordId, x.User.UserName}).Select(t => new TrackUserDto {
                     //     CreatedOn = t.Min(x => x.CreatedOn),
                     //     LastPlayed =  t.Max(x => x.CreatedOn),
@@ -29,11 +29,11 @@ namespace API.Helpers {
                 .ForMember(dest => dest.Dislikes, opt => opt.MapFrom(src => src.Likes.Where(x => x.Liked == false).Count()));
 
             // Mappings for AppUserTrack
-            CreateMap<AppUserTrack, TrackUserDto>()
+            CreateMap<TrackPlay, TrackUserDto>()
                 .ForMember(dest => dest.Username, opt => opt.MapFrom(src => src.User.UserName))
                 .ForMember(dest => dest.DiscordId, opt => opt.MapFrom(src => src.User.DiscordId));
 
-            CreateMap<AppUserTrack, MemberTrackDto>()
+            CreateMap<TrackPlay, MemberTrackDto>()
                 .ForMember(dest => dest.YoutubeId, opt => opt.MapFrom(src => src.Track.YoutubeId))
                 .ForMember(dest => dest.FirstPlayed, opt => opt.MapFrom(src => src.Track.CreatedOn))
                 .ForMember(dest => dest.LastPlayed, opt => opt.MapFrom(src => src.Track.CreatedOn));

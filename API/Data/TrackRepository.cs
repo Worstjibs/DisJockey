@@ -1,7 +1,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using API.DTOs;
-using API.Models;
+using API.Entities;
 using API.Interfaces;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
@@ -28,13 +28,14 @@ namespace API.Data {
         public async Task<Track> GetTrackByYoutubeIdAsync(string youtubeId) {
             return await _context.Tracks
                 .Include(x => x.Likes).ThenInclude(x => x.User)
+                .Include(x => x.TrackPlays).ThenInclude(x => x.TrackPlayHistory)
                 .Include(x => x.PullUps)
                 .FirstOrDefaultAsync(x => x.YoutubeId == youtubeId);
         }
 
         public async Task<PagedList<TrackDto>> GetTracks(PaginationParams paginationParams) {
             var userTracks = _context.Tracks.AsQueryable()
-                .OrderByDescending(t => t.AppUsers.Max(tp => tp.CreatedOn))
+                .OrderByDescending(t => t.TrackPlays.Max(tp => tp.CreatedOn))
                 .ProjectTo<TrackDto>(_mapper.ConfigurationProvider);
 
             return await PagedList<TrackDto>.CreateAsync(userTracks, paginationParams.PageNumber, paginationParams.PageSize);

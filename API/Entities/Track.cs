@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace API.Models {
+namespace API.Entities {
     [Table("Tracks")]
     public class Track {
         public int Id { get; set; }
@@ -14,7 +14,7 @@ namespace API.Models {
         public string SmallThumbnail { get; set; }
         public string MediumThumbnail { get; set; }
         public string LargeThumbnail { get; set; }
-        public ICollection<AppUserTrack> AppUsers { get; set; }
+        public ICollection<TrackPlay> TrackPlays { get; set; }
         public ICollection<TrackLike> Likes { get; set; }
         public ICollection<PlaylistTrack> Playlists { get; set; }
         public ICollection<PullUp> PullUps { get; set; }

@@ -1,6 +1,8 @@
 using System;
+using System.ComponentModel.DataAnnotations.Schema;
 
-namespace API.Models {
+namespace API.Entities {
+    [Table("PlaylistTracks")]
     public class PlaylistTrack {
         public int TrackId { get; set; }
         public Track Track { get; set; }

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using API.DTOs;
 using API.Helpers;
-using API.Models;
+using API.Entities;
 
 namespace API.Interfaces {
     public interface ITrackRepository {

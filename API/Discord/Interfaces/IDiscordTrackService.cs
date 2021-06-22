@@ -1,5 +1,5 @@
 using System.Threading.Tasks;
-using API.Models;
+using API.Entities;
 using Discord.WebSocket;
 
 namespace API.Discord.Interfaces {
