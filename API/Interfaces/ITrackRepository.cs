@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using API.DTOs;
 using API.Helpers;
 using API.Entities;
+using API.Models;
 
 namespace API.Interfaces {
     public interface ITrackRepository {
@@ -14,5 +15,6 @@ namespace API.Interfaces {
         void AddTrack(Track track);
         Task AddMissingTracks(IList<PlaylistTrack> playlistTracks);
         Task AddPlaylist(Playlist playlist);
+        Task<PlaylistModel> GetPlaylist(int playlistId);
     }
 }

@@ -10,6 +10,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System;
 using API.Helpers;
+using API.Models;
 
 namespace API.Data {
     public class TrackRepository : ITrackRepository {
@@ -84,6 +85,13 @@ namespace API.Data {
             _context.Playlists.Add(playlistToSave);
 
             await _context.SaveChangesAsync();
+        }
+
+        public async Task<PlaylistModel> GetPlaylist(int playlistId) {
+            return await _context.Playlists.AsQueryable()
+                .Where(x => x.Id == playlistId)
+                .ProjectTo<PlaylistModel>(_mapper.ConfigurationProvider)
+                .FirstOrDefaultAsync();            
         }
     }
 }

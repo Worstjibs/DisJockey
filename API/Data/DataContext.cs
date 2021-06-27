@@ -13,7 +13,7 @@ namespace API.Data {
 
         public DbSet<AppUser> Users { get; set; }
         public DbSet<Track> Tracks { get; set; }
-        public DbSet<TrackPlay> UserTracks { get; set; }
+        public DbSet<TrackPlay> TrackPlays { get; set; }
         public DbSet<TrackLike> TrackLikes { get; set; }
         public DbSet<Playlist> Playlists { get; set; }
         public DbSet<PlaylistTrack> PlaylistTracks { get; set; }

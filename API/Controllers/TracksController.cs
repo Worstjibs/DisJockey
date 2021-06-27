@@ -16,6 +16,7 @@ using Discord.WebSocket;
 using API.Discord.Services;
 using Discord;
 using API.Helpers;
+using API.Models;
 
 namespace API.Controllers {
     public class TracksController : BaseApiController {
@@ -104,23 +105,6 @@ namespace API.Controllers {
             } else {
                 return BadRequest("You must be connected to a Voice channel to play a track");
             }            
-        }
-
-        [HttpPost("playlist")]
-        public async Task<ActionResult> AddPlayList(PlaylistDto playlistDto) {
-            var playlist = await _videoService.GetPlaylistDetails(playlistDto.PlaylistId);
-
-            if (playlist == null) return NotFound("Playlist Id Invalid");
-
-            if (playlist.Tracks.Count == 0) return BadRequest("No Tracks in Playlist");
-
-            await _unitOfWork.TrackRepository.AddMissingTracks(playlist.Tracks);
-
-            await _unitOfWork.TrackRepository.AddPlaylist(playlist);
-
-            await _unitOfWork.Complete();
-
-            return Ok();
         }
     }
 }

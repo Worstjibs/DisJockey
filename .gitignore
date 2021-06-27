@@ -444,3 +444,4 @@ $RECYCLE.BIN/
 appsettings.json
 botsettings.json
 API/appsettings.json
+API/Data/SeedData.json

@@ -10,7 +10,7 @@ using Victoria;
 
 namespace API.Extensions {
     public static class DiscordServiceExtensions {
-        public static IServiceCollection AddDiscordServices(this IServiceCollection services, IConfiguration config) {
+        public static void AddDiscordServices(this IServiceCollection services, IConfiguration config) {
             var botSettings = config.GetSection("BotSettings").Get<BotSettings>();
             services.AddSingleton<BotSettings>(botSettings);
 
@@ -39,9 +39,7 @@ namespace API.Extensions {
             services.AddSingleton<MusicService>();
 
             services.AddSingleton<DiscordService>();
-            services.AddHostedService<DiscordService>(provider => provider.GetService<DiscordService>());
-
-            return services;
+            // services.AddHostedService<DiscordService>(provider => provider.GetService<DiscordService>());
         }
     }
 }

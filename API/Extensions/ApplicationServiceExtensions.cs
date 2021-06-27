@@ -1,3 +1,4 @@
+using System;
 using API.Data;
 using API.Helpers;
 using API.Interfaces;
@@ -10,8 +11,9 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace API.Extensions {
     public static class ApplicationServiceExtensions {
-        public static IServiceCollection AddApplicationServices(this IServiceCollection services, IConfiguration config) {
-            services.AddAutoMapper(typeof(AutoMapperProfiles).Assembly);
+        public static void AddApplicationServices(this IServiceCollection services, IConfiguration config) {
+            var autoMapperProfile = typeof(AutoMapperProfiles).Assembly;
+            services.AddAutoMapper(autoMapperProfile);
 
             services.Configure<YoutubeSettings>(config.GetSection("YoutubeSettings"));
 
@@ -22,8 +24,6 @@ namespace API.Extensions {
             services.AddDbContext<DataContext>(options => {
                 options.UseSqlServer(config.GetConnectionString("DefaultConnection"));
             });
-
-            return services;
         }
     }
 }

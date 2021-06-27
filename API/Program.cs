@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using API.Data;
+using API.Interfaces;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -20,8 +21,9 @@ namespace API {
 
                 try  {
                     var context = services.GetRequiredService<DataContext>();
-                    
+
                     await context.Database.MigrateAsync();
+                    await Seed.SeedData(context);
                 } catch (Exception e) {
                     var logger = services.GetRequiredService<ILogger<Program>>();
                     logger.LogError(e, "An error occured during migraiton");
