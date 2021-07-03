@@ -2,8 +2,6 @@ using System;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
-using API.Discord.Interfaces;
-using API.Discord.Services;
 using Discord;
 using Discord.Commands;
 using Discord.WebSocket;

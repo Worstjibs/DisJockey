@@ -16,5 +16,6 @@ namespace API.DTOs {
         public string SmallThumbnail { get; set; }
         public string MediumThumbnail { get; set; }
         public string LargeThumbnail { get; set; }
+        public DateTime LastPlayed { get; set; }
     }
 }

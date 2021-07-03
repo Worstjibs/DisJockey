@@ -1,6 +1,7 @@
 using API.Discord;
-using API.Discord.Interfaces;
 using API.Discord.Services;
+using API.Interfaces;
+using API.Services;
 using Discord;
 using Discord.Commands;
 using Discord.WebSocket;
@@ -39,7 +40,7 @@ namespace API.Extensions {
             services.AddSingleton<MusicService>();
 
             services.AddSingleton<DiscordService>();
-            // services.AddHostedService<DiscordService>(provider => provider.GetService<DiscordService>());
+            services.AddHostedService<DiscordService>(provider => provider.GetService<DiscordService>());
         }
     }
 }

@@ -8,15 +8,9 @@ using API.Extensions;
 using API.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.WebUtilities;
-using Microsoft.EntityFrameworkCore;
-using API.Discord.Interfaces;
-using System.Collections;
 using Discord.WebSocket;
 using API.Discord.Services;
-using Discord;
 using API.Helpers;
-using API.Models;
 
 namespace API.Controllers {
     public class TracksController : BaseApiController {
@@ -33,7 +27,7 @@ namespace API.Controllers {
             _client = client;
         }
 
-        // [Authorize]
+        [Authorize]
         [HttpGet]
         public async Task<ActionResult<IEnumerable<TrackDto>>> GetTracks([FromQuery] PaginationParams paginationParams) {
             var tracks = await _unitOfWork.TrackRepository.GetTracks(paginationParams);
@@ -100,8 +94,8 @@ namespace API.Controllers {
             if (user != null) {
                 var guild = user.MutualGuilds.FirstOrDefault();
 
-                await _musicService.PlayTrack("https://youtu.be/" + track.YoutubeId, user, guild, trackPlayDto.PlayNow);
-                return Ok();
+                var message = await _musicService.PlayTrack("https://youtu.be/" + track.YoutubeId, user, guild, trackPlayDto.PlayNow);
+                return Ok(message);
             } else {
                 return BadRequest("You must be connected to a Voice channel to play a track");
             }            

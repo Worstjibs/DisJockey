@@ -1,6 +1,9 @@
+using System;
 using System.Linq;
+using System.Reflection;
 using API.DTOs;
 using API.Entities;
+using API.Interfaces;
 using AutoMapper;
 
 namespace API.Helpers {
@@ -16,7 +19,7 @@ namespace API.Helpers {
                 // .ForMember(dest => dest.Dislikes, opt => opt.MapFrom(src => src.Likes.Where(x => x.Liked == false).Count()));
 
             CreateMap<Track, TrackDto>()
-                .ForMember(dest => dest.Users, opt => opt.MapFrom(src => src.TrackPlays))
+                .ForMember(dest => dest.Users, opt => opt.MapFrom(src => src.TrackPlays.OrderByDescending(tp => tp.LastPlayed)))
                     // .GroupBy(x => new {x.User.DiscordId, x.User.UserName}).Select(t => new TrackUserDto {
                     //     CreatedOn = t.Min(x => x.CreatedOn),
                     //     LastPlayed =  t.Max(x => x.CreatedOn),
@@ -26,14 +29,15 @@ namespace API.Helpers {
                     // })))
                 .ForMember(dest => dest.UserLikes, opt => opt.MapFrom(src => src.Likes))
                 .ForMember(dest => dest.Likes, opt => opt.MapFrom(src => src.Likes.Where(x => x.Liked == true).Count()))
-                .ForMember(dest => dest.Dislikes, opt => opt.MapFrom(src => src.Likes.Where(x => x.Liked == false).Count()));
+                .ForMember(dest => dest.Dislikes, opt => opt.MapFrom(src => src.Likes.Where(x => x.Liked == false).Count()))
+                .ForMember(dest => dest.LastPlayed, opt => opt.MapFrom(src => src.TrackPlays.Max(x => x.LastPlayed)));
 
             // Mappings for TrackPlay
             CreateMap<TrackPlay, TrackPlayDto>()
                 .ForMember(dest => dest.Username, opt => opt.MapFrom(src => src.User.UserName))
                 .ForMember(dest => dest.DiscordId, opt => opt.MapFrom(src => src.User.DiscordId))
                 .ForMember(dest => dest.TimesPlayed, opt => opt.MapFrom(src => src.TrackPlayHistory.Count))
-                .ForMember(dest => dest.LastPlayed, opt => opt.MapFrom(src => src.TrackPlayHistory.Max(x => x.CreatedOn)))
+                .ForMember(dest => dest.LastPlayed, opt => opt.MapFrom(src => src.LastPlayed))
                 .ForMember(dest => dest.FirstPlayed, opt => opt.MapFrom(src => src.CreatedOn))
                 .ForMember(dest => dest.History, opt => opt.MapFrom(src => src.TrackPlayHistory));
 

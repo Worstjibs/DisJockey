@@ -27,26 +27,37 @@ namespace API.Data {
                 var users = await context.Users.ToListAsync();
                 var tracks = await context.Tracks.ToListAsync();
 
-                users.ForEach(user => {
-                    user.Tracks = new List<TrackPlay>();
-                    var userTracks = (List<TrackPlay>)user.Tracks;
+                var dateToSet = DateTime.UtcNow;
 
-                    userTracks.AddRange(tracks.Select(y => new TrackPlay {
-                        AppUserId = user.Id,
-                        User = user,
-                        TrackId = y.Id,
-                        Track = y,
-                        TrackPlayHistory = new List<TrackPlayHistory>()
-                    }));
+                tracks.ForEach(track => {
+                    track.TrackPlays = new List<TrackPlay>();
+                    var trackPlays = (List<TrackPlay>)track.TrackPlays;
 
-                    userTracks.ForEach(tp => tp.TrackPlayHistory.Add(new TrackPlayHistory {
-                        CreatedOn = DateTime.UtcNow
-                    }));                
+                    users.ForEach(user => {
+                        var trackPlay = new TrackPlay {
+                            AppUserId = user.Id,
+                            User = user,
+                            TrackId = track.Id,
+                            Track = track,
+                            TrackPlayHistory = new List<TrackPlayHistory>() {
+                                new TrackPlayHistory {
+                                    CreatedOn = dateToSet
+                                }
+                            },
+                            CreatedOn = dateToSet,
+                            LastPlayed = dateToSet
+                        };
+
+                        track.TrackPlays.Add(trackPlay);
+
+                        dateToSet = dateToSet.AddDays(-1);
+                    });
+
                 });
 
                 await context.SaveChangesAsync();
             }
-            
+
         }
     }
 }

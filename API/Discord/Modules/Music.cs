@@ -63,8 +63,8 @@ namespace API.Discord.Modules {
         }
 
         [Command("Skip")]
-        public async Task Skip() {
-            var player = _lavaNode.GetPlayer(Context.Guild);
+        public async Task SkipAsync() {
+            var player = TryGetCurrentPlayer();
 
             if (player.PlayerState != PlayerState.Playing) {
                 await ReplyAsync("I am not playing anything");
@@ -80,10 +80,10 @@ namespace API.Discord.Modules {
         }
 
         [Command("Stop")]
-        public async Task Stop() {
-            var player = _lavaNode.GetPlayer(Context.Guild);
+        public async Task StopAsync() {
+            var player = TryGetCurrentPlayer();
 
-            if (player.PlayerState != PlayerState.Playing) {
+            if (player?.PlayerState != PlayerState.Playing) {
                 await ReplyAsync("I am not playing anything");
                 return;
             }
@@ -92,18 +92,35 @@ namespace API.Discord.Modules {
         }
 
         [Command("PullIt")]
-        public async Task PullIt() {
-            LavaPlayer player;
-
-            _lavaNode.TryGetPlayer(Context.Guild, out player);
+        public async Task PullItAsync() {
+            var player = TryGetCurrentPlayer();
 
             if (player?.PlayerState != PlayerState.Playing) {
                 await ReplyAsync("I am not playing anything");
                 return;
             }
 
-            await _musicService.PullUpTrack(player, player.Track, Context.User);
+            await _musicService.PullUpTrackAsync(player, player.Track, Context.User);
             await ReplyAsync("Wheel that one up");
+        }
+
+        [Command("TrackId")]
+        public async Task TrackIdAsync() {
+            var player = TryGetCurrentPlayer();            
+
+            if (player?.PlayerState != PlayerState.Playing) {
+                await ReplyAsync("I am not playing anything");
+                return;
+            }
+
+            await ReplyAsync($"Currently playing {player.Track.Title}");
+        }
+
+        private LavaPlayer TryGetCurrentPlayer() {            
+            LavaPlayer player;
+            _lavaNode.TryGetPlayer(Context.Guild, out player);
+
+            return player;
         }
     }
 }

@@ -1,8 +1,8 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using API.Discord.Interfaces;
 using API.Exceptions;
+using API.Interfaces;
 using Discord;
 using Discord.WebSocket;
 using Microsoft.Extensions.DependencyInjection;
@@ -66,7 +66,7 @@ namespace API.Discord.Services {
             return returnMessage;
         }
 
-        public async Task<string> PullUpTrack(LavaPlayer player, LavaTrack track, SocketUser user) {
+        public async Task<string> PullUpTrackAsync(LavaPlayer player, LavaTrack track, SocketUser user) {
             LavaTrack wheelUpSound;
             try {
                 wheelUpSound = await GetWheelUpSoundAsync();

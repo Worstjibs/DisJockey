@@ -2,18 +2,15 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using API.Exceptions;
-using API.Discord.Interfaces;
 using API.Entities;
 using API.Interfaces;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.WebUtilities;
-using System.Data.Common;
 using Discord.WebSocket;
 using API.Extensions;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
+using API.Discord.Services;
 
-namespace API.Discord.Services {
+namespace API.Services {
     public class DiscordTrackService : IDiscordTrackService {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IVideoDetailService _videoService;
@@ -77,8 +74,10 @@ namespace API.Discord.Services {
                 track.TrackPlays.Add(trackPlay);
             }
 
+            trackPlay.LastPlayed = DateTime.UtcNow;
+
             trackPlay.TrackPlayHistory.Add(new TrackPlayHistory {
-                CreatedOn = DateTime.UtcNow,
+                CreatedOn = trackPlay.LastPlayed,
                 TrackPlay = trackPlay
             });
 

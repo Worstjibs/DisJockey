@@ -36,9 +36,8 @@ namespace API.Data {
 
         public async Task<PagedList<TrackDto>> GetTracks(PaginationParams paginationParams) {
             var userTracks = _context.Tracks.AsQueryable()
-                .Include(x => x.TrackPlays).ThenInclude(x => x.TrackPlayHistory)
-                .OrderByDescending(t => t.TrackPlays.Max(tp => tp.CreatedOn))
-                .ProjectTo<TrackDto>(_mapper.ConfigurationProvider);
+                .ProjectTo<TrackDto>(_mapper.ConfigurationProvider)                
+                .OrderByDescending(x => x.LastPlayed);
 
             return await PagedList<TrackDto>.CreateAsync(userTracks, paginationParams.PageNumber, paginationParams.PageSize);
         }
@@ -91,7 +90,7 @@ namespace API.Data {
             return await _context.Playlists.AsQueryable()
                 .Where(x => x.Id == playlistId)
                 .ProjectTo<PlaylistModel>(_mapper.ConfigurationProvider)
-                .FirstOrDefaultAsync();            
+                .FirstOrDefaultAsync();
         }
     }
 }
