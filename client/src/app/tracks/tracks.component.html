@@ -1,16 +1,22 @@
 <div class="container">
+    <form class="form-inline">
+        <div class="form-group">
+            <input class="form-control mr-2" type="text" id="track-search" placeholder="Search">
+        </div>
+        <div class="form-group">
+            <button class="btn btn-primary" type="submit">Search</button>
+        </div>        
+    </form>
+
     <div *ngFor="let track of tracks">
-        <app-track-item
-            [track]="track"
-            (trackLiked)="likeTrack($event)"
+        <app-track-item 
+            [track]="track" 
+            (trackLiked)="likeTrack($event)" 
             (trackPlayed)="playTrack($event)">
         </app-track-item>
-        <hr>
     </div>
+
     <div class="d-flex justify-content-center" *ngIf="pagination">
-        <pagination
-            [itemsPerPage]="pagination.itemsPerPage"
-            [totalItems]="pagination.totalItems"
-            (pageChanged)="pageChanged($event)"></pagination>
-    </div>    
+        <button class="btn btn-primary my-3" (click)="loadMore()">Load More</button>
+    </div>
 </div>

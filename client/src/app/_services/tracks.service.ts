@@ -7,32 +7,23 @@ import { Observable, of } from 'rxjs';
 import { UserParams } from '../_models/userParams';
 import { getPaginatedResult, getPaginationHeaders } from './paginationHelper';
 import { PaginatedResult } from '../_models/pagination';
+import { ToastrService } from 'ngx-toastr';
 
 @Injectable({
     providedIn: 'root'
 })
 export class TracksService {
     baseUrl = environment.apiUrl + 'tracks';
-    tracks: Track[] = [];
     userParams : UserParams;
 
-    constructor(private http: HttpClient) { 
+    constructor(private readonly http: HttpClient, private readonly toastr: ToastrService) { 
         this.userParams = new UserParams();
     }
 
-    getTracks(userParams: UserParams) {
-        // if (this.tracks.length > 0) return of(this.tracks);
-
+    getTracks(userParams: UserParams): Observable<PaginatedResult<Track[]>> {
         let params = getPaginationHeaders(userParams.pageNumber, userParams.pageSize);
 
         return getPaginatedResult<Track[]>(this.baseUrl, params, this.http);
-
-        // return this.http.get<Track[]>(this.baseUrl + 'track').pipe(
-        //     map(tracks => {
-        //         this.tracks = tracks;
-        //         return tracks;
-        //     })
-        // );
     }
 
     postTrackLike(track: Track, liked: boolean) {        
@@ -66,8 +57,8 @@ export class TracksService {
             'PlayNow': playNow
         }
 
-        return this.http.post(this.baseUrl + '/play', trackPlayDto).subscribe(response => {
-            console.log(response);
+        return this.http.post(this.baseUrl + '/play', trackPlayDto).subscribe(() => {
+            this.toastr.success(`${track.title} is now playing`);
         });
     }
 
@@ -77,5 +68,10 @@ export class TracksService {
 
     setUserParams(userParams: UserParams) {
         this.userParams = userParams;
+    }
+
+    resetUserParams(): UserParams {
+        this.userParams = new UserParams();
+        return this.userParams;
     }
 }

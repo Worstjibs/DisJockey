@@ -11,28 +11,30 @@ import { Pagination } from '../_models/pagination';
     styleUrls: ['./tracks.component.css']
 })
 export class TracksComponent implements OnInit {
-    // tracks$: Observable<Track[]>;
     tracks: Track[];
     userParams: UserParams;
     pagination: Pagination;
 
-    constructor(private tracksService: TracksService) { 
-        this.userParams = tracksService.getUserParams();
+    constructor(private tracksService: TracksService) {
+        this.userParams = tracksService.resetUserParams();
         console.log(this.userParams);
     }
 
     ngOnInit(): void {
         this.getTracks();
     }
+    
+    getTracks(): void {
+        this.tracks = [];
+        this.userParams = new UserParams();
 
-    getTracks() {
         this.tracksService.getTracks(this.userParams).subscribe(response => {
             this.pagination = response.pagination;
             this.tracks = response.result;
         });
     }
 
-    likeTrack(event) {
+    likeTrack(event): void {
         var track: Track = event.track;
 
         if (event.liked != track.likedByUser) {
@@ -40,17 +42,17 @@ export class TracksComponent implements OnInit {
         }
     }
 
-    playTrack(event) {
+    playTrack(event): void {
         if (event.track) {
             this.tracksService.playTrack(event.track, event.playNow);
         }
     }
 
-    pageChanged(event) {
-        this.userParams = {
-            pageNumber: event.page,
-            pageSize: event.itemsPerPage
-        };
-        this.getTracks();
+    loadMore(): void {
+        this.userParams.pageNumber++;
+
+        this.tracksService.getTracks(this.userParams).subscribe(response => {
+            this.tracks = this.tracks.concat(response.result);
+        });
     }
 }

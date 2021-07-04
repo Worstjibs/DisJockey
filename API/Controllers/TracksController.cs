@@ -95,7 +95,7 @@ namespace API.Controllers {
                 var guild = user.MutualGuilds.FirstOrDefault();
 
                 var message = await _musicService.PlayTrack("https://youtu.be/" + track.YoutubeId, user, guild, trackPlayDto.PlayNow);
-                return Ok(message);
+                return Ok();
             } else {
                 return BadRequest("You must be connected to a Voice channel to play a track");
             }            
