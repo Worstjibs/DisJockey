@@ -20,11 +20,13 @@ export function getPaginatedResult<T>(url, params: HttpParams, http: HttpClient)
     );
 }
 
-export function getPaginationHeaders(pageNumber: number, pageSize: number) {
+export function getPaginationHeaders(pageNumber: number, pageSize: number, sortBy: string) {
     let params = new HttpParams();
 
     params = params.append('pageNumber', pageNumber.toString());
     params = params.append('pageSize', pageSize.toString());
+
+    params = params.append('sortBy', sortBy);
 
     return params;
 }

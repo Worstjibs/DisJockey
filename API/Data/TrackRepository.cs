@@ -36,8 +36,16 @@ namespace API.Data {
 
         public async Task<PagedList<TrackDto>> GetTracks(PaginationParams paginationParams) {
             var userTracks = _context.Tracks.AsQueryable()
-                .ProjectTo<TrackDto>(_mapper.ConfigurationProvider)                
-                .OrderByDescending(x => x.LastPlayed);
+                .ProjectTo<TrackDto>(_mapper.ConfigurationProvider);
+
+            switch (paginationParams.SortBy) {
+                case "title":
+                    userTracks = userTracks.OrderBy(x => x.Title);
+                    break;
+                default:
+                    userTracks = userTracks.OrderByDescending(x => x.LastPlayed);
+                    break;
+            }
 
             return await PagedList<TrackDto>.CreateAsync(userTracks, paginationParams.PageNumber, paginationParams.PageSize);
         }

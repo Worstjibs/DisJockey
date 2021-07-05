@@ -21,7 +21,7 @@ export class TracksService {
     }
 
     getTracks(userParams: UserParams): Observable<PaginatedResult<Track[]>> {
-        let params = getPaginationHeaders(userParams.pageNumber, userParams.pageSize);
+        let params = getPaginationHeaders(userParams.pageNumber, userParams.pageSize, userParams.sortBy);
 
         return getPaginatedResult<Track[]>(this.baseUrl, params, this.http);
     }

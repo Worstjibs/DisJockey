@@ -3,4 +3,5 @@ export class UserParams {
     pageSize: number = 5;
 
     searchQuery: string;
+    sortBy: string;
 }

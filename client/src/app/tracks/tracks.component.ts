@@ -17,20 +17,19 @@ export class TracksComponent implements OnInit {
 
     constructor(private tracksService: TracksService) {
         this.userParams = tracksService.resetUserParams();
-        console.log(this.userParams);
     }
 
     ngOnInit(): void {
+        this.userParams = new UserParams();
+        this.tracks = [];
+
         this.getTracks();
     }
     
     getTracks(): void {
-        this.tracks = [];
-        this.userParams = new UserParams();
-
         this.tracksService.getTracks(this.userParams).subscribe(response => {
             this.pagination = response.pagination;
-            this.tracks = response.result;
+            this.tracks = this.tracks.concat(response.result);
         });
     }
 
@@ -48,11 +47,17 @@ export class TracksComponent implements OnInit {
         }
     }
 
+    sortBy(predicate: string) {
+        this.userParams = new UserParams();
+        this.userParams.sortBy = predicate;
+        this.tracks = [];
+
+        this.getTracks();
+    }
+
     loadMore(): void {
         this.userParams.pageNumber++;
 
-        this.tracksService.getTracks(this.userParams).subscribe(response => {
-            this.tracks = this.tracks.concat(response.result);
-        });
+        this.getTracks();
     }
 }
