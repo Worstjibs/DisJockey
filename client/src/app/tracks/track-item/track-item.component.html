@@ -1,34 +1,32 @@
-<div id="track-item-container" class="row mt-3 border border-rounded border-dark">
-    <!-- <div class="col my-3">
-        <img [hidden]="track.clicked" src="{{track.mediumThumbnail}}" alt="" class="img-fluid" (click)="track.clicked = true;">
-        <youtube-player 
-            *ngIf="track.clicked"
-            videoId="{{track.youtubeId}}" 
-            suggestedQuality="highres" 
-            [height]="320" 
-            [width]="430">
-        </youtube-player>
-    </div> -->
-    <div class="col-4 my-3">
-        <img [hidden]="track.clicked" src="{{track.mediumThumbnail}}" alt="" class="img-fluid">
-    </div>
-    <div class="col-8 my-3">
-        <h4>{{track.title}}</h4>
-        <h5>{{track.channelTitle}}</h5>
-        <p>First posted on {{track.createdOn | date: 'dd MMMM yyyy'}}</p>
-
-        <div class="d-flex justify-content-around align-items-center my-2 w-50">
-            <div>
-                <span><i class="fas fa-thumbs-up fa-lg like-icon" (click)="likeTrack(track)"></i><span class="like-num" [class.liked-by-user]="track.likedByUser">{{track.likes}}</span></span>
-            </div>
-            <div>
-                <span><i class="fas fa-thumbs-down fa-lg like-icon" (click)="dislikeTrack(track)"></i><span class="like-num" [class.liked-by-user]="track.likedByUser === false">{{track.dislikes}}</span></span>
-            </div>            
-            <button class="btn btn-success" (click)="playTrack(track)">Play Now</button>
-            <button class="btn btn-primary" (click)="queueTrack(track)">Queue</button>
+<div id="track-item-container" class="border border-rounded border-dark" (click)="toggleDetail()">
+    <div class="row mt-3 px-3">
+        <div [ngClass]="{'col-4': showDetail, 'col-2': !showDetail}" class="my-3">
+            <img src="{{track.mediumThumbnail}}" alt="" class="img-fluid">
         </div>
 
-        <p>Played By</p>
+        <div id="track-info" [ngClass]="{'col-8': showDetail, 'col-10': !showDetail}" class="my-3">
+            <div>
+                <h4>{{track.title}}</h4>
+                <h5>{{track.channelTitle}}</h5>
+                <p>First posted on {{track.createdOn | date: 'dd MMMM yyyy'}}</p>
+            </div>
+
+            <div *ngIf="showDetail" class="my-2 w-50">
+                <div class="d-flex justify-content-around align-items-center">
+                    <div>
+                        <span><i class="fas fa-thumbs-up fa-lg like-icon" (click)="likeTrack(track)"></i><span class="like-num" [class.liked-by-user]="track.likedByUser">{{track.likes}}</span></span>
+                    </div>
+                    <div>
+                        <span><i class="fas fa-thumbs-down fa-lg like-icon" (click)="dislikeTrack(track)"></i><span class="like-num" [class.liked-by-user]="track.likedByUser === false">{{track.dislikes}}</span></span>
+                    </div>
+                    <button class="btn btn-success" (click)="playTrack(track)">Play Now</button>
+                    <button class="btn btn-primary" (click)="queueTrack(track)">Queue</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="m-2" *ngIf="showDetail">
         <ul class="list-group">
             <li class="list-group-item" *ngFor="let user of track.users">
                 {{user.username}}, played {{user.timesPlayed}} times, last played {{user.lastPlayed | timeago}}

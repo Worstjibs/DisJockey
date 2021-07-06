@@ -1,6 +1,6 @@
 # DisJockey
 
-This is a web application that hosts a Discord Bot, intended to play and track music that is played on a Discord server. It is build using .NET 5 Web API, Angular 10 and the Bot uses Discord.NET and Victoria (https://github.com/Yucked/Victoria).
+This is a web application that hosts a Discord Bot, intended to play and track music that is played on a Discord server. It is build using .NET 5 Web API, Angular 11 and the Bot uses Discord.NET and Victoria (https://github.com/Yucked/Victoria).
 
 I used the following repositories as a guide for my work so far, thanks to the authors of them:  
 Eliza: https://github.com/Pheubel/Eliza  
@@ -14,11 +14,13 @@ You'll also need access to a LavaLink server (https://github.com/Frederikam/Lava
 
 I've included a skeleton `appsettings.json` file in the root of the repo, you'll need to populate each of the empty properties with corresponding values and put it in the API folder.
 
-Finally, you need to add `https://localhost:5001/signin-discord` to the redirect URLs for your Discord Application, which is to ensure Discord Auth is successful.
+Finally, you need to add `{Application Hostname}/signin-discord` to the redirect URLs for your Discord Application, which is to ensure Discord Auth is successful.
 
 # Running
 
 You can launch the app by running `dotnet run` from inside the API folder. I've also included vscode launch options so you can debug through that.
+
+I've started using Visual Studio 2019, so have included the Angular App as an existing Website to view within the IDE.
 
 To make changes to Angular, you'll need to run `ng build` inside the client folder, as the API needs to serve static HTML files for Discord Authentication to work (this might be possible with `ng serve` but I haven't managed it). You can use the argument `--watch` to automatically build the Angular solution when you make changes to it.
 

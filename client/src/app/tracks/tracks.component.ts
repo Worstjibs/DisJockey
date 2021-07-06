@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { AfterViewChecked, Component, ElementRef, HostListener, OnInit, ViewChild } from '@angular/core';
 import { Observable } from 'rxjs';
 import { TracksService } from '../_services/tracks.service';
 import { Track } from '../_models/track';
@@ -6,58 +6,58 @@ import { UserParams } from '../_models/userParams';
 import { Pagination } from '../_models/pagination';
 
 @Component({
-    selector: 'app-tracks',
-    templateUrl: './tracks.component.html',
-    styleUrls: ['./tracks.component.css']
+	selector: 'app-tracks',
+	templateUrl: './tracks.component.html',
+	styleUrls: ['./tracks.component.css']
 })
 export class TracksComponent implements OnInit {
-    tracks: Track[];
-    userParams: UserParams;
-    pagination: Pagination;
+	tracks: Track[];
+	userParams: UserParams;
+	pagination: Pagination;
 
-    constructor(private tracksService: TracksService) {
-        this.userParams = tracksService.resetUserParams();
-    }
+	constructor(private tracksService: TracksService) {
+		this.userParams = tracksService.resetUserParams();
+	}
 
-    ngOnInit(): void {
-        this.userParams = new UserParams();
-        this.tracks = [];
+	ngOnInit(): void {
+		this.userParams = new UserParams();
+		this.tracks = [];
 
-        this.getTracks();
-    }
-    
-    getTracks(): void {
-        this.tracksService.getTracks(this.userParams).subscribe(response => {
-            this.pagination = response.pagination;
-            this.tracks = this.tracks.concat(response.result);
-        });
-    }
+		this.getTracks();
+	}
 
-    likeTrack(event): void {
-        var track: Track = event.track;
+	getTracks(): void {
+		this.tracksService.getTracks(this.userParams).subscribe(response => {
+			this.pagination = response.pagination;
+			this.tracks = this.tracks.concat(response.result);
+		});
+	}
 
-        if (event.liked != track.likedByUser) {
-            this.tracksService.postTrackLike(event.track, event.liked);
-        }
-    }
+	likeTrack(event): void {
+		var track: Track = event.track;
 
-    playTrack(event): void {
-        if (event.track) {
-            this.tracksService.playTrack(event.track, event.playNow);
-        }
-    }
+		if (event.liked != track.likedByUser) {
+			this.tracksService.postTrackLike(event.track, event.liked);
+		}
+	}
 
-    sortBy(predicate: string) {
-        this.userParams = new UserParams();
-        this.userParams.sortBy = predicate;
-        this.tracks = [];
+	playTrack(event): void {
+		if (event.track) {
+			this.tracksService.playTrack(event.track, event.playNow);
+		}
+	}
 
-        this.getTracks();
-    }
+	sortBy(predicate: string) {
+		this.userParams = new UserParams();
+		this.userParams.sortBy = predicate;
+		this.tracks = [];
 
-    loadMore(): void {
-        this.userParams.pageNumber++;
+		this.getTracks();
+	}
 
-        this.getTracks();
-    }
+	loadMore(): void {
+		this.userParams.pageNumber++;
+
+		this.getTracks();
+	}
 }

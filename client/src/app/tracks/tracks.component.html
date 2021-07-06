@@ -18,14 +18,16 @@
         </div>
     </div>
 
-    <div *ngFor="let track of tracks">
-        <app-track-item [track]="track"
-                        (trackLiked)="likeTrack($event)"
-                        (trackPlayed)="playTrack($event)">
-        </app-track-item>
+    <div class="my-2" id="scrollable-list">
+        <div *ngFor="let track of tracks">
+            <app-track-item [track]="track"
+                            (trackLiked)="likeTrack($event)"
+                            (trackPlayed)="playTrack($event)">
+            </app-track-item>
+        </div>
     </div>
 
     <div class="d-flex justify-content-center" *ngIf="pagination">
-        <button class="btn btn-primary my-3" (click)="loadMore()">Load More</button>
+        <button class="btn btn-primary my-3" *ngIf="tracks.length > 0" (click)="loadMore()">Load More</button>
     </div>
 </div>

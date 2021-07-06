@@ -33,3 +33,9 @@
 #track-item-container:hover {
     background-color: #363636;
 }
+
+.col-0 {
+    width: 0;
+    margin: 0;
+    padding: 0;
+}

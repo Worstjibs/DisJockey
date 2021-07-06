@@ -13,5 +13,4 @@ export interface Track {
     smallThumbnail: string;
     mediumThumbnail: string;
     largeThumbnail: string;
-    clicked: boolean;
 }
