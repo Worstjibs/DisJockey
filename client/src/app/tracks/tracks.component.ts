@@ -1,9 +1,10 @@
-import { AfterViewChecked, Component, ElementRef, HostListener, OnInit, ViewChild } from '@angular/core';
+import { AfterViewChecked, Component, ElementRef, HostListener, OnInit, ViewChild, ViewChildren } from '@angular/core';
 import { Observable } from 'rxjs';
 import { TracksService } from '../_services/tracks.service';
 import { Track } from '../_models/track';
 import { UserParams } from '../_models/userParams';
 import { Pagination } from '../_models/pagination';
+import { TrackItemComponent } from './track-item/track-item.component';
 
 @Component({
 	selector: 'app-tracks',
@@ -14,6 +15,8 @@ export class TracksComponent implements OnInit {
 	tracks: Track[];
 	userParams: UserParams;
 	pagination: Pagination;
+
+	@ViewChildren('trackItem') trackItemComponents: TrackItemComponent[];
 
 	constructor(private tracksService: TracksService) {
 		this.userParams = tracksService.resetUserParams();
@@ -45,6 +48,17 @@ export class TracksComponent implements OnInit {
 		if (event.track) {
 			this.tracksService.playTrack(event.track, event.playNow);
 		}
+	}
+
+	toggledDetail(event: Track): void {
+		// Close the current track
+		const currentTrack = this.trackItemComponents.find(x => x.showDetail);
+		if (currentTrack) {
+			currentTrack.showDetail = false;
+		}
+
+		const requestedTrack = this.trackItemComponents.find(x => x.track.youtubeId == event.youtubeId);
+		requestedTrack.showDetail = true;
 	}
 
 	sortBy(predicate: string) {

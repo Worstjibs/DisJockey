@@ -1,10 +1,10 @@
 <div id="track-item-container" class="border border-rounded border-dark" (click)="toggleDetail()">
-    <div class="row mt-3 px-3">
-        <div [ngClass]="{'col-4': showDetail, 'col-2': !showDetail}" class="my-3">
+    <div class="row px-2 my-1">
+        <div [ngClass]="{'col-4': showDetail, 'col-2': !showDetail}">
             <img src="{{track.mediumThumbnail}}" alt="" class="img-fluid">
         </div>
 
-        <div id="track-info" [ngClass]="{'col-8': showDetail, 'col-10': !showDetail}" class="my-3">
+        <div id="track-info" [ngClass]="{'col-8': showDetail, 'col-10': !showDetail}">
             <div>
                 <h4>{{track.title}}</h4>
                 <h5>{{track.channelTitle}}</h5>
@@ -26,9 +26,9 @@
         </div>
     </div>
 
-    <div class="m-2" *ngIf="showDetail">
+    <div class="m-2" [hidden]="!showDetail">
         <ul class="list-group">
-            <li class="list-group-item" *ngFor="let user of track.users">
+            <li class="track-user list-group-item" [ngClass]="{'h-0': !showDetail}" *ngFor="let user of track.users">
                 {{user.username}}, played {{user.timesPlayed}} times, last played {{user.lastPlayed | timeago}}
             </li>
         </ul>

@@ -20,9 +20,11 @@
 
     <div class="my-2" id="scrollable-list">
         <div *ngFor="let track of tracks">
-            <app-track-item [track]="track"
+            <app-track-item #trackItem
+                            [track]="track"
                             (trackLiked)="likeTrack($event)"
-                            (trackPlayed)="playTrack($event)">
+                            (trackPlayed)="playTrack($event)"
+                            (toggledDetail)="toggledDetail($event)">
             </app-track-item>
         </div>
     </div>
