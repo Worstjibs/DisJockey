@@ -35,12 +35,15 @@ namespace API.Data {
         }
 
         public async Task<PagedList<TrackDto>> GetTracks(PaginationParams paginationParams) {
-            var userTracks = _context.Tracks.AsQueryable()
+            var userTracks = _context.Tracks.AsQueryable().AsNoTracking()
                 .ProjectTo<TrackDto>(_mapper.ConfigurationProvider);
 
             switch (paginationParams.SortBy) {
                 case "title":
                     userTracks = userTracks.OrderBy(x => x.Title);
+                    break;
+                case "firstPlayed":
+                    userTracks = userTracks.OrderBy(x => x.LastPlayed);
                     break;
                 default:
                     userTracks = userTracks.OrderByDescending(x => x.LastPlayed);

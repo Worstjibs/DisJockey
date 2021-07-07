@@ -1,5 +1,5 @@
 <div class="row">
-    <div *ngFor="let member of members$ | async" class="col-3" routerLink="/users/{{member.username}}">
+    <div *ngFor="let member of members$ | async" class="col-3 my-3" routerLink="/users/{{member.username}}">
         <div class="card">
             <div class="card-img-wrapper">
                 <img src="{{member.avatarUrl}}" alt="member.username" class="card-img-top">

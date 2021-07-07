@@ -8,6 +8,11 @@
     border-radius: 50%;
 }
 
+.dropdown-toggle {
+    text-decoration: none !important;
+    color: inherit;
+}
+
 .dropdown-toggle, .dropdown-item {
     cursor: pointer
 }

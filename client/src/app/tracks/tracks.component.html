@@ -13,6 +13,7 @@
             <button dropdownToggle class="btn btn-primary dropdown-toggle" type="button">Sort By</button>
             <ul class="dropdown-menu dropdown-menu-right" *dropdownMenu>
                 <li class="dropdown-item" (click)="sortBy('lastPlayed')">Last Played</li>
+                <li class="dropdown-item" (click)="sortBy('firstPlayed')">First Played</li>
                 <li class="dropdown-item" (click)="sortBy('title')">Track Title</li>
             </ul>
         </div>

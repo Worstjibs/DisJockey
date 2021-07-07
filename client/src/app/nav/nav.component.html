@@ -12,19 +12,18 @@
         </ul>
 
         <div class="dropdown" dropdown *ngIf="(accountService.currentUser$ | async) as user">
-            <a class="dropdown-toggle" style="text-decoration: none!important; color: inherit;" dropdownToggle>
+            <a class="dropdown-toggle" dropdownToggle>
                 <img id="avatar" src="{{user.avatarUrl}}" alt="{{user.username}}"> 
                 {{user.username}}
             </a>
-            <div class="dropdown-menu mt-3" *dropdownMenu> 
-                <!-- <a class="dropdown-item" routerLinkActive="active">Edit Profile</a>
-                <div class="dropdown-divider"></div> -->
+            <div class="dropdown-menu dropdown-menu-right mt-3" *dropdownMenu>
                 <div class="dropdown-item" (click)="logout()">Logout</div>
             </div>
         </div>
+
         <div class="dropdown" dropdown *ngIf="(accountService.currentUser$ | async) == null">
-            <a class="dropdown-toggle" style="text-decoration: none!important; color: inherit;" dropdownToggle>Welcome</a>
-            <div class="dropdown-menu mt-3" *dropdownMenu>
+            <a class="dropdown-toggle" dropdownToggle>Welcome</a>
+            <div class="dropdown-menu dropdown-menu-right mt-3" *dropdownMenu>
                 <a class="dropdown-item" href="{{baseUrl}}account/login">Login</a>
             </div>
         </div>

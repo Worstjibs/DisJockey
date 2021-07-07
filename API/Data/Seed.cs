@@ -44,11 +44,11 @@ namespace API.Data {
                                     CreatedOn = dateToSet
                                 }
                             },
-                            CreatedOn = dateToSet,
                             LastPlayed = dateToSet
                         };
 
                         track.TrackPlays.Add(trackPlay);
+                        track.CreatedOn = dateToSet;
 
                         dateToSet = dateToSet.AddDays(-1);
                     });
