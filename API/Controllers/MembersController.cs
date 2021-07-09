@@ -1,16 +1,19 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using API.DTOs;
+using API.DTOs.Member;
 using API.Interfaces;
+using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers {
     public class MembersController : BaseApiController {
         private readonly IUnitOfWork _unitOfWork;
+        private readonly IMapper _mapper;
 
-        public MembersController(IUnitOfWork unitOfWork) {
+        public MembersController(IUnitOfWork unitOfWork, IMapper mapper) {
             _unitOfWork = unitOfWork;
+            _mapper = mapper;
         }
 
         [HttpGet]
@@ -30,6 +33,11 @@ namespace API.Controllers {
             }
 
             return Ok(members);
+        }
+
+        [HttpGet("{discordId}")]
+        public async Task<ActionResult<MemberDto>> GetMemberByUsername(ulong discordId) {
+            return await _unitOfWork.UserRepository.GetMemberByDiscordIdAsync(discordId);
         }
     }
 }

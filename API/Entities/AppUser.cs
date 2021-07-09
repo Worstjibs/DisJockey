@@ -13,5 +13,6 @@ namespace API.Entities {
         public ICollection<TrackPlay> Tracks { get; set; }
         public ICollection<TrackLike> Likes { get; set; }
         public ICollection<PullUp> PullUps { get; set; }
+        public ICollection<Playlist> Playlists { get; set; }
     }
 }

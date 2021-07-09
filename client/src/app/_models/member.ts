@@ -5,4 +5,5 @@ export interface Member {
     avatarUrl: string;
     tracks: Track[];
     dateJoined: Date;
+    discordId: string;
 }

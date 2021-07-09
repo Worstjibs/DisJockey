@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using System.Reflection;
 using API.DTOs;
+using API.DTOs.Member;
 using API.Entities;
 using API.Interfaces;
 using AutoMapper;
@@ -10,9 +11,13 @@ namespace API.Helpers {
     public class AutoMapperProfiles : Profile {
         public AutoMapperProfiles() {
             CreateMap<AppUser, MemberDto>()
-                .ForMember(dest => dest.DateJoined, opt => opt.MapFrom(src => src.CreatedOn));
+                .ForMember(dest => dest.DateJoined, opt => opt.MapFrom(src => src.CreatedOn))
+                .ForMember(dest => dest.DiscordId, opt => opt.MapFrom(src => src.DiscordId));
+
+            //CreateMap<Playlist, MemberPlaylistDto>();
 
             CreateMap<AppUser, TrackPlayDto>();
+
 
             CreateMap<Track, MemberTrackDto>();
                 // .ForMember(dest => dest.Likes, opt => opt.MapFrom(src => src.Likes.Where(x => x.Liked == true).Count()))

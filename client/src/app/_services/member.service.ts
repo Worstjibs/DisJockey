@@ -22,4 +22,8 @@ export class MemberService {
             })
         );
     }
+
+    getMember(discordId: string): Observable<Member> {
+        return this.http.get<Member>(this.baseUrl + "members/" + discordId);
+	}
 }

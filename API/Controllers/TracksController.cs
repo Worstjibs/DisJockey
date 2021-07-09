@@ -33,9 +33,7 @@ namespace API.Controllers {
             var tracks = await _unitOfWork.TrackRepository.GetTracks(paginationParams);
 
             var discordIdStr = User.GetDiscordId();
-            ulong discordId;
-
-            UInt64.TryParse(discordIdStr, out discordId);
+            ulong.TryParse(discordIdStr, out ulong discordId);
 
             // Set Liked Flag on Tracks
             foreach (var track in tracks) {
@@ -54,13 +52,20 @@ namespace API.Controllers {
 
             if (track == null) return BadRequest("Track does not exist");
 
-            var username = User.GetUsername();
+            var discordIdStr = User.GetDiscordId();
 
-            var user = await _unitOfWork.UserRepository.GetUserByUsernameAsync(username);
+            ulong discordId;
+            var parsed = ulong.TryParse(discordIdStr, out discordId);
+
+            if (!parsed) {
+                return BadRequest("Invalid Discord Id");
+            }
+
+            var user = await _unitOfWork.UserRepository.GetUserByDiscordIdAsync(discordId);
 
             if (user == null) return Unauthorized("Invalid Token");
 
-            var trackLike = track.Likes.FirstOrDefault(t => t.User.UserName == username);
+            var trackLike = track.Likes.FirstOrDefault(t => t.User.DiscordId == discordId);
 
             if (trackLike == null) {
                 trackLike = new TrackLike {
@@ -86,8 +91,7 @@ namespace API.Controllers {
 
             if (track == null) return NotFound("Track with YoutubeId " + trackPlayDto.YoutubeId + "Not Found");
 
-            ulong discordId;
-            ulong.TryParse(User.GetDiscordId(), out discordId);
+            ulong.TryParse(User.GetDiscordId(), out ulong discordId);
 
             var user = _client.GetUser(discordId);
 
@@ -98,7 +102,7 @@ namespace API.Controllers {
                 return Ok();
             } else {
                 return BadRequest("You must be connected to a Voice channel to play a track");
-            }            
+            }
         }
     }
 }

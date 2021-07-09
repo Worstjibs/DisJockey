@@ -5,6 +5,7 @@ import { Track } from '../_models/track';
 import { UserParams } from '../_models/userParams';
 import { Pagination } from '../_models/pagination';
 import { TrackItemComponent } from './track-item/track-item.component';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
 	selector: 'app-tracks',
@@ -18,7 +19,11 @@ export class TracksComponent implements OnInit {
 
 	@ViewChildren('trackItem') trackItemComponents: TrackItemComponent[];
 
-	constructor(private tracksService: TracksService) {
+	get noMoreResults() {
+		return this.pagination.currentPage == this.pagination.totalPages;
+	}
+
+	constructor(private tracksService: TracksService, private toastr: ToastrService) {
 		this.userParams = tracksService.resetUserParams();
 	}
 
@@ -50,7 +55,7 @@ export class TracksComponent implements OnInit {
 		}
 	}
 
-	toggledDetail(event: Track): void {
+	trackExpanded(event: Track): void {
 		// Close the current track
 		const currentTrack = this.trackItemComponents.find(x => x.showDetail);
 		if (currentTrack) {

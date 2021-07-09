@@ -1,6 +1,7 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
-using API.DTOs;
+using API.DTOs.Member;
 using API.Entities;
 using API.Interfaces;
 using AutoMapper;
@@ -20,16 +21,14 @@ namespace API.Data {
             return await _context.Users.FindAsync(id);
         }
 
-        public async Task<AppUser> GetUserByUsernameAsync(string username) {
-            return await _context.Users
-                .Include(x => x.Tracks)
-                .FirstOrDefaultAsync(user => user.UserName == username);
+        public async Task<AppUser> GetUserByDiscordIdAsync(ulong discordId) {
+            return await _context.Users.AsQueryable().FirstOrDefaultAsync(x => x.DiscordId == discordId);
         }
 
-        public async Task<AppUser> GetUserByDiscordIdAsync(ulong discordId) {
+        public async Task<MemberDto> GetMemberByDiscordIdAsync(ulong discordId) {
             return await _context.Users
-                .Include(x => x.Tracks)
-                .FirstOrDefaultAsync(user => user.DiscordId == discordId);
+                .ProjectTo<MemberDto>(_mapper.ConfigurationProvider)
+                .FirstOrDefaultAsync(user => user.DiscordId == discordId.ToString());
         }
 
         public async Task<IEnumerable<MemberDto>> GetMembersAsync() {
