@@ -1,6 +1,6 @@
 using System;
 
-namespace API.DTOs {
+namespace API.DTOs.Track {
     public class TrackPlayHistoryDto {
         public DateTime CreatedOn { get; set; }
     }

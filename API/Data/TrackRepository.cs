@@ -1,16 +1,12 @@
 using System.Linq;
 using System.Threading.Tasks;
-using API.DTOs;
 using API.Entities;
 using API.Interfaces;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using Microsoft.EntityFrameworkCore;
-using System.Collections;
-using System.Collections.Generic;
-using System;
 using API.Helpers;
-using API.Models;
+using API.DTOs.Track;
 
 namespace API.Data {
     public class TrackRepository : ITrackRepository {
@@ -36,6 +32,7 @@ namespace API.Data {
 
         public async Task<PagedList<TrackDto>> GetTracks(PaginationParams paginationParams) {
             var userTracks = _context.Tracks.AsQueryable().AsNoTracking()
+                .Where(x => x.TrackPlays.Count > 0)
                 .ProjectTo<TrackDto>(_mapper.ConfigurationProvider);
 
             switch (paginationParams.SortBy) {
@@ -55,53 +52,6 @@ namespace API.Data {
 
         public void AddTrack(Track track) {
             _context.Tracks.Add(track);
-        }
-
-        public async Task AddMissingTracks(IList<PlaylistTrack> playlistTracks) {
-            var trackIds = playlistTracks.Select(x => x.Track.YoutubeId);
-
-            var existingTrackIds = await _context.Tracks.AsNoTracking()
-                .Where(x => trackIds.Contains(x.YoutubeId)).Select(x => x.YoutubeId)
-                .ToListAsync();
-
-            var missingTracks = playlistTracks.Where(x => !existingTrackIds.Any(y => y == x.Track.YoutubeId)).Select(x => x.Track);
-
-            foreach (var track in missingTracks) {
-                _context.Tracks.Add(track);
-            }
-
-            await _context.SaveChangesAsync();
-        }
-
-        public async Task AddPlaylist(Playlist playlist) {
-            var playlistTrackIds = playlist.Tracks.Select(x => x.Track.YoutubeId);
-
-            var playlistTracks = await _context.Tracks
-                .Include(x => x.Playlists)
-                .Where(x => playlistTrackIds.Any(y => y == x.YoutubeId))
-                .ToListAsync();
-
-            var playlistToSave = new Playlist {
-                Name = playlist.Name
-            };
-            playlistToSave.Tracks = playlistTracks.Select(x => new PlaylistTrack {
-                CreatedOn = DateTime.Now,
-                Playlist = playlistToSave,
-                PlaylistId = playlistToSave.Id,
-                Track = x,
-                TrackId = x.Id
-            }).ToList();
-
-            _context.Playlists.Add(playlistToSave);
-
-            await _context.SaveChangesAsync();
-        }
-
-        public async Task<PlaylistModel> GetPlaylist(int playlistId) {
-            return await _context.Playlists.AsQueryable()
-                .Where(x => x.Id == playlistId)
-                .ProjectTo<PlaylistModel>(_mapper.ConfigurationProvider)
-                .FirstOrDefaultAsync();
         }
     }
 }

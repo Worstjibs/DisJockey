@@ -31,6 +31,7 @@ namespace API.Services.YouTube {
 
             var playlist = new Playlist {
                 Name = playlistResponse.Items.First().Snippet.Title,
+                YoutubeId = playlistId,
                 Tracks = new List<PlaylistTrack>()
             };
 

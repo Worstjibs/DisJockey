@@ -22,7 +22,9 @@ namespace API.Data {
         }
 
         public async Task<AppUser> GetUserByDiscordIdAsync(ulong discordId) {
-            return await _context.Users.AsQueryable().FirstOrDefaultAsync(x => x.DiscordId == discordId);
+            return await _context.Users.AsQueryable()
+                .Include(x => x.Playlists)
+                .FirstOrDefaultAsync(x => x.DiscordId == discordId);
         }
 
         public async Task<MemberDto> GetMemberByDiscordIdAsync(ulong discordId) {

@@ -1,7 +1,6 @@
 using System.Threading.Tasks;
-using API.DTOs;
+using API.DTOs.Playlist;
 using API.Interfaces;
-using API.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers {
@@ -14,25 +13,31 @@ namespace API.Controllers {
         }
 
         [HttpPost]
-        public async Task<ActionResult> AddPlayList(PlaylistDto playlistDto) {
+        public async Task<ActionResult> AddPlayList(PlaylistAddDto playlistDto) {
+            if (await _unitOfWork.PlaylistRepository.CheckPlaylistExists(playlistDto.PlaylistId)) {
+                return Conflict($"Playlist with Id {playlistDto.PlaylistId} already exists");
+            }
+
             var playlist = await _videoDetailService.GetPlaylistDetails(playlistDto.PlaylistId);
 
-            if (playlist == null) return NotFound("Playlist Id Invalid");
-
+            if (playlist == null) {
+                return NotFound("Playlist Id Invalid");
+            }
             if (playlist.Tracks.Count == 0) return BadRequest("No Tracks in Playlist");
 
-            await _unitOfWork.TrackRepository.AddMissingTracks(playlist.Tracks);
+            var user = await _unitOfWork.UserRepository.GetUserByDiscordIdAsync(playlistDto.DiscordId);
+            if (user == null) {
+                return NotFound($"User with Discord Id {playlistDto.DiscordId} not found");
+            }
 
-            await _unitOfWork.TrackRepository.AddPlaylist(playlist);
+            await _unitOfWork.PlaylistRepository.AddMissingTracks(playlist.Tracks);
 
-            await _unitOfWork.Complete();
-
-            return Ok();
+            return Ok(await _unitOfWork.PlaylistRepository.AddPlaylist(playlist, user));
         }
 
-        [HttpGet("{id:int}")]
-        public async Task<ActionResult<PlaylistModel>> GetPlaylist(int playlistId) {
-            return await _unitOfWork.TrackRepository.GetPlaylist(playlistId);
+        [HttpGet("{youtubeId}")]
+        public async Task<ActionResult<PlaylistDto>> GetPlaylist(string youtubeId) {
+            return await _unitOfWork.PlaylistRepository.GetPlaylistByYoutubeId(youtubeId);
         }
     }
 }

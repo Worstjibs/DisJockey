@@ -21,32 +21,6 @@ namespace API.Controllers {
             _context = context;
         }
 
-        [HttpPost("register")]
-        public async Task<ActionResult> Register(RegisterDto registerDto) {
-            var discordId = registerDto.DiscordId;
-
-            // Check if the Discor duser is already registered
-            if (await CheckDiscordUserExists(discordId)) return Conflict("Discord user already registered");
-
-            // Check the user already exists in the DbContext
-            if (await CheckUserExists(registerDto.Username)) return Conflict("Username is taken");
-
-            // Generate a new AppUser
-            AppUser user = new AppUser {
-                UserName = registerDto.Username.ToLower(),
-                CreatedOn = DateTime.Now,
-                DiscordId = discordId
-            };
-
-            // Add it to the DbContext
-            _context.Users.Add(user);
-
-            // Save changes asynchronously
-            await _context.SaveChangesAsync();
-
-            return Ok();
-        }
-
         [HttpGet("login")]
         public ActionResult Login() {
             var redirectUri = "/tracks";

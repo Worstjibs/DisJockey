@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Mvc;
 using Discord.WebSocket;
 using API.Discord.Services;
 using API.Helpers;
+using API.DTOs.Track;
 
 namespace API.Controllers {
     public class TracksController : BaseApiController {

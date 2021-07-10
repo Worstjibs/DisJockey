@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace API.DTOs {
+namespace API.DTOs.Track {
     public class TrackPlayDto {
         public string Username { get; set; }
         public ulong DiscordId { get; set; }
