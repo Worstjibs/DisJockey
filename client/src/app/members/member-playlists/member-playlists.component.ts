@@ -1,5 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core';
+import { map, take } from 'rxjs/operators';
 import { Playlist } from '../../_models/playlist';
+import { AccountService } from '../../_services/account.service';
 import { PlaylistsService } from '../../_services/playlists.service';
 
 @Component({
@@ -9,14 +11,28 @@ import { PlaylistsService } from '../../_services/playlists.service';
 })
 export class MemberPlaylistsComponent implements OnInit {
 	@Input() playlists: Playlist[];
+	@Input() discordId: string;
 	selectedPlaylist: Playlist;
 
-	constructor(private readonly playlistsService: PlaylistsService) { }
+	addPlaylistEnabled: boolean;
 
-	ngOnInit(): void {
+	constructor(
+		private readonly playlistsService: PlaylistsService,
+		private readonly accountService: AccountService
+	) { }
+
+	isCurrentUser() {
+		return this.accountService.currentUser$.pipe(take(1)).pipe(map(user => user.discordId === this.discordId));
+	}
+
+	ngOnInit() {
 		if (this.playlists.length > 0) {
+			this.addPlaylistEnabled = false;
 			this.selectedPlaylist = this.playlists[0]
 			this.getPlaylist(this.selectedPlaylist);
+		} else {
+			this.addPlaylistEnabled = true;
+			this.playlists = [];
 		}
 	}
 
@@ -30,12 +46,29 @@ export class MemberPlaylistsComponent implements OnInit {
 	}
 
 	playlistClicked(playlist: Playlist) {
+		this.addPlaylistEnabled = false;
+
 		if (this.selectedPlaylist == playlist) {
 			return;
 		}
 
 		this.selectedPlaylist = playlist;
 		this.getPlaylist(this.selectedPlaylist);
+	}
+
+	enableAddMode() {
+		this.addPlaylistEnabled = true;
+	}
+
+	addPlaylist(data) {
+		this.playlistsService.addPlaylist(data.youtubeId).subscribe((response: Playlist) => {
+			if (response) {
+				this.playlists.push(response);
+
+				this.addPlaylistEnabled = false;
+				this.selectedPlaylist = response;
+			}
+		});
 	}
 
 }

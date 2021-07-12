@@ -15,8 +15,6 @@ export class MembersComponent implements OnInit {
 
     ngOnInit(): void {
         this.members$ = this.memberService.getMembers();
-
-        console.log(this.members$);
     }
 
 }

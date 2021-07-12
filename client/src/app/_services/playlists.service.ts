@@ -15,4 +15,8 @@ export class PlaylistsService {
 	getPlaylistByYoutubeId(youtubeId: string): Observable<Playlist> {
 		return this.http.get<Playlist>(`${this.baseUrl}/${youtubeId}`);
 	}
+
+	addPlaylist(youtubeId: string): Observable<Playlist> {
+		return this.http.post<Playlist>(this.baseUrl, {playlistId: youtubeId});
+	}
 }

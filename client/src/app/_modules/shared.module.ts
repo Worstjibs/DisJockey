@@ -7,6 +7,7 @@ import { TimeagoModule } from 'ngx-timeago';
 import { NgxSpinnerModule } from 'ngx-spinner';
 import { YouTubePlayerModule } from '@angular/youtube-player';
 import { ToastrModule } from 'ngx-toastr';
+import { FormsModule } from '@angular/forms';
 
 @NgModule({
     declarations: [],
@@ -20,7 +21,8 @@ import { ToastrModule } from 'ngx-toastr';
             positionClass: 'toast-bottom-right'
         }),
         PaginationModule.forRoot(),
-        TabsModule.forRoot()
+        TabsModule.forRoot(),
+        FormsModule
     ],
     exports: [
         TimeagoModule,
@@ -29,7 +31,8 @@ import { ToastrModule } from 'ngx-toastr';
         YouTubePlayerModule,
         ToastrModule,
         PaginationModule,
-        TabsModule
+        TabsModule,
+        FormsModule
     ]
 })
 export class SharedModule { }

@@ -8,3 +8,7 @@
         overflow: auto;
         border-radius: 0;
     }
+
+#playlist-list {
+    border-top-left-radius: 0.25rem !important;
+}

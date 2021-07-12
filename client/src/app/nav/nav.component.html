@@ -18,6 +18,7 @@
             </a>
             <div class="dropdown-menu dropdown-menu-right mt-3" *dropdownMenu>
                 <div class="dropdown-item" (click)="logout()">Logout</div>
+                <a class="dropdown-item" routerLink="/users/{{user.discordId}}">View Profile</a>
             </div>
         </div>
 
