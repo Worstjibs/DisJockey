@@ -1,6 +1,8 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Member } from '../../_models/member';
+import { Playlist } from '../../_models/playlist';
+import { PlaylistsService } from '../../_services/playlists.service';
 
 @Component({
 	selector: 'app-member-detail',
@@ -10,7 +12,9 @@ import { Member } from '../../_models/member';
 export class MemberDetailComponent implements OnInit {
 	member: Member;
 
-	constructor(private route: ActivatedRoute) { }
+	constructor(
+		private readonly route: ActivatedRoute
+	) { }
 
 	ngOnInit(): void {
 		this.route.data.subscribe((data: any) => {

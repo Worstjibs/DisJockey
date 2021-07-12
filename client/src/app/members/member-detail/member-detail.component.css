@@ -1,0 +1,22 @@
+.card-img-top {
+    background-color: #3E3E3E;
+}
+
+.card-img-wrapper {
+    overflow: hidden;
+    position: relative;
+
+    border: 3px solid black;
+}
+
+    .card-img-wrapper img {
+        transition: transform 0.5s ease-in-out;
+    }
+
+    .card-img-wrapper img:hover {
+        transform: scale(1.1);
+    }
+
+#username {
+    height: 50px;
+}

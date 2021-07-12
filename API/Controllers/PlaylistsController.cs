@@ -1,5 +1,6 @@
 using System.Threading.Tasks;
 using API.DTOs.Playlist;
+using API.DTOs.Shared;
 using API.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
@@ -36,7 +37,7 @@ namespace API.Controllers {
         }
 
         [HttpGet("{youtubeId}")]
-        public async Task<ActionResult<PlaylistDto>> GetPlaylist(string youtubeId) {
+        public async Task<ActionResult<BasePlaylistDto>> GetPlaylist(string youtubeId) {
             return await _unitOfWork.PlaylistRepository.GetPlaylistByYoutubeId(youtubeId);
         }
     }

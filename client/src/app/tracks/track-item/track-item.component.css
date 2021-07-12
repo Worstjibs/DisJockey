@@ -40,22 +40,26 @@
     transition: opacity 0.3s ease-in-out;
 }
 
+#track-item-container {
+    width: 99%;
+}
+
+    #track-item-container:hover {
+        background-color: #363636;
+    }
+
+        #track-item-container:hover .play-button {
+            opacity: 1;
+        }
+
+        #track-item-container:hover #track-thumbnail {
+            transform: scale(1.1);
+        }
+
 #track-thumbnail {
     transform: scale(1);
     transition: all .5s ease-in-out;
 }
-
-#track-item-container:hover {
-    background-color: #363636;
-}
-
-    #track-item-container:hover .play-button {
-        opacity: 1;
-    }
-
-    #track-item-container:hover #track-thumbnail {
-        transform: scale(1.1);
-    }
 
 .col-0 {
     width: 0;

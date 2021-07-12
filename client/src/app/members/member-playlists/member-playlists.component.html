@@ -1,0 +1,12 @@
+<div id="playlist-container" *ngIf="playlists.length > 0" class="row border rounded">
+    <ul class="list-group col-3">
+        <li class="list-group-item"
+            [ngClass]="{'active':selectedPlaylist === playlist}"
+            *ngFor="let playlist of playlists"
+            (click)="playlistClicked(playlist)">{{playlist.name}}</li>
+    </ul>
+
+    <ul class="list-group col-9">        
+        <li class="list-group-item" *ngFor="let track of selectedPlaylist.tracks">{{track.title}}</li>
+    </ul>
+</div>

@@ -8,7 +8,7 @@ namespace API.Interfaces {
     public interface ITrackRepository {
         Task<Track> GetTrackByIdAsync(int id);
         Task<Track> GetTrackByYoutubeIdAsync(string youtubeId);
-        Task<PagedList<TrackDto>> GetTracks(PaginationParams paginationParams);
+        Task<PagedList<TrackListDto>> GetTracks(PaginationParams paginationParams);
         void AddTrack(Track track);
     }
 }

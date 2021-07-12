@@ -1,7 +1,8 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { BsDropdownModule } from 'ngx-bootstrap/dropdown';
-import { PaginationModule } from 'ngx-bootstrap/pagination'
+import { PaginationModule } from 'ngx-bootstrap/pagination';
+import { TabsModule } from 'ngx-bootstrap/tabs';
 import { TimeagoModule } from 'ngx-timeago';
 import { NgxSpinnerModule } from 'ngx-spinner';
 import { YouTubePlayerModule } from '@angular/youtube-player';
@@ -18,7 +19,8 @@ import { ToastrModule } from 'ngx-toastr';
         ToastrModule.forRoot({
             positionClass: 'toast-bottom-right'
         }),
-        PaginationModule.forRoot()
+        PaginationModule.forRoot(),
+        TabsModule.forRoot()
     ],
     exports: [
         TimeagoModule,
@@ -26,7 +28,8 @@ import { ToastrModule } from 'ngx-toastr';
         NgxSpinnerModule,
         YouTubePlayerModule,
         ToastrModule,
-        PaginationModule
+        PaginationModule,
+        TabsModule
     ]
 })
 export class SharedModule { }

@@ -30,7 +30,7 @@ namespace API.Controllers {
 
         [Authorize]
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<TrackDto>>> GetTracks([FromQuery] PaginationParams paginationParams) {
+        public async Task<ActionResult<IEnumerable<TrackListDto>>> GetTracks([FromQuery] PaginationParams paginationParams) {
             var tracks = await _unitOfWork.TrackRepository.GetTracks(paginationParams);
 
             var discordIdStr = User.GetDiscordId();

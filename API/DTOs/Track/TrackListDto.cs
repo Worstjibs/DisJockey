@@ -1,8 +1,9 @@
+using API.DTOs.Shared;
 using System;
 using System.Collections.Generic;
 
 namespace API.DTOs.Track {
-    public class TrackDto : BaseTrackDto {
+    public class TrackListDto : BaseTrackDto {
         public ICollection<TrackPlayDto> Users { get; set; }
         public ICollection<TrackUserLikeDto> UserLikes { get; set; }
         public int Likes { get; set; }

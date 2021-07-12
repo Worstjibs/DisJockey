@@ -67,17 +67,17 @@ namespace API.Data {
             return await _context.Playlists.AsQueryable().AnyAsync(x => x.YoutubeId == playlistId);
         }
 
-        public async Task<PlaylistDto> GetPlaylistById(int id) {
+        public async Task<PlaylistDetailDto> GetPlaylistById(int id) {
             return await _context.Playlists.AsQueryable()
                 .Where(x => x.Id == id)
-                .ProjectTo<PlaylistDto>(_mapper.ConfigurationProvider)
+                .ProjectTo<PlaylistDetailDto>(_mapper.ConfigurationProvider)
                 .FirstOrDefaultAsync();
         }
 
-        public async Task<PlaylistDto> GetPlaylistByYoutubeId(string youtubeId) {
+        public async Task<PlaylistDetailDto> GetPlaylistByYoutubeId(string youtubeId) {
             return await _context.Playlists.AsQueryable()
                 .Where(x => x.YoutubeId == youtubeId)
-                .ProjectTo<PlaylistDto>(_mapper.ConfigurationProvider)
+                .ProjectTo<PlaylistDetailDto>(_mapper.ConfigurationProvider)
                 .FirstOrDefaultAsync();
         }
     }

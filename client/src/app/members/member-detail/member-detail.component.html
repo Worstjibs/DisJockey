@@ -1,14 +1,39 @@
 <div class="container">
-    <div class="col-4">
-        <div class="card">
-            <div class="card-body">
-                <div class="d-flex flex-column align-items-center text-center">
-                    <img class="rounded-circle" src="{{member.avatarUrl}}" alt="{{member.username}}" />
-                    <div class="mt-3">
-                        <h4>{{member.username}}</h4>
+    <div class="row">
+        <div class="col-3">
+            <div class="card border">
+                <div class="card-img-top text-center">
+                    <div class="p-4">
+                        <div class="card-img-wrapper rounded-circle">
+                            <img class="h-100 w-100" src="{{member.avatarUrl}}" alt="{{member.username}}" />
+                        </div>
+                    </div>
+                    <div id="username" class="border border-secondary d-flex justify-content-center">
+                        <h4 class="my-auto">{{member.username}}</h4>
+                    </div>
+                </div>
+                <div class="card-body p-1">
+                    <div class="d-flex flex-column justify-content-center align-items-center">
+                        <span class="my-1">Date Joined: {{member.dateJoined | date: 'dd MMM yyyy'}}</span>
+                        <span class="my-1">Unique Tracks Played: {{member.tracksPlayed}}</span>
                     </div>
                 </div>
             </div>
+        </div>
+
+        <div class="col-9">
+            <tabset>
+                <tab heading="Playlists">
+                    <app-member-playlists [playlists]="member.playlists">
+                    </app-member-playlists>
+                </tab>
+                <tab heading="Tracks Played">
+                    Tracks Played
+                </tab>
+                <tab heading="Pull Ups">
+                    Pull Ups
+                </tab>
+            </tabset>
         </div>
     </div>
 </div>

@@ -30,10 +30,10 @@ namespace API.Data {
                 .FirstOrDefaultAsync(x => x.YoutubeId == youtubeId);
         }
 
-        public async Task<PagedList<TrackDto>> GetTracks(PaginationParams paginationParams) {
+        public async Task<PagedList<TrackListDto>> GetTracks(PaginationParams paginationParams) {
             var userTracks = _context.Tracks.AsQueryable().AsNoTracking()
                 .Where(x => x.TrackPlays.Count > 0)
-                .ProjectTo<TrackDto>(_mapper.ConfigurationProvider);
+                .ProjectTo<TrackListDto>(_mapper.ConfigurationProvider);
 
             switch (paginationParams.SortBy) {
                 case "title":
@@ -47,7 +47,7 @@ namespace API.Data {
                     break;
             }
 
-            return await PagedList<TrackDto>.CreateAsync(userTracks, paginationParams.PageNumber, paginationParams.PageSize);
+            return await PagedList<TrackListDto>.CreateAsync(userTracks, paginationParams.PageNumber, paginationParams.PageSize);
         }
 
         public void AddTrack(Track track) {

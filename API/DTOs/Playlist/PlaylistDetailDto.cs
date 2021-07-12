@@ -1,13 +1,11 @@
-﻿using API.DTOs.Track;
+﻿using API.DTOs.Shared;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace API.DTOs.Playlist {
-    public class PlaylistDto {
-        public string YoutubeId { get; set; }
-        public string Name { get; set; }
+    public class PlaylistDetailDto : BasePlaylistDto {
         public ICollection<BaseTrackDto> Tracks { get; set; }
     }
 }

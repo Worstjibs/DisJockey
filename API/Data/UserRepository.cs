@@ -27,15 +27,16 @@ namespace API.Data {
                 .FirstOrDefaultAsync(x => x.DiscordId == discordId);
         }
 
-        public async Task<MemberDto> GetMemberByDiscordIdAsync(ulong discordId) {
-            return await _context.Users
-                .ProjectTo<MemberDto>(_mapper.ConfigurationProvider)
-                .FirstOrDefaultAsync(user => user.DiscordId == discordId.ToString());
+        public async Task<MemberDetailDto> GetMemberByDiscordIdAsync(ulong discordId) {
+            return await _context.Users.AsQueryable()
+                .Where(x => x.DiscordId == discordId)
+                .ProjectTo<MemberDetailDto>(_mapper.ConfigurationProvider)
+                .FirstOrDefaultAsync();
         }
 
-        public async Task<IEnumerable<MemberDto>> GetMembersAsync() {
+        public async Task<IEnumerable<MemberListDto>> GetMembersAsync() {
             return await _context.Users
-                .ProjectTo<MemberDto>(_mapper.ConfigurationProvider)
+                .ProjectTo<MemberListDto>(_mapper.ConfigurationProvider)
                 .ToListAsync();
         }
 

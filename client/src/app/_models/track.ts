@@ -2,7 +2,7 @@ import { TrackUser } from "./trackUser";
 
 export interface Track {
     youtubeId: string;
-    users: TrackUser[];
+    users?: TrackUser[];
     createdOn: Date;
     likes: number;
     dislikes: number;

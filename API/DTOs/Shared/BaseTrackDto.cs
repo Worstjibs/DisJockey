@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace API.DTOs.Track {
+namespace API.DTOs.Shared {
     public class BaseTrackDto {
         public string YoutubeId { get; set; }
         public DateTime CreatedOn { get; set; }

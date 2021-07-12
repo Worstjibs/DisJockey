@@ -56,6 +56,30 @@ namespace API.Data {
                 });
 
                 await context.SaveChangesAsync();
+
+                users.ForEach(user => {
+                    user.Playlists = new List<Playlist>();
+
+                    for (int i = 0; i < 5; i++) {
+                        var playlist = new Playlist {
+                            Name = $"{user.UserName}: Playlist {i}",
+                            YoutubeId = $"{user.DiscordId}{i}"
+                        };
+
+                        playlist.Tracks = tracks.Select(t => new PlaylistTrack {
+                            Playlist = playlist,
+                            PlaylistId = playlist.Id,
+                            Track = t,
+                            TrackId = t.Id,
+                            CreatedBy = user,
+                            CreatedOn = DateTime.UtcNow
+                        }).ToList();
+
+                        user.Playlists.Add(playlist);
+                    }
+                });
+
+                await context.SaveChangesAsync();
             }
 
         }

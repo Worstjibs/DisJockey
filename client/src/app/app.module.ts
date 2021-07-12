@@ -15,6 +15,7 @@ import { TrackItemComponent } from './tracks/track-item/track-item.component';
 import { NotFoundComponent } from './errors/not-found/not-found.component';
 import { ServerErrorComponent } from './errors/server-error/server-error.component';
 import { MemberDetailComponent } from './members/member-detail/member-detail.component';
+import { MemberPlaylistsComponent } from './members/member-playlists/member-playlists.component';
 
 
 @NgModule({
@@ -27,7 +28,8 @@ import { MemberDetailComponent } from './members/member-detail/member-detail.com
         TrackItemComponent,
         NotFoundComponent,
         ServerErrorComponent,
-        MemberDetailComponent
+        MemberDetailComponent,
+        MemberPlaylistsComponent
     ],
     imports: [
         BrowserModule,

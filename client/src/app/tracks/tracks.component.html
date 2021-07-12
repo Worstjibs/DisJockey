@@ -28,9 +28,9 @@
                             (trackExpanded)="trackExpanded($event)">
             </app-track-item>
         </div>
-    </div>
 
-    <div class="d-flex justify-content-center" *ngIf="pagination && !noMoreResults">
-        <button class="btn btn-primary my-3" *ngIf="tracks.length > 0" (click)="loadMore()">Load More</button>
+        <div class="d-flex justify-content-center" *ngIf="pagination && !noMoreResults">
+            <button class="btn btn-primary my-3" *ngIf="tracks.length > 0" (click)="loadMore()">Load More</button>
+        </div>
     </div>
 </div>
