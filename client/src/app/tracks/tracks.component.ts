@@ -3,42 +3,36 @@ import { Observable } from 'rxjs';
 import { TracksService } from '../_services/tracks.service';
 import { Track } from '../_models/track';
 import { UserParams } from '../_models/userParams';
-import { Pagination } from '../_models/pagination';
+import { PaginatedResult, Pagination } from '../_models/pagination';
 import { TrackItemComponent } from './track-item/track-item.component';
 import { ToastrService } from 'ngx-toastr';
+import { BaseListComponent } from '../shared/base-list-component';
 
 @Component({
 	selector: 'app-tracks',
 	templateUrl: './tracks.component.html',
 	styleUrls: ['./tracks.component.css']
 })
-export class TracksComponent implements OnInit {
-	tracks: Track[];
-	userParams: UserParams;
-	pagination: Pagination;
-
+export class TracksComponent extends BaseListComponent<Track> implements OnInit {
 	@ViewChildren('trackItem') trackItemComponents: TrackItemComponent[];
 
 	get noMoreResults() {
 		return this.pagination.currentPage == this.pagination.totalPages;
 	}
 
-	constructor(private tracksService: TracksService, private toastr: ToastrService) {
-		this.userParams = tracksService.resetUserParams();
+	constructor(private tracksService: TracksService, private toastr: ToastrService) {       
+        super();
 	}
+    
+    loadServiceData(): Observable<PaginatedResult<Track>> {
+        return this.tracksService.getTracks(this.userParams);
+    }
 
 	ngOnInit(): void {
 		this.userParams = new UserParams();
-		this.tracks = [];
+		this.results = [];
 
-		this.getTracks();
-	}
-
-	getTracks(): void {
-		this.tracksService.getTracks(this.userParams).subscribe(response => {
-			this.pagination = response.pagination;
-			this.tracks = this.tracks.concat(response.result);
-		});
+		this.loadData();
 	}
 
 	likeTrack(event): void {
@@ -69,14 +63,14 @@ export class TracksComponent implements OnInit {
 	sortBy(predicate: string) {
 		this.userParams = new UserParams();
 		this.userParams.sortBy = predicate;
-		this.tracks = [];
+		this.results = [];
 
-		this.getTracks();
+		this.loadData();
 	}
 
 	loadMore(): void {
 		this.userParams.pageNumber++;
 
-		this.getTracks();
+		this.loadData();
 	}
 }

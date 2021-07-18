@@ -7,7 +7,7 @@ import { Track } from "../_models/track";
 export function getPaginatedResult<T>(url, params: HttpParams, http: HttpClient): Observable<PaginatedResult<T>> {
     const paginatedResult = new PaginatedResult<T>();
 
-    return http.get<T>(url, { observe: 'response', params }).pipe(
+    return http.get<T[]>(url, { observe: 'response', params }).pipe(
         map(response => {
             paginatedResult.result = response.body;
 
