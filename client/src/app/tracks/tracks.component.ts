@@ -29,10 +29,7 @@ export class TracksComponent extends BaseListComponent<Track> implements OnInit 
     }
 
 	ngOnInit(): void {
-		this.userParams = new UserParams();
-		this.results = [];
-
-		this.loadData();
+        this.resetUserParams();
 	}
 
 	likeTrack(event): void {
@@ -58,19 +55,5 @@ export class TracksComponent extends BaseListComponent<Track> implements OnInit 
 
 		const requestedTrack = this.trackItemComponents.find(x => x.track.youtubeId == event.youtubeId);
 		requestedTrack.showDetail = true;
-	}
-
-	sortBy(predicate: string) {
-		this.userParams = new UserParams();
-		this.userParams.sortBy = predicate;
-		this.results = [];
-
-		this.loadData();
-	}
-
-	loadMore(): void {
-		this.userParams.pageNumber++;
-
-		this.loadData();
 	}
 }

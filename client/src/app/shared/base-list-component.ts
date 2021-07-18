@@ -7,11 +7,6 @@ export abstract class BaseListComponent<T> {
     pagination: Pagination;
     results: T[];
 
-    constructor() {
-        this.results = [];
-        this.resetUserParams();
-    }
-
     loadData(): void {
         this.loadServiceData().subscribe((response: PaginatedResult<T>) => {
             this.pagination = response.pagination;
@@ -19,8 +14,29 @@ export abstract class BaseListComponent<T> {
         });
     }
 
-    resetUserParams(): void {
-        this.userParams = new UserParams();
+    resetUserParams(userParams?: UserParams): void {
+        if (userParams) {
+            this.userParams = userParams;
+        } else {
+            this.userParams = new UserParams();
+        }        
+
+        this.results = [];
+
+        this.loadData();
+    }
+
+    sortBy(predicate: string): void {
+        let userParams = new UserParams();
+        userParams.sortBy = predicate;
+
+        this.resetUserParams(userParams);
+    }
+
+    loadMore(): void {
+        this.userParams.pageNumber++;
+
+        this.loadData();
     }
 
     abstract loadServiceData(): Observable<PaginatedResult<T>>;
