@@ -1,4 +1,4 @@
-<div id="playlist-container" *ngIf="playlists" class="row border rounded">
+<div id="playlist-container" *ngIf="playlists" class="row border border-primary rounded">
     <ul id="playlist-list" class="list-group col-3">
         <li class="list-group-item"
             [ngClass]="{'active': selectedPlaylist === playlist && !addPlaylistEnabled}"
@@ -11,8 +11,22 @@
     </ul>
 
     <div id="playlist-tracks" class="col-9 list-group ">
-        <ul class="p-0 m-0" *ngIf="!addPlaylistEnabled">
-            <li class="list-group-item" *ngFor="let track of selectedPlaylist?.tracks">{{track.title}}</li>
+        <ul *ngIf="!addPlaylistEnabled">
+            <li class="list-group-item border border-primary" *ngFor="let track of selectedPlaylist?.tracks">
+                <div class="row">
+                    <div class="col-3">
+                        <img class="img-fluid" src="{{track.smallThumbnail}}" alt="">
+                    </div>
+                    <div class="col-7">
+                        <h5>{{track.title}}</h5>
+                        <h6>{{track.channelTitle}}</h6>
+                    </div>
+                    <div id="play-buttons" class="col-2 d-flex flex-column justify-content-around">
+                        <button (click)="playTrack(track)" class="btn btn-sm btn-success">Play</button>
+                        <button (click)="queueTrack(track)" class="btn btn-sm btn-info">Queue</button>
+                    </div>
+                </div>
+            </li>
         </ul>
 
         <div class="m-2 text-center" *ngIf="addPlaylistEnabled">

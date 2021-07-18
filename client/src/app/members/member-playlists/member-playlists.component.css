@@ -9,6 +9,18 @@
         border-radius: 0;
     }
 
-#playlist-list {
-    border-top-left-radius: 0.25rem !important;
+    
+
+#play-buttons button {
+    opacity: 0;
+    transition: opacity 0.2s ease-in-out;
+}
+
+#playlist-tracks ul {
+    margin: 0;
+    padding: 0
+}
+
+#playlist-tracks li:hover #play-buttons button {
+    opacity: 1;
 }

@@ -24,8 +24,14 @@ namespace API.Controllers {
         }
 
         [HttpGet("{discordId}")]
-        public async Task<ActionResult<MemberListDto>> GetMemberByUsername(ulong discordId) {
-            return await _unitOfWork.UserRepository.GetMemberByDiscordIdAsync(discordId);
+        public async Task<ActionResult<MemberDetailDto>> GetMemberByDiscordId(ulong discordId) {
+            var user = await _unitOfWork.UserRepository.GetMemberByDiscordIdAsync(discordId);
+
+            if (user == null) {
+                return NotFound();
+            }
+
+            return user;
         }
     }
 }

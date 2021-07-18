@@ -58,7 +58,9 @@ export class TracksService {
         }
 
         return this.http.post(this.baseUrl + '/play', trackPlayDto).subscribe(() => {
-            this.toastr.success(`${track.title} is now playing`);
+            const message = playNow ? "is now playing" : "has been queued";
+
+            this.toastr.success(`${track.title} ${message}`);
         });
     }
 

@@ -1,5 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { map, take } from 'rxjs/operators';
+import { Track } from 'src/app/_models/track';
+import { TracksService } from 'src/app/_services/tracks.service';
 import { Playlist } from '../../_models/playlist';
 import { AccountService } from '../../_services/account.service';
 import { PlaylistsService } from '../../_services/playlists.service';
@@ -18,7 +20,8 @@ export class MemberPlaylistsComponent implements OnInit {
 
 	constructor(
 		private readonly playlistsService: PlaylistsService,
-		private readonly accountService: AccountService
+		private readonly accountService: AccountService,
+        private readonly tracksService: TracksService
 	) { }
 
 	isCurrentUser() {
@@ -70,5 +73,13 @@ export class MemberPlaylistsComponent implements OnInit {
 			}
 		});
 	}
+
+    playTrack(track: Track) {
+        this.tracksService.playTrack(track, true);
+    }    
+
+    queueTrack(track: Track) {
+        this.tracksService.playTrack(track, false);
+    }
 
 }
