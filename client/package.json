@@ -23,7 +23,7 @@
     "@angular/youtube-player": "^11.0.3",
     "@fortawesome/fontawesome-free": "^5.15.2",
     "@schematics/angular": "^12.1.1",
-    "bootstrap": "^4.1.1",
+    "bootstrap": "^4.6.0",
     "bootswatch": "^4.5.3",
     "ngx-bootstrap": "^6.2.0",
     "ngx-spinner": "^10.0.1",
