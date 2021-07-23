@@ -1,5 +1,5 @@
 ﻿using API.DTOs.Playlist;
-using API.Entities;
+using DisJockey.Core;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 

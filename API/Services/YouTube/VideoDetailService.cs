@@ -1,7 +1,7 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using API.Entities;
+using DisJockey.Core;
 using API.Helpers;
 using API.Interfaces;
 using Google.Apis.Services;
@@ -76,7 +76,7 @@ namespace API.Services.YouTube {
             throw new Exception("Invalid Youtube Id");
         }
 
-        private void ProcessTracks(Playlist playlist, IList<GoogleData.PlaylistItem> playlistItems) {
+        private static void ProcessTracks(Playlist playlist, IList<GoogleData.PlaylistItem> playlistItems) {
             var playlistTracks = playlistItems.Select(x => new PlaylistTrack {
                 CreatedOn = DateTime.UtcNow,
                 Playlist = playlist,

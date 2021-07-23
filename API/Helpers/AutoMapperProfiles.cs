@@ -6,7 +6,7 @@ using API.DTOs.Member;
 using API.DTOs.Playlist;
 using API.DTOs.Shared;
 using API.DTOs.Track;
-using API.Entities;
+using DisJockey.Core;
 using API.Interfaces;
 using AutoMapper;
 

@@ -1,6 +1,6 @@
 using System.Linq;
 using System.Threading.Tasks;
-using API.Entities;
+using DisJockey.Core;
 using API.Interfaces;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
@@ -35,17 +35,11 @@ namespace API.Data {
                 .Where(x => x.TrackPlays.Count > 0)
                 .ProjectTo<TrackListDto>(_mapper.ConfigurationProvider);
 
-            switch (paginationParams.SortBy) {
-                case "title":
-                    userTracks = userTracks.OrderBy(x => x.Title);
-                    break;
-                case "firstPlayed":
-                    userTracks = userTracks.OrderBy(x => x.LastPlayed);
-                    break;
-                default:
-                    userTracks = userTracks.OrderByDescending(x => x.LastPlayed);
-                    break;
-            }
+            userTracks = paginationParams.SortBy switch {
+                "title" => userTracks.OrderBy(x => x.Title),
+                "firstPlayed" => userTracks.OrderBy(x => x.LastPlayed),
+                _ => userTracks.OrderByDescending(x => x.LastPlayed),
+            };
 
             return await PagedList<TrackListDto>.CreateAsync(userTracks, paginationParams.PageNumber, paginationParams.PageSize);
         }

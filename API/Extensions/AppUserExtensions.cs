@@ -1,4 +1,4 @@
-using API.Entities;
+using DisJockey.Core;
 using Discord.WebSocket;
 
 namespace API.Extensions {

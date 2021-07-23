@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using API.DTOs;
-using API.Entities;
+using DisJockey.Core;
 using API.Extensions;
 using API.Interfaces;
 using Microsoft.AspNetCore.Authorization;
@@ -16,14 +16,12 @@ using API.DTOs.Track;
 namespace API.Controllers {
     public class TracksController : BaseApiController {
         private readonly IUnitOfWork _unitOfWork;
-        private readonly IVideoDetailService _videoService;
         private readonly DiscordSocketClient _client;
         private readonly MusicService _musicService;
 
-        public TracksController(IUnitOfWork unitOfWork, IVideoDetailService videoDetailService, DiscordSocketClient client,
+        public TracksController(IUnitOfWork unitOfWork, DiscordSocketClient client,
             MusicService musicService) {
             _musicService = musicService;
-            _videoService = videoDetailService;
             _unitOfWork = unitOfWork;
             _client = client;
         }
@@ -34,12 +32,13 @@ namespace API.Controllers {
             var tracks = await _unitOfWork.TrackRepository.GetTracks(paginationParams);
 
             var discordIdStr = User.GetDiscordId();
-            ulong.TryParse(discordIdStr, out ulong discordId);
 
-            // Set Liked Flag on Tracks
-            foreach (var track in tracks) {
-                track.LikedByUser = track.UserLikes.FirstOrDefault(user => user.DiscordId == discordId)?.Liked; ;
-            }
+            if (ulong.TryParse(discordIdStr, out ulong discordId)) {
+                // Set Liked Flag on Tracks
+                foreach (var track in tracks) {
+                    track.LikedByUser = track.UserLikes.FirstOrDefault(user => user.DiscordId == discordId)?.Liked; ;
+                }
+            }            
 
             Response.AddPaginationHeader(tracks.CurrentPage, tracks.ItemsPerPage, tracks.TotalPages, tracks.TotalCount);
 
@@ -55,9 +54,7 @@ namespace API.Controllers {
 
             var discordIdStr = User.GetDiscordId();
 
-            ulong discordId;
-            var parsed = ulong.TryParse(discordIdStr, out discordId);
-
+            var parsed = ulong.TryParse(discordIdStr, out ulong discordId);
             if (!parsed) {
                 return BadRequest("Invalid Discord Id");
             }
@@ -92,14 +89,16 @@ namespace API.Controllers {
 
             if (track == null) return NotFound("Track with YoutubeId " + trackPlayDto.YoutubeId + "Not Found");
 
-            ulong.TryParse(User.GetDiscordId(), out ulong discordId);
+            if (!ulong.TryParse(User.GetDiscordId(), out ulong discordId)) {
+                return BadRequest("Invalid DiscordId, contact an administrator");
+            }
 
             var user = _client.GetUser(discordId);
 
             if (user != null) {
                 var guild = user.MutualGuilds.FirstOrDefault();
 
-                var message = await _musicService.PlayTrack("https://youtu.be/" + track.YoutubeId, user, guild, trackPlayDto.PlayNow);
+                await _musicService.PlayTrack("https://youtu.be/" + track.YoutubeId, user, guild, trackPlayDto.PlayNow);
                 return Ok();
             } else {
                 return BadRequest("You must be connected to a Voice channel to play a track");

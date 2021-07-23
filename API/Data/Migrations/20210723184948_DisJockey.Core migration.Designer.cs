@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace API.Data.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20210622182709_CreatedOn TrackPlayHistory")]
-    partial class CreatedOnTrackPlayHistory
+    [Migration("20210723184948_DisJockey.Core migration")]
+    partial class DisJockeyCoremigration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -21,7 +21,7 @@ namespace API.Data.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("ProductVersion", "5.0.4");
 
-            modelBuilder.Entity("API.Entities.AppUser", b =>
+            modelBuilder.Entity("DisJockey.Core.AppUser", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -45,22 +45,30 @@ namespace API.Data.Migrations
                     b.ToTable("Users");
                 });
 
-            modelBuilder.Entity("API.Entities.Playlist", b =>
+            modelBuilder.Entity("DisJockey.Core.Playlist", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .UseIdentityColumn();
 
+                    b.Property<int?>("AppUserId")
+                        .HasColumnType("int");
+
                     b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("YoutubeId")
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
+                    b.HasIndex("AppUserId");
+
                     b.ToTable("Playlists");
                 });
 
-            modelBuilder.Entity("API.Entities.PlaylistTrack", b =>
+            modelBuilder.Entity("DisJockey.Core.PlaylistTrack", b =>
                 {
                     b.Property<int>("TrackId")
                         .HasColumnType("int");
@@ -83,7 +91,7 @@ namespace API.Data.Migrations
                     b.ToTable("PlaylistTracks");
                 });
 
-            modelBuilder.Entity("API.Entities.PullUp", b =>
+            modelBuilder.Entity("DisJockey.Core.PullUp", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -111,7 +119,7 @@ namespace API.Data.Migrations
                     b.ToTable("PullUps");
                 });
 
-            modelBuilder.Entity("API.Entities.Track", b =>
+            modelBuilder.Entity("DisJockey.Core.Track", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -147,7 +155,7 @@ namespace API.Data.Migrations
                     b.ToTable("Tracks");
                 });
 
-            modelBuilder.Entity("API.Entities.TrackLike", b =>
+            modelBuilder.Entity("DisJockey.Core.TrackLike", b =>
                 {
                     b.Property<int>("UserId")
                         .HasColumnType("int");
@@ -165,7 +173,7 @@ namespace API.Data.Migrations
                     b.ToTable("TrackLikes");
                 });
 
-            modelBuilder.Entity("API.Entities.TrackPlay", b =>
+            modelBuilder.Entity("DisJockey.Core.TrackPlay", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -176,6 +184,9 @@ namespace API.Data.Migrations
                         .HasColumnType("int");
 
                     b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("LastPlayed")
                         .HasColumnType("datetime2");
 
                     b.Property<int>("TrackId")
@@ -190,7 +201,7 @@ namespace API.Data.Migrations
                     b.ToTable("TrackPlays");
                 });
 
-            modelBuilder.Entity("API.Entities.TrackPlayHistory", b =>
+            modelBuilder.Entity("DisJockey.Core.TrackPlayHistory", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -210,19 +221,26 @@ namespace API.Data.Migrations
                     b.ToTable("TrackPlayHistory");
                 });
 
-            modelBuilder.Entity("API.Entities.PlaylistTrack", b =>
+            modelBuilder.Entity("DisJockey.Core.Playlist", b =>
                 {
-                    b.HasOne("API.Entities.AppUser", "CreatedBy")
+                    b.HasOne("DisJockey.Core.AppUser", null)
+                        .WithMany("Playlists")
+                        .HasForeignKey("AppUserId");
+                });
+
+            modelBuilder.Entity("DisJockey.Core.PlaylistTrack", b =>
+                {
+                    b.HasOne("DisJockey.Core.AppUser", "CreatedBy")
                         .WithMany()
                         .HasForeignKey("CreatedById");
 
-                    b.HasOne("API.Entities.Playlist", "Playlist")
+                    b.HasOne("DisJockey.Core.Playlist", "Playlist")
                         .WithMany("Tracks")
                         .HasForeignKey("PlaylistId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("API.Entities.Track", "Track")
+                    b.HasOne("DisJockey.Core.Track", "Track")
                         .WithMany("Playlists")
                         .HasForeignKey("TrackId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -235,15 +253,15 @@ namespace API.Data.Migrations
                     b.Navigation("Track");
                 });
 
-            modelBuilder.Entity("API.Entities.PullUp", b =>
+            modelBuilder.Entity("DisJockey.Core.PullUp", b =>
                 {
-                    b.HasOne("API.Entities.Track", "Track")
+                    b.HasOne("DisJockey.Core.Track", "Track")
                         .WithMany("PullUps")
                         .HasForeignKey("TrackId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("API.Entities.AppUser", "User")
+                    b.HasOne("DisJockey.Core.AppUser", "User")
                         .WithMany("PullUps")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -254,15 +272,15 @@ namespace API.Data.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("API.Entities.TrackLike", b =>
+            modelBuilder.Entity("DisJockey.Core.TrackLike", b =>
                 {
-                    b.HasOne("API.Entities.Track", "Track")
+                    b.HasOne("DisJockey.Core.Track", "Track")
                         .WithMany("Likes")
                         .HasForeignKey("TrackId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("API.Entities.AppUser", "User")
+                    b.HasOne("DisJockey.Core.AppUser", "User")
                         .WithMany("Likes")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -273,15 +291,15 @@ namespace API.Data.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("API.Entities.TrackPlay", b =>
+            modelBuilder.Entity("DisJockey.Core.TrackPlay", b =>
                 {
-                    b.HasOne("API.Entities.AppUser", "User")
+                    b.HasOne("DisJockey.Core.AppUser", "User")
                         .WithMany("Tracks")
                         .HasForeignKey("AppUserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("API.Entities.Track", "Track")
+                    b.HasOne("DisJockey.Core.Track", "Track")
                         .WithMany("TrackPlays")
                         .HasForeignKey("TrackId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -292,30 +310,32 @@ namespace API.Data.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("API.Entities.TrackPlayHistory", b =>
+            modelBuilder.Entity("DisJockey.Core.TrackPlayHistory", b =>
                 {
-                    b.HasOne("API.Entities.TrackPlay", "TrackPlay")
+                    b.HasOne("DisJockey.Core.TrackPlay", "TrackPlay")
                         .WithMany("TrackPlayHistory")
                         .HasForeignKey("TrackPlayId");
 
                     b.Navigation("TrackPlay");
                 });
 
-            modelBuilder.Entity("API.Entities.AppUser", b =>
+            modelBuilder.Entity("DisJockey.Core.AppUser", b =>
                 {
                     b.Navigation("Likes");
+
+                    b.Navigation("Playlists");
 
                     b.Navigation("PullUps");
 
                     b.Navigation("Tracks");
                 });
 
-            modelBuilder.Entity("API.Entities.Playlist", b =>
+            modelBuilder.Entity("DisJockey.Core.Playlist", b =>
                 {
                     b.Navigation("Tracks");
                 });
 
-            modelBuilder.Entity("API.Entities.Track", b =>
+            modelBuilder.Entity("DisJockey.Core.Track", b =>
                 {
                     b.Navigation("Likes");
 
@@ -326,7 +346,7 @@ namespace API.Data.Migrations
                     b.Navigation("TrackPlays");
                 });
 
-            modelBuilder.Entity("API.Entities.TrackPlay", b =>
+            modelBuilder.Entity("DisJockey.Core.TrackPlay", b =>
                 {
                     b.Navigation("TrackPlayHistory");
                 });

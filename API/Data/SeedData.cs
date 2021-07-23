@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using API.Entities;
+using DisJockey.Core;
 
 namespace API.Data
 {

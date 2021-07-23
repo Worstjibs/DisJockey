@@ -1,5 +1,5 @@
 using System.Threading.Tasks;
-using API.Entities;
+using DisJockey.Core;
 
 namespace API.Interfaces {
     public interface IVideoDetailService {

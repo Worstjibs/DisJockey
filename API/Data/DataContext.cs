@@ -1,5 +1,5 @@
 using System;
-using API.Entities;
+using DisJockey.Core;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;

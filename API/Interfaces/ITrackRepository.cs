@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using API.Helpers;
-using API.Entities;
+using DisJockey.Core;
 using API.DTOs.Track;
 
 namespace API.Interfaces {

@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using API.DTOs.Member;
-using API.Entities;
+using DisJockey.Core;
 using API.Interfaces;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;

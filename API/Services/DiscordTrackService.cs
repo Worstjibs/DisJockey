@@ -2,7 +2,7 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using API.Exceptions;
-using API.Entities;
+using DisJockey.Core;
 using API.Interfaces;
 using Microsoft.AspNetCore.WebUtilities;
 using Discord.WebSocket;
@@ -14,9 +14,8 @@ namespace API.Services {
     public class DiscordTrackService : IDiscordTrackService {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IVideoDetailService _videoService;
-        private readonly MusicService _musicService;
-        public DiscordTrackService(IUnitOfWork unitOfWork, IVideoDetailService videoService, MusicService musicService) {
-            _musicService = musicService;
+
+        public DiscordTrackService(IUnitOfWork unitOfWork, IVideoDetailService videoService) {
             _videoService = videoService;
             _unitOfWork = unitOfWork;
         }
@@ -125,19 +124,9 @@ namespace API.Services {
             }
         }
 
-        private AppUser CreateAppUser(SocketUser discordUser) {
-            var user = new AppUser {
-                DiscordId = discordUser.Id,
-                UserName = discordUser.Username,
-                AvatarUrl = discordUser.GetAvatarUrl(),
-                Tracks = new List<TrackPlay>()
-            };
-            return user;
-        }
-
-        public string GetYouTubeId(string url) {
+        private static string GetYouTubeId(string url) {
             try {
-                Uri uri = new Uri(url);
+                Uri uri = new(url);
 
                 if (uri == null) return null;
 
@@ -155,6 +144,16 @@ namespace API.Services {
             } catch {
                 throw new Exception("Something went wrong");
             }
+        }
+
+        private static AppUser CreateAppUser(SocketUser discordUser) {
+            var user = new AppUser {
+                DiscordId = discordUser.Id,
+                UserName = discordUser.Username,
+                AvatarUrl = discordUser.GetAvatarUrl(),
+                Tracks = new List<TrackPlay>()
+            };
+            return user;
         }
     }
 }
