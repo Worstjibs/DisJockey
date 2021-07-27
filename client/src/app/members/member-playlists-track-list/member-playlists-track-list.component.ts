@@ -13,7 +13,7 @@ import { TracksService } from '../../_services/tracks.service';
 	templateUrl: './member-playlists-track-list.component.html',
 	styleUrls: ['./member-playlists-track-list.component.css']
 })
-export class MemberPlaylistsTrackListComponent extends BaseListComponent<Track> implements OnInit {
+export class MemberPlaylistsTrackListComponent extends BaseListComponent<Track> {
 	private _playlist: Playlist;
 
 	@Input()
@@ -29,10 +29,6 @@ export class MemberPlaylistsTrackListComponent extends BaseListComponent<Track> 
 		private readonly tracksService: TracksService
 	) {
 		super();
-	}
-
-	ngOnInit(): void {
-		//this.resetUserParams();
 	}
 
 	playTrack(track: Track) {
