@@ -20,7 +20,6 @@
     "@angular/platform-browser": "~11.2.10",
     "@angular/platform-browser-dynamic": "~11.2.10",
     "@angular/router": "~11.2.10",
-    "@angular/youtube-player": "^11.0.3",
     "@fortawesome/fontawesome-free": "^5.15.2",
     "@schematics/angular": "^12.1.1",
     "bootstrap": "^4.6.0",

@@ -5,7 +5,6 @@ import { PaginationModule } from 'ngx-bootstrap/pagination';
 import { TabsModule } from 'ngx-bootstrap/tabs';
 import { TimeagoModule } from 'ngx-timeago';
 import { NgxSpinnerModule } from 'ngx-spinner';
-import { YouTubePlayerModule } from '@angular/youtube-player';
 import { ToastrModule } from 'ngx-toastr';
 import { FormsModule } from '@angular/forms';
 
@@ -16,7 +15,6 @@ import { FormsModule } from '@angular/forms';
         TimeagoModule.forRoot(),
         BsDropdownModule.forRoot(),
         NgxSpinnerModule,
-        YouTubePlayerModule,
         ToastrModule.forRoot({
             positionClass: 'toast-bottom-right'
         }),
@@ -28,7 +26,6 @@ import { FormsModule } from '@angular/forms';
         TimeagoModule,
         BsDropdownModule,
         NgxSpinnerModule,
-        YouTubePlayerModule,
         ToastrModule,
         PaginationModule,
         TabsModule,
