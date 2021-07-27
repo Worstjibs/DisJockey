@@ -16,11 +16,7 @@ import { BaseListComponent } from '../shared/base-list-component';
 export class TracksComponent extends BaseListComponent<Track> implements OnInit {
 	@ViewChildren('trackItem') trackItemComponents: TrackItemComponent[];
 
-	get noMoreResults() {
-		return this.pagination.currentPage == this.pagination.totalPages;
-	}
-
-	constructor(private tracksService: TracksService, private toastr: ToastrService) {       
+	constructor(private tracksService: TracksService) {       
         super();
 	}
     

@@ -7,6 +7,10 @@ export abstract class BaseListComponent<T> {
     pagination: Pagination;
     results: T[];
 
+    get noMoreResults() {
+        return this.pagination.currentPage == this.pagination.totalPages;
+    }
+
     loadData(): void {
         this.loadServiceData().subscribe((response: PaginatedResult<T>) => {
             this.pagination = response.pagination;

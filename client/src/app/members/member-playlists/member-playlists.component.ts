@@ -1,10 +1,11 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, ViewChild } from '@angular/core';
 import { map, take } from 'rxjs/operators';
 import { Track } from 'src/app/_models/track';
 import { TracksService } from 'src/app/_services/tracks.service';
 import { Playlist } from '../../_models/playlist';
 import { AccountService } from '../../_services/account.service';
 import { PlaylistsService } from '../../_services/playlists.service';
+import { MemberPlaylistsTrackListComponent } from '../member-playlists-track-list/member-playlists-track-list.component';
 
 @Component({
 	selector: 'app-member-playlists',
@@ -17,6 +18,8 @@ export class MemberPlaylistsComponent implements OnInit {
 	selectedPlaylist: Playlist;
 
 	addPlaylistEnabled: boolean;
+
+	@ViewChild('playlistTrackList') playlistTrackComponent: MemberPlaylistsTrackListComponent;
 
 	constructor(
 		private readonly playlistsService: PlaylistsService,
@@ -32,19 +35,9 @@ export class MemberPlaylistsComponent implements OnInit {
 		if (this.playlists.length > 0) {
 			this.addPlaylistEnabled = false;
 			this.selectedPlaylist = this.playlists[0]
-			this.getPlaylist(this.selectedPlaylist);
 		} else {
 			this.addPlaylistEnabled = true;
 			this.playlists = [];
-		}
-	}
-
-	getPlaylist(playlist: Playlist): void {
-		if (!playlist.tracks) {
-			this.playlistsService.getPlaylistByYoutubeId(playlist.youtubeId)
-				.subscribe((response: Playlist) => {
-					this.selectedPlaylist.tracks = response.tracks;
-				});
 		}
 	}
 
@@ -56,7 +49,6 @@ export class MemberPlaylistsComponent implements OnInit {
 		}
 
 		this.selectedPlaylist = playlist;
-		this.getPlaylist(this.selectedPlaylist);
 	}
 
 	enableAddMode() {

@@ -14,6 +14,7 @@ using DisJockey.Services.Interfaces;
 using DisJockey.Shared.Helpers;
 
 namespace DisJockey.Controllers {
+    [Authorize]
     public class TracksController : BaseApiController {
         private readonly IUnitOfWork _unitOfWork;
         private readonly DiscordSocketClient _client;
@@ -26,7 +27,6 @@ namespace DisJockey.Controllers {
             _client = client;
         }
 
-        [Authorize]
         [HttpGet]
         public async Task<ActionResult<IEnumerable<TrackListDto>>> GetTracks([FromQuery] PaginationParams paginationParams) {
             var tracks = await _unitOfWork.TrackRepository.GetTracks(paginationParams);
@@ -45,7 +45,6 @@ namespace DisJockey.Controllers {
             return Ok(tracks);
         }
 
-        [Authorize]
         [HttpPost("like")]
         public async Task<ActionResult> LikeTrack(TrackLikeAddDto trackLikeDto) {
             var track = await _unitOfWork.TrackRepository.GetTrackByYoutubeIdAsync(trackLikeDto.YoutubeId);
@@ -82,7 +81,6 @@ namespace DisJockey.Controllers {
             return BadRequest("Error saving like");
         }
 
-        [Authorize]
         [HttpPost("play")]
         public async Task<ActionResult> PlayTrack(TrackPlayRequestDto trackPlayDto) {
             var track = await _unitOfWork.TrackRepository.GetTrackByYoutubeIdAsync(trackPlayDto.YoutubeId);

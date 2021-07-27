@@ -4,29 +4,17 @@
             [ngClass]="{'active': selectedPlaylist === playlist && !addPlaylistEnabled}"
             *ngFor="let playlist of playlists"
             (click)="playlistClicked(playlist)">{{playlist.name}}</li>
-        <li class="list-group-item" 
-            *ngIf="(isCurrentUser() | async)" 
+        <li class="list-group-item"
+            *ngIf="(isCurrentUser() | async)"
             (click)="enableAddMode()"
             [ngClass]="{'active': addPlaylistEnabled}">Add Playlist</li>
     </ul>
 
     <div id="playlist-tracks" class="col-9 list-group ">
         <ul *ngIf="!addPlaylistEnabled">
-            <li class="list-group-item border border-primary" *ngFor="let track of selectedPlaylist?.tracks">
-                <div class="row">
-                    <div class="col-3">
-                        <img class="img-fluid" src="{{track.smallThumbnail}}" alt="">
-                    </div>
-                    <div class="col-7">
-                        <h5>{{track.title}}</h5>
-                        <h6>{{track.channelTitle}}</h6>
-                    </div>
-                    <div id="play-buttons" class="col-2 d-flex flex-column justify-content-around">
-                        <button (click)="playTrack(track)" class="btn btn-sm btn-success">Play</button>
-                        <button (click)="queueTrack(track)" class="btn btn-sm btn-info">Queue</button>
-                    </div>
-                </div>
-            </li>
+            <app-member-playlists-track-list [playlist]="selectedPlaylist"
+                                             #playlistTrackList>
+            </app-member-playlists-track-list>
         </ul>
 
         <div class="m-2 text-center" *ngIf="addPlaylistEnabled">

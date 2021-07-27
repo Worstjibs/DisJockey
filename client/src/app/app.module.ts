@@ -16,6 +16,7 @@ import { NotFoundComponent } from './errors/not-found/not-found.component';
 import { ServerErrorComponent } from './errors/server-error/server-error.component';
 import { MemberDetailComponent } from './members/member-detail/member-detail.component';
 import { MemberPlaylistsComponent } from './members/member-playlists/member-playlists.component';
+import { MemberPlaylistsTrackListComponent } from './members/member-playlists-track-list/member-playlists-track-list.component';
 
 
 @NgModule({
@@ -29,7 +30,8 @@ import { MemberPlaylistsComponent } from './members/member-playlists/member-play
         NotFoundComponent,
         ServerErrorComponent,
         MemberDetailComponent,
-        MemberPlaylistsComponent
+        MemberPlaylistsComponent,
+        MemberPlaylistsTrackListComponent
     ],
     imports: [
         BrowserModule,

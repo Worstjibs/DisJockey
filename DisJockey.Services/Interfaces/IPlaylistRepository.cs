@@ -1,14 +1,14 @@
-﻿using DisJockey.Shared.DTOs.Playlist;
-using DisJockey.Core;
+﻿using DisJockey.Core;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using DisJockey.Shared.Helpers;
+using DisJockey.Shared.DTOs.Shared;
 
 namespace DisJockey.Services.Interfaces {
     public interface IPlaylistRepository {
         Task<Playlist> AddPlaylist(Playlist playlist, AppUser user);
         Task AddMissingTracks(IList<PlaylistTrack> playlistTracks);
-        Task<PlaylistDetailDto> GetPlaylistById(int id);
-        Task<PlaylistDetailDto> GetPlaylistByYoutubeId(string youtubeId);
+        Task<PagedList<BaseTrackDto>> GetPlaylistTracks(PaginationParams paginationParams, string youtubeId);
         Task<bool> CheckPlaylistExists(string playlistId);
     }
 }

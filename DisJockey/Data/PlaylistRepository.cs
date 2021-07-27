@@ -8,6 +8,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using DisJockey.Services.Interfaces;
+using DisJockey.Shared.DTOs.Shared;
+using DisJockey.Shared.Helpers;
 
 namespace DisJockey.Data {
     public class PlaylistRepository : IPlaylistRepository {
@@ -67,18 +69,13 @@ namespace DisJockey.Data {
             return await _context.Playlists.AsQueryable().AnyAsync(x => x.YoutubeId == playlistId);
         }
 
-        public async Task<PlaylistDetailDto> GetPlaylistById(int id) {
-            return await _context.Playlists.AsQueryable()
-                .Where(x => x.Id == id)
-                .ProjectTo<PlaylistDetailDto>(_mapper.ConfigurationProvider)
-                .FirstOrDefaultAsync();
-        }
+        public async Task<PagedList<BaseTrackDto>> GetPlaylistTracks(PaginationParams paginationParams, string youtubeId) {
+            var source = _context.PlaylistTracks.AsNoTracking()
+                .Where(x => x.Playlist.YoutubeId == youtubeId)
+                .ProjectTo<BaseTrackDto>(_mapper.ConfigurationProvider)
+                .OrderBy(x => x.Title);
 
-        public async Task<PlaylistDetailDto> GetPlaylistByYoutubeId(string youtubeId) {
-            return await _context.Playlists.AsQueryable()
-                .Where(x => x.YoutubeId == youtubeId)
-                .ProjectTo<PlaylistDetailDto>(_mapper.ConfigurationProvider)
-                .FirstOrDefaultAsync();
+            return await PagedList<BaseTrackDto>.CreateAsync(source, paginationParams.PageNumber, paginationParams.PageSize);
         }
     }
 }
