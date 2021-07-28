@@ -1,1 +1,17 @@
 /* You can add global styles to this file, and also import other style files */
+
+.tab-container {
+    border-color: #444 !important;
+    height: 70vh;
+}
+
+.tab-container .list-group {
+    padding: 0 !important;
+    height: 100%;
+    overflow: auto;
+    border-radius: 0;
+} 
+
+.nav-tabs {
+    border-bottom: 0 !important;
+}

@@ -1,36 +1,27 @@
-<div class="container">
-    <div class="d-flex justify-content-between">
-        <form class="form-inline">
-            <div class="form-group">
-                <input class="form-control mr-2" type="text" id="track-search" placeholder="Search">
-            </div>
-            <div class="form-group">
-                <button class="btn btn-primary" type="submit">Search</button>
-            </div>
-        </form>
+<div class="d-flex justify-content-between">
+    <h3>Tracks played on DisJockey</h3>
 
-        <div dropdown class="btn-group">
-            <button dropdownToggle class="btn btn-primary dropdown-toggle" type="button">Sort By</button>
-            <ul class="dropdown-menu dropdown-menu-right" *dropdownMenu>
-                <li class="dropdown-item" (click)="sortBy('lastPlayed')">Last Played</li>
-                <li class="dropdown-item" (click)="sortBy('firstPlayed')">First Played</li>
-                <li class="dropdown-item" (click)="sortBy('title')">Track Title</li>
-            </ul>
-        </div>
+    <div dropdown class="btn-group">
+        <button dropdownToggle class="btn btn-primary dropdown-toggle" type="button">Sort By</button>
+        <ul class="dropdown-menu dropdown-menu-right" *dropdownMenu>
+            <li class="dropdown-item" (click)="sortBy('lastPlayed')">Last Played</li>
+            <li class="dropdown-item" (click)="sortBy('firstPlayed')">First Played</li>
+            <li class="dropdown-item" (click)="sortBy('title')">Track Title</li>
+        </ul>
+    </div>
+</div>
+
+<div class="my-2" id="scrollable-list">
+    <div *ngFor="let track of results">
+        <app-track-item #trackItem
+                        [track]="track"
+                        (trackLiked)="likeTrack($event)"
+                        (trackPlayed)="playTrack($event)"
+                        (trackExpanded)="trackExpanded($event)">
+        </app-track-item>
     </div>
 
-    <div class="my-2" id="scrollable-list">
-        <div *ngFor="let track of results">
-            <app-track-item #trackItem
-                            [track]="track"
-                            (trackLiked)="likeTrack($event)"
-                            (trackPlayed)="playTrack($event)"
-                            (trackExpanded)="trackExpanded($event)">
-            </app-track-item>
-        </div>
-
-        <div class="d-flex justify-content-center" *ngIf="pagination && !noMoreResults">
-            <button class="btn btn-primary my-3" *ngIf="results.length > 0" (click)="loadMore()">Load More</button>
-        </div>
+    <div class="d-flex justify-content-center" *ngIf="pagination && !noMoreResults">
+        <button class="btn btn-primary my-3" *ngIf="results.length > 0" (click)="loadMore()">Load More</button>
     </div>
 </div>

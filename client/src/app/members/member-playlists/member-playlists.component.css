@@ -1,15 +1,4 @@
-#playlist-container {
-    height: 70vh;
-}
-
-    #playlist-container .list-group {
-        padding: 0;
-        height: 100%;
-        overflow: auto;
-        border-radius: 0;
-    }
-
-    
+   
 
 #play-buttons button {
     opacity: 0;

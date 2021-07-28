@@ -1,4 +1,4 @@
-<div id="playlist-container" *ngIf="playlists" class="row border border-primary rounded">
+<div id="playlist-container" *ngIf="playlists" class="tab-container row border rounded">
     <ul id="playlist-list" class="list-group col-3">
         <li class="list-group-item"
             [ngClass]="{'active': selectedPlaylist === playlist && !addPlaylistEnabled}"
@@ -10,7 +10,7 @@
             [ngClass]="{'active': addPlaylistEnabled}">Add Playlist</li>
     </ul>
 
-    <div id="playlist-tracks" class="col-9 list-group ">
+    <div id="playlist-tracks" class="col-9 list-group">
         <ul *ngIf="!addPlaylistEnabled">
             <app-member-playlists-track-list [playlist]="selectedPlaylist"
                                              #playlistTrackList>
