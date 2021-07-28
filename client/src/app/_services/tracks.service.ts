@@ -21,9 +21,23 @@ export class TracksService {
     }
 
     getTracks(userParams: UserParams): Observable<PaginatedResult<Track>> {
+        return this.getPaginatedTrackResult(userParams);
+    }
+
+    getTrackPlaysForMember(userParams: UserParams, discordId: string): Observable<PaginatedResult<Track>> {
+        return this.getPaginatedTrackResult(userParams, discordId);
+    }
+
+    private getPaginatedTrackResult(userParams: UserParams, discordId?: string): Observable<PaginatedResult<Track>> {
+        let url = this.baseUrl;
+
+        if (discordId) {
+            url += `/${discordId}`;
+		}
+
         let params = getPaginationHeaders(userParams.pageNumber, userParams.pageSize, userParams.sortBy);
 
-        return getPaginatedResult<Track>(this.baseUrl, params, this.http);
+        return getPaginatedResult<Track>(url, params, this.http);
     }
 
     postTrackLike(track: Track, liked: boolean) {        

@@ -1,0 +1,27 @@
+.card {
+    border-radius: 0.60rem;
+    border: 1.5px solid rgb(0, 0, 0)
+}
+
+.card-img-wrapper {
+    border-top-left-radius: inherit;
+    border-top-right-radius: inherit;
+    height: 250px;
+}
+
+.card:hover img {
+    transform: scale(1.2, 1.2);
+    transition: transform 0.5s ease-in-out;
+    opacity: 0.8;
+}
+
+.card img {
+    transform: scale(1.1, 1.1);
+    transition: transform 0.5s ease-in-out;
+    opacity: 1;
+}
+
+.card-img-wrapper {
+    overflow: hidden;
+    position: relative;
+}

@@ -1,3 +1,9 @@
 <div class="tab-container row border rounded">
-
+    <ul class="list-group">
+        <li class="list-group-item p-0" *ngFor="let track of results">
+            <app-track-item #trackItem
+                            [track]="track">
+            </app-track-item>
+        </li>
+    </ul>
 </div>

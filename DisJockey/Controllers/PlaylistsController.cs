@@ -6,8 +6,10 @@ using Microsoft.AspNetCore.Mvc;
 using DisJockey.Services.Interfaces;
 using DisJockey.Shared.DTOs.Shared;
 using DisJockey.Shared.Helpers;
+using Microsoft.AspNetCore.Authorization;
 
 namespace DisJockey.Controllers {
+    [Authorize]
     public class PlaylistsController : BaseApiController {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IVideoDetailService _videoDetailService;
@@ -32,7 +34,9 @@ namespace DisJockey.Controllers {
             }
             if (playlist.Tracks.Count == 0) return BadRequest("No Tracks in Playlist");
 
-            ulong.TryParse(User.GetDiscordId(), out ulong discordId);
+            if (!ulong.TryParse(User.GetDiscordId(), out ulong discordId)) {
+                return BadRequest("Invalid DiscordId");
+            }
 
             var user = await _unitOfWork.UserRepository.GetUserByDiscordIdAsync(discordId);
             if (user == null) {
@@ -47,7 +51,7 @@ namespace DisJockey.Controllers {
         }
 
         [HttpGet("{youtubeId}")]
-        public async Task<ActionResult<PagedList<BaseTrackDto>>> GetPlaylist([FromQuery] PaginationParams paginationParams, string youtubeId) {
+        public async Task<ActionResult<PagedList<BaseTrackDto>>> GetPlaylistTracks([FromQuery] PaginationParams paginationParams, string youtubeId) {
             var playlistTracks = await _unitOfWork.PlaylistRepository.GetPlaylistTracks(paginationParams, youtubeId);
 
             Response.AddPaginationHeader(playlistTracks.CurrentPage, playlistTracks.ItemsPerPage, playlistTracks.TotalPages, playlistTracks.TotalCount);

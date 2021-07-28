@@ -16,3 +16,7 @@
 .dropdown-toggle, .dropdown-item {
     cursor: pointer
 }
+
+.container {
+    max-width: 1300px;
+}

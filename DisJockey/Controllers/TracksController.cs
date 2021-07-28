@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -36,13 +35,18 @@ namespace DisJockey.Controllers {
             if (ulong.TryParse(discordIdStr, out ulong discordId)) {
                 // Set Liked Flag on Tracks
                 foreach (var track in tracks) {
-                    track.LikedByUser = track.UserLikes.FirstOrDefault(user => user.DiscordId == discordId)?.Liked; ;
+                    track.LikedByUser = track.UserLikes.FirstOrDefault(user => user.DiscordId == discordId)?.Liked;
                 }
-            }            
+            }
 
             Response.AddPaginationHeader(tracks.CurrentPage, tracks.ItemsPerPage, tracks.TotalPages, tracks.TotalCount);
 
             return Ok(tracks);
+        }
+
+        [HttpGet("{discordId}")]
+        public async Task<ActionResult<PagedList<TrackListDto>>> GetTrackPlaysForMember([FromQuery] PaginationParams paginationParams, ulong discordId) {
+            return await _unitOfWork.TrackRepository.GetTrackPlaysForMember(paginationParams, discordId);
         }
 
         [HttpPost("like")]
@@ -53,9 +57,8 @@ namespace DisJockey.Controllers {
 
             var discordIdStr = User.GetDiscordId();
 
-            var parsed = ulong.TryParse(discordIdStr, out ulong discordId);
-            if (!parsed) {
-                return BadRequest("Invalid Discord Id");
+            if (!ulong.TryParse(User.GetDiscordId(), out ulong discordId)) {
+                return BadRequest("Invalid DiscordId");
             }
 
             var user = await _unitOfWork.UserRepository.GetUserByDiscordIdAsync(discordId);
@@ -88,7 +91,7 @@ namespace DisJockey.Controllers {
             if (track == null) return NotFound("Track with YoutubeId " + trackPlayDto.YoutubeId + "Not Found");
 
             if (!ulong.TryParse(User.GetDiscordId(), out ulong discordId)) {
-                return BadRequest("Invalid DiscordId, contact an administrator");
+                return BadRequest("Invalid DiscordId");
             }
 
             var user = _client.GetUser(discordId);

@@ -1,23 +1,6 @@
 <div class="row">
     <div class="col-3">
-        <div class="card border">
-            <div class="card-img-top text-center">
-                <div class="p-4">
-                    <div class="card-img-wrapper rounded-circle">
-                        <img class="h-100 w-100" src="{{member.avatarUrl}}" alt="{{member.username}}" />
-                    </div>
-                </div>
-                <div id="username" class="border border-secondary d-flex justify-content-center">
-                    <h4 class="my-auto">{{member.username}}</h4>
-                </div>
-            </div>
-            <div class="card-body p-1">
-                <div class="d-flex flex-column justify-content-center align-items-center">
-                    <span class="my-1">Date Joined: {{member.dateJoined | date: 'dd MMM yyyy'}}</span>
-                    <span class="my-1">Unique Tracks Played: {{member.tracksPlayed}}</span>
-                </div>
-            </div>
-        </div>
+        <app-member-card [member]="member"></app-member-card>
     </div>
 
     <div class="col-9">
@@ -28,7 +11,7 @@
                 </app-member-playlists>
             </tab>
             <tab heading="Tracks Played">
-                <app-member-track-list></app-member-track-list>
+                <app-member-track-list [member]="member"></app-member-track-list>
             </tab>
             <tab heading="Pull Ups">
                 Pull Ups

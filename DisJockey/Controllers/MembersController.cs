@@ -23,7 +23,7 @@ namespace DisJockey.Controllers {
         }
 
         [HttpGet("{discordId}")]
-        public async Task<ActionResult<MemberDetailDto>> GetMemberByDiscordId(ulong discordId) {
+        public async Task<ActionResult<MemberDetailDto>> GetMember(ulong discordId) {
             var user = await _unitOfWork.UserRepository.GetMemberByDiscordIdAsync(discordId);
 
             if (user == null) {
