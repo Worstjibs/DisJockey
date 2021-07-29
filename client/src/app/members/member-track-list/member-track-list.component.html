@@ -6,4 +6,8 @@
             </app-track-item>
         </li>
     </ul>
+
+    <div class="d-flex justify-content-center" *ngIf="pagination && !noMoreResults">
+        <button class="btn btn-primary my-3" *ngIf="results.length > 0" (click)="loadMore()">Load More</button>
+    </div>
 </div>

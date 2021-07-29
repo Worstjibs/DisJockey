@@ -1,12 +1,13 @@
 .card {
     border-radius: 0.60rem;
-    border: 1.5px solid rgb(0, 0, 0)
+    box-shadow: 1px 1px 5px rgb(95 112 190);
 }
 
 .card-img-wrapper {
     border-top-left-radius: inherit;
     border-top-right-radius: inherit;
-    height: 250px;
+    border: 2px solid black;
+    height: 292px;
 }
 
 .card:hover img {
@@ -24,4 +25,11 @@
 .card-img-wrapper {
     overflow: hidden;
     position: relative;
+}
+
+.card-body {
+    border: 2px solid black;
+    border-bottom-left-radius: inherit;
+    border-bottom-right-radius: inherit;
+    border-top: 0 !important;
 }

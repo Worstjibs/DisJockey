@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { Observable } from 'rxjs';
 import { BaseListComponent } from '../../shared/base-list-component';
 import { PaginatedResult } from '../../_models/pagination';

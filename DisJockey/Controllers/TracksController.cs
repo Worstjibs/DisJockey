@@ -46,7 +46,11 @@ namespace DisJockey.Controllers {
 
         [HttpGet("{discordId}")]
         public async Task<ActionResult<PagedList<TrackListDto>>> GetTrackPlaysForMember([FromQuery] PaginationParams paginationParams, ulong discordId) {
-            return await _unitOfWork.TrackRepository.GetTrackPlaysForMember(paginationParams, discordId);
+            var tracks = await _unitOfWork.TrackRepository.GetTrackPlaysForMember(paginationParams, discordId);
+
+            Response.AddPaginationHeader(tracks.CurrentPage, tracks.ItemsPerPage, tracks.TotalPages, tracks.TotalCount);
+
+            return Ok(tracks);
         }
 
         [HttpPost("like")]

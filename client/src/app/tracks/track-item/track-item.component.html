@@ -1,8 +1,8 @@
-<div id="track-item-container" class="border border-rounded border-dark" (click)="expandTrackItem()">
+<div #container id="track-item-container" class="border border-rounded border-dark" (click)="expandTrackItem()">
     <div class="row p-2">
         <div [ngClass]="{'col-4': showDetail, 'col-2': !showDetail}">
             <div class="img-wrapper">
-                <img src="{{track.mediumThumbnail}}" alt="" id="track-thumbnail" class="img-fluid">
+                <img [src]="!showDetail ? track.smallThumbnail : track.largeThumbnail" alt="" id="track-thumbnail" class="img-fluid">
             </div>
         </div>
 

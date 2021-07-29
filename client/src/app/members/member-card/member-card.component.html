@@ -1,6 +1,6 @@
 <div class="card">
     <div class="card-img-wrapper">
-        <img src="{{member.avatarUrl}}" alt="member.username" class="card-img-top">
+        <img src="{{member.avatarUrl}}" onerror="this.src='./assets/icon.png'" alt="{{member.username}}" class="card-img-top">
     </div>
     <div class="card-body text-center">
         <h4>{{member.username}}</h4>

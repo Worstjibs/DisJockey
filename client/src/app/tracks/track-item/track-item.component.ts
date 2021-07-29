@@ -1,4 +1,4 @@
-import { EventEmitter } from '@angular/core';
+import { ElementRef, EventEmitter, ViewChild } from '@angular/core';
 import { Component, Input, OnInit, Output } from '@angular/core';
 import { Track } from 'src/app/_models/track';
 
@@ -15,7 +15,7 @@ export class TrackItemComponent implements OnInit {
 
 	showDetail: boolean;
 
-	constructor() { }
+	constructor(public elementRef: ElementRef) { }
 
 	ngOnInit(): void {
 		this.showDetail = false;
