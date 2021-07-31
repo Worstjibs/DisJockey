@@ -4,8 +4,10 @@ using DisJockey.Shared.DTOs.Member;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using DisJockey.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 
 namespace DisJockey.Controllers {
+    [Authorize]
     public class MembersController : BaseApiController {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;

@@ -30,12 +30,11 @@ namespace DisJockey.Controllers {
         public async Task<ActionResult<IEnumerable<TrackListDto>>> GetTracks([FromQuery] PaginationParams paginationParams) {
             var tracks = await _unitOfWork.TrackRepository.GetTracks(paginationParams);
 
-            var discordIdStr = User.GetDiscordId();
-
-            if (ulong.TryParse(discordIdStr, out ulong discordId)) {
+            var discordId = User.GetDiscordId();
+            if (discordId.HasValue) {
                 // Set Liked Flag on Tracks
                 foreach (var track in tracks) {
-                    track.LikedByUser = track.UserLikes.FirstOrDefault(user => user.DiscordId == discordId)?.Liked;
+                    track.LikedByUser = track.UserLikes.FirstOrDefault(user => user.DiscordId == discordId.Value)?.Liked;
                 }
             }
 
@@ -59,13 +58,12 @@ namespace DisJockey.Controllers {
 
             if (track == null) return BadRequest("Track does not exist");
 
-            var discordIdStr = User.GetDiscordId();
-
-            if (!ulong.TryParse(User.GetDiscordId(), out ulong discordId)) {
+            var discordId = User.GetDiscordId();
+            if (!discordId.HasValue) {
                 return BadRequest("Invalid DiscordId");
             }
 
-            var user = await _unitOfWork.UserRepository.GetUserByDiscordIdAsync(discordId);
+            var user = await _unitOfWork.UserRepository.GetUserByDiscordIdAsync(discordId.Value);
 
             if (user == null) return Unauthorized("Invalid Token");
 
@@ -94,20 +92,21 @@ namespace DisJockey.Controllers {
 
             if (track == null) return NotFound("Track with YoutubeId " + trackPlayDto.YoutubeId + "Not Found");
 
-            if (!ulong.TryParse(User.GetDiscordId(), out ulong discordId)) {
+            var discordId = User.GetDiscordId();
+            if (!discordId.HasValue) {
                 return BadRequest("Invalid DiscordId");
             }
 
-            var user = _client.GetUser(discordId);
+            var user = _client.GetUser(discordId.Value);
 
-            if (user != null) {
-                var guild = user.MutualGuilds.FirstOrDefault();
-
-                await _musicService.PlayTrack("https://youtu.be/" + track.YoutubeId, user, guild, trackPlayDto.PlayNow);
-                return Ok();
-            } else {
+            var guild = _client.Guilds.FirstOrDefault(x => x.VoiceChannels.Any(v => v.Users.Any(u => u.Id == user.Id)));
+            if (guild == null) {
                 return BadRequest("You must be connected to a Voice channel to play a track");
             }
+
+            await _musicService.PlayTrack("https://youtu.be/" + track.YoutubeId, user, guild, trackPlayDto.PlayNow);
+            return Ok();
+
         }
     }
 }

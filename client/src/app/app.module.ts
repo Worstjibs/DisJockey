@@ -19,6 +19,7 @@ import { MemberPlaylistsComponent } from './members/member-playlists/member-play
 import { MemberPlaylistsTrackListComponent } from './members/member-playlists-track-list/member-playlists-track-list.component';
 import { MemberTrackListComponent } from './members/member-track-list/member-track-list.component';
 import { MemberCardComponent } from './members/member-card/member-card.component';
+import { UnauthorizedComponent } from './errors/unauthorized/unauthorized.component';
 
 
 @NgModule({
@@ -35,7 +36,8 @@ import { MemberCardComponent } from './members/member-card/member-card.component
         MemberPlaylistsComponent,
         MemberPlaylistsTrackListComponent,
         MemberTrackListComponent,
-        MemberCardComponent
+        MemberCardComponent,
+        UnauthorizedComponent
     ],
     imports: [
         BrowserModule,

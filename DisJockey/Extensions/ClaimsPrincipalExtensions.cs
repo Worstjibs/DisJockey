@@ -6,8 +6,11 @@ namespace DisJockey.Extensions {
             return user.FindFirst(ClaimTypes.Name)?.Value;
         }
 
-        public static string GetDiscordId(this ClaimsPrincipal user) {
-            return user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        public static ulong? GetDiscordId(this ClaimsPrincipal user) {
+            if (ulong.TryParse(user.FindFirst(ClaimTypes.NameIdentifier)?.Value, out ulong discordId)) {
+                return discordId;
+            }
+            return null;
         }
 
         public static string GetAvatarUrl(this ClaimsPrincipal user) {

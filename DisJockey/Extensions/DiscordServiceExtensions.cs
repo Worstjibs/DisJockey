@@ -8,24 +8,25 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Victoria;
 using DisJockey.Services.Interfaces;
+using Discord.Rest;
 
 namespace DisJockey.Extensions {
     public static class DiscordServiceExtensions {
         public static void AddDiscordServices(this IServiceCollection services, IConfiguration config) {
             var botSettings = config.GetSection("BotSettings").Get<BotSettings>();
-            services.AddSingleton<BotSettings>(botSettings);
+            services.AddSingleton(botSettings);
 
             var client = new DiscordSocketClient(new DiscordSocketConfig {
                 LogLevel = LogSeverity.Verbose,
                 AlwaysDownloadUsers = false
             });
-            services.AddSingleton<DiscordSocketClient>(client);
+            services.AddSingleton(client);
 
             var commandService = new CommandService(new CommandServiceConfig {
                 LogLevel = LogSeverity.Verbose,
                 CaseSensitiveCommands = false
             });
-            services.AddSingleton<CommandService>(commandService);
+            services.AddSingleton(commandService);
 
             services.AddScoped<IDiscordTrackService, DiscordTrackService>();
 

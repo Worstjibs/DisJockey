@@ -34,11 +34,12 @@ namespace DisJockey.Controllers {
             }
             if (playlist.Tracks.Count == 0) return BadRequest("No Tracks in Playlist");
 
-            if (!ulong.TryParse(User.GetDiscordId(), out ulong discordId)) {
+            var discordId = User.GetDiscordId();
+            if (!discordId.HasValue) {
                 return BadRequest("Invalid DiscordId");
             }
 
-            var user = await _unitOfWork.UserRepository.GetUserByDiscordIdAsync(discordId);
+            var user = await _unitOfWork.UserRepository.GetUserByDiscordIdAsync(discordId.Value);
             if (user == null) {
                 return NotFound($"User with Discord Id {discordId} not found");
             }

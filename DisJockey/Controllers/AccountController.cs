@@ -28,15 +28,15 @@ namespace DisJockey.Controllers {
         
         [HttpGet("claims")]
         public ActionResult<UserDto> GetUserInfo() {
-            var discordIdStr = User.GetDiscordId();
+            var discordId = User.GetDiscordId();
 
-            if (discordIdStr != null) {
+            if (discordId.HasValue) {
                 var username = User.GetUsername();
                 var avatarUrl = User.GetAvatarUrl();
 
                 var userDto = new UserDto {
                     AvatarUrl = avatarUrl,
-                    DiscordId = discordIdStr,
+                    DiscordId = discordId.Value,
                     Username = username
                 };
 

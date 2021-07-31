@@ -1,9 +1,12 @@
 using System;
-using System.Reflection;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
+using Discord.Rest;
 using Discord.WebSocket;
 using Microsoft.Extensions.Hosting;
 using Victoria;
@@ -16,8 +19,8 @@ namespace DisJockey.Discord {
         private readonly IServiceProvider _services;
         private readonly LavaNode _lavaNode;
 
-        public DiscordService(DiscordSocketClient client, BotSettings botSettings, CommandService cmdService,
-            IServiceProvider services, LavaNode lavaNode) {
+
+        public DiscordService(DiscordSocketClient client, BotSettings botSettings, CommandService cmdService, IServiceProvider services, LavaNode lavaNode) {
             _cmdService = cmdService;
             _services = services;
             _client = client;
@@ -40,6 +43,15 @@ namespace DisJockey.Discord {
             _client.Ready += ReadyAsync;
             _cmdService.Log += LogAsync;
             _client.MessageReceived += MessageReceivedAsync;
+        }
+
+        public bool UserPermitted(ulong discordId) {
+            var activeUser = _client.GetUser(discordId);
+            if (activeUser != null) {
+                return true;
+            }
+
+            return false;
         }
 
         private async Task MessageReceivedAsync(SocketMessage message) {

@@ -7,6 +7,7 @@ import { TracksComponent } from './tracks/tracks.component';
 import { MembersComponent } from './members/members.component';
 import { MemberDetailComponent } from './members/member-detail/member-detail.component';
 import { MemberDetailResolver } from './_resolvers/member-detail.resolver';
+import { UnauthorizedComponent } from './errors/unauthorized/unauthorized.component';
 
 const routes: Routes = [
 	{
@@ -24,6 +25,7 @@ const routes: Routes = [
 	},
 	{ path: 'not-found', component: NotFoundComponent },
 	{ path: 'server-error', component: ServerErrorComponent },
+	{ path: 'unauthorized', component: UnauthorizedComponent },
 	{ path: '**', component: NotFoundComponent, pathMatch: 'full' }
 ];
 
