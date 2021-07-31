@@ -7,6 +7,7 @@ using DisJockey.Shared.DTOs.Shared;
 using DisJockey.Shared.DTOs.Track;
 using DisJockey.Core;
 using AutoMapper;
+using DisJockey.Shared.DTOs.PullUps;
 
 namespace DisJockey.Shared.Helpers {
     public class AutoMapperProfiles : Profile {
@@ -16,6 +17,8 @@ namespace DisJockey.Shared.Helpers {
             CreateMemberListMappings();
 
             CreatePlaylistMappings();
+
+            CreatePullUpMappings();
         }
 
         private void CreateTrackListMappings() {
@@ -48,9 +51,11 @@ namespace DisJockey.Shared.Helpers {
         }
 
         private void CreateMemberListMappings() {
+            CreateMap<AppUser, BaseMemberDto>()
+                .ForMember(dest => dest.DateJoined, opt => opt.MapFrom(src => src.CreatedOn));
+
             CreateMap<AppUser, MemberListDto>()
-                .ForMember(dest => dest.DateJoined, opt => opt.MapFrom(src => src.CreatedOn))
-                .ForMember(dest => dest.DiscordId, opt => opt.MapFrom(src => src.DiscordId))
+                .IncludeBase<AppUser, BaseMemberDto>()
                 .ForMember(dest => dest.TracksPlayed, opt => opt.MapFrom(src => src.Tracks.Count));
 
             CreateMap<AppUser, MemberDetailDto>()
@@ -76,6 +81,17 @@ namespace DisJockey.Shared.Helpers {
                 .ForMember(dest => dest.SmallThumbnail, opt => opt.MapFrom(src => src.Track.SmallThumbnail))
                 .ForMember(dest => dest.Title, opt => opt.MapFrom(src => src.Track.Title))
                 .ForMember(dest => dest.YoutubeId, opt => opt.MapFrom(src => src.Track.YoutubeId));
+        }
+
+        private void CreatePullUpMappings() {
+            CreateMap<Track, PullUpDto>()
+                .IncludeBase<Track, BaseTrackDto>()
+                .ForMember(dest => dest.LastPulled, opt => opt.MapFrom(src => src.PullUps.Max(x => x.CreatedOn)))
+                .ForMember(dest => dest.PullUps, opt => opt.MapFrom(src => src.PullUps));
+
+            CreateMap<PullUp, PullUpTrackDto>()
+                .ForMember(dest => dest.DatePulled, opt => opt.MapFrom(src => src.CreatedOn))
+                .ForMember(dest => dest.TimePulled, opt => opt.MapFrom(src => src.TimePulled));
         }
     }
 }

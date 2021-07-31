@@ -8,6 +8,7 @@ using DisJockey.Shared.DTOs.Track;
 using DisJockey.Shared.Helpers;
 using DisJockey.Services.Interfaces;
 using DisJockey.Shared.DTOs.Shared;
+using DisJockey.Shared.DTOs.PullUps;
 
 namespace DisJockey.Data {
     public class TrackRepository : ITrackRepository {
@@ -51,14 +52,28 @@ namespace DisJockey.Data {
             _context.Tracks.Add(track);
         }
 
-        private static async Task<PagedList<TrackListDto>> CreatePagedList(PaginationParams paginationParams, IQueryable<TrackListDto> source) {
-            source = paginationParams.SortBy switch {
-                "title" => source.OrderBy(x => x.Title),
-                "firstPlayed" => source.OrderBy(x => x.LastPlayed),
-                _ => source.OrderByDescending(x => x.LastPlayed),
+        public async Task<PagedList<PullUpDto>> GetPullUpsForMember(PaginationParams paginationParams, ulong discordId) {
+            var query = _context.Tracks.AsNoTracking()
+                .Where(x => x.PullUps.Any(tp => tp.User.DiscordId == discordId))
+                .ProjectTo<PullUpDto>(_mapper.ConfigurationProvider);
+
+            query = paginationParams.SortBy switch {
+                "title" => query.OrderBy(x => x.Title),
+                "firstPulled" => query.OrderBy(x => x.LastPulled),
+                _ => query.OrderByDescending(x => x.LastPulled),
             };
 
-            return await PagedList<TrackListDto>.CreateAsync(source, paginationParams.PageNumber, paginationParams.PageSize);
+            return await PagedList<PullUpDto>.CreateAsync(query, paginationParams.PageNumber, paginationParams.PageSize);
+        }
+
+        private static async Task<PagedList<TrackListDto>> CreatePagedList(PaginationParams paginationParams, IQueryable<TrackListDto> query) {
+            query = paginationParams.SortBy switch {
+                "title" => query.OrderBy(x => x.Title),
+                "firstPlayed" => query.OrderBy(x => x.LastPlayed),
+                _ => query.OrderByDescending(x => x.LastPlayed),
+            };
+
+            return await PagedList<TrackListDto>.CreateAsync(query, paginationParams.PageNumber, paginationParams.PageSize);
         }
     }
 }

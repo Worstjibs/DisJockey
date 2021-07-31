@@ -14,6 +14,8 @@ namespace DisJockey.Data {
             }
 
             if (File.Exists("Data/SeedData.json")) {
+                var random = new Random();
+
                 var seedDataString = await System.IO.File.ReadAllTextAsync("Data/SeedData.json");
 
                 var json = JsonSerializer.Deserialize<SeedData>(seedDataString);
@@ -32,6 +34,9 @@ namespace DisJockey.Data {
                     track.TrackPlays = new List<TrackPlay>();
                     var trackPlays = (List<TrackPlay>)track.TrackPlays;
 
+                    track.PullUps = new List<PullUp>();
+                    var pullUps = (List<PullUp>)track.PullUps;
+
                     users.ForEach(user => {
                         var trackPlay = new TrackPlay {
                             AppUserId = user.Id,
@@ -48,6 +53,17 @@ namespace DisJockey.Data {
 
                         track.TrackPlays.Add(trackPlay);
                         track.CreatedOn = dateToSet;
+
+                        var pullUp = new PullUp {
+                            UserId = user.Id,
+                            User = user,
+                            TrackId = track.Id,
+                            Track = track,
+                            CreatedOn = dateToSet,
+                            TimePulled = random.NextDouble() * 60
+                        };
+
+                        pullUps.Add(pullUp);
 
                         dateToSet = dateToSet.AddDays(-1);
                     });

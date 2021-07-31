@@ -1,7 +1,8 @@
 /* You can add global styles to this file, and also import other style files */
 
-.tab-container {
-    border-color: #444 !important;
+.tab-container-content {
+    border: 2px solid black !important;
+    box-shadow: 0px 0px 5px 1px rgb(95 112 190);
     height: 70vh;
 }
 

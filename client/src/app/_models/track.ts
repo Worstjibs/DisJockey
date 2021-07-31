@@ -1,16 +1,9 @@
+import { BaseTrack } from "./baseTrack";
 import { TrackUser } from "./trackUser";
 
-export interface Track {
-    youtubeId: string;
+export interface Track extends BaseTrack {
     users?: TrackUser[];
-    createdOn: Date;
     likes: number;
     dislikes: number;
     likedByUser?: boolean;
-    title: string;
-    channelTitle: string;
-    description: string;
-    smallThumbnail: string;
-    mediumThumbnail: string;
-    largeThumbnail: string;
 }

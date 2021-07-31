@@ -52,8 +52,11 @@ export class TracksComponent extends BaseListComponent<Track> implements OnInit 
 		const requestedTrack = this.trackItemComponents.find(x => x.track.youtubeId == event.youtubeId);
 
 		const element = requestedTrack.elementRef.nativeElement;
-		element.scrollIntoView({ behavior: 'smooth', block: 'center' });
-
 		requestedTrack.showDetail = true;
+
+		// Wait for column animation
+		window.setTimeout(() => {
+			element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+		}, 500);		
 	}
 }

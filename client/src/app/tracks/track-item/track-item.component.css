@@ -54,24 +54,15 @@
             opacity: 1;
         }
 
-        #track-item-container:hover #track-thumbnail {
+        #track-item-container:hover #track-thumbnail-img {
             transform: scale(1.1);
         }
 
-#track-thumbnail {/*
-    display: block;
-    margin: auto;*/
+.track-cols {
+    transition: all ease 0.5s;
+}
+
+#track-thumbnail-img {
     transform: scale(1);
     transition: all .5s ease-in-out;
-}
-
-.col-0 {
-    width: 0;
-    margin: 0;
-    padding: 0;
-}
-
-.h-0 {
-    height: 0;
-    transition: height 1s ease-in-out 0s;
 }

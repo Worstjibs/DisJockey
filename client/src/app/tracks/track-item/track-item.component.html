@@ -1,12 +1,12 @@
 <div #container id="track-item-container" class="border border-rounded border-dark" (click)="expandTrackItem()">
-    <div class="row p-2">
-        <div [ngClass]="{'col-4': showDetail, 'col-2': !showDetail}">
+    <div class="row p-3">
+        <div class="track-cols" [ngClass]="{'col-4': showDetail, 'col-2': !showDetail}">
             <div class="img-wrapper">
-                <img [src]="!showDetail ? track.smallThumbnail : track.largeThumbnail" alt="" id="track-thumbnail" class="img-fluid">
+                <img [src]="!showDetail ? track.smallThumbnail : track.largeThumbnail" alt="" id="track-thumbnail-img" class="img-fluid">
             </div>
         </div>
 
-        <div id="track-info" class="my-2" [ngClass]="{'col-8': showDetail, 'col-10': !showDetail}">
+        <div id="track-info" class="track-cols pl-0" [ngClass]="{'col-8': showDetail, 'col-10': !showDetail}">
             <div>
                 <h4>{{track.title}}</h4>
                 <h5>{{track.channelTitle}}</h5>
