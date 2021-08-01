@@ -1,6 +1,6 @@
 using System.Security.Claims;
 
-namespace DisJockey.Extensions {
+namespace DisJockey.Shared.Extensions {
     public static class ClaimsPrincipalExtensions {
         public static string GetUsername(this ClaimsPrincipal user) {
             return user.FindFirst(ClaimTypes.Name)?.Value;

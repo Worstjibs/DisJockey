@@ -1,8 +1,10 @@
 using System.Threading.Tasks;
 using DisJockey.Middleware;
+using DisJockey.Services;
 using DisJockey.Shared.Helpers;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -31,6 +33,7 @@ namespace DisJockey.Extensions {
 
             services.AddScoped<IAuthorizationMiddlewareResultHandler, DisJockeyAuthorizationMiddlewareResultHandler>();
 
+            services.AddTransient<IHttpContextAccessor, HttpContextAccessor>();
 
             return services;
         }

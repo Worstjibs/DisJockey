@@ -9,14 +9,18 @@ using DisJockey.Shared.Helpers;
 using DisJockey.Services.Interfaces;
 using DisJockey.Shared.DTOs.Shared;
 using DisJockey.Shared.DTOs.PullUps;
+using Microsoft.AspNetCore.Http;
+using DisJockey.Shared.Extensions;
 
 namespace DisJockey.Data {
     public class TrackRepository : ITrackRepository {
         private readonly DataContext _context;
         private readonly IMapper _mapper;
+        private readonly IHttpContextAccessor _httpContext;
 
-        public TrackRepository(DataContext context, IMapper mapper) {
+        public TrackRepository(DataContext context, IMapper mapper, IHttpContextAccessor httpContext) {
             _mapper = mapper;
+            _httpContext = httpContext;
             _context = context;
         }
 
@@ -33,9 +37,12 @@ namespace DisJockey.Data {
         }
 
         public async Task<PagedList<TrackListDto>> GetTracks(PaginationParams paginationParams) {
+            var discordId = _httpContext.HttpContext.User.GetDiscordId();
+
             var query = _context.Tracks.AsNoTracking()
+                .Include(x => x.TrackPlays)
                 .Where(x => x.TrackPlays.Count > 0)
-                .ProjectTo<TrackListDto>(_mapper.ConfigurationProvider);
+                .ProjectTo<TrackListDto>(_mapper.ConfigurationProvider, new { discordId });
 
             return await CreatePagedList(paginationParams, query);
         }

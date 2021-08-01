@@ -7,6 +7,7 @@ using DisJockey.Services.Interfaces;
 using DisJockey.Shared.DTOs.Shared;
 using DisJockey.Shared.Helpers;
 using Microsoft.AspNetCore.Authorization;
+using DisJockey.Shared.Extensions;
 
 namespace DisJockey.Controllers {
     [Authorize]

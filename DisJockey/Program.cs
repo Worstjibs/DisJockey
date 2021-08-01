@@ -7,7 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
-namespace API {
+namespace DisJockey {
     public class Program {
         public static async Task Main(string[] args) {
             var host = CreateHostBuilder(args).Build();

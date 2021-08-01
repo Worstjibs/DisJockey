@@ -7,7 +7,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
-namespace API {
+namespace DisJockey {
     public class Startup {
         private readonly IConfiguration _config;
         public Startup(IConfiguration config) {

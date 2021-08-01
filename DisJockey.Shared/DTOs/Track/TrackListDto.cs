@@ -8,7 +8,7 @@ namespace DisJockey.Shared.DTOs.Track {
         public ICollection<TrackUserLikeDto> UserLikes { get; set; }
         public int Likes { get; set; }
         public int Dislikes { get; set; }
-        public bool? LikedByUser { get; set; } = null;
+        public bool? LikedByUser { get; set; }
         public DateTime LastPlayed { get; set; }
     }
 }

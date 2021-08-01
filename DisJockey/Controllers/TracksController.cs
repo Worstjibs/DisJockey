@@ -11,6 +11,7 @@ using DisJockey.Discord.Services;
 using DisJockey.Shared.DTOs.Track;
 using DisJockey.Services.Interfaces;
 using DisJockey.Shared.Helpers;
+using DisJockey.Shared.Extensions;
 
 namespace DisJockey.Controllers {
     [Authorize]
@@ -30,13 +31,13 @@ namespace DisJockey.Controllers {
         public async Task<ActionResult<IEnumerable<TrackListDto>>> GetTracks([FromQuery] PaginationParams paginationParams) {
             var tracks = await _unitOfWork.TrackRepository.GetTracks(paginationParams);
 
-            var discordId = User.GetDiscordId();
-            if (discordId.HasValue) {
-                // Set Liked Flag on Tracks
-                foreach (var track in tracks) {
-                    track.LikedByUser = track.UserLikes.FirstOrDefault(user => user.DiscordId == discordId.Value)?.Liked;
-                }
-            }
+            //var discordId = User.GetDiscordId();
+            //if (discordId.HasValue) {
+            //    // Set Liked Flag on Tracks
+            //    foreach (var track in tracks) {
+            //        track.LikedByUser = track.UserLikes.FirstOrDefault(user => user.DiscordId == discordId.Value)?.Liked;
+            //    }
+            //}
 
             Response.AddPaginationHeader(tracks.CurrentPage, tracks.ItemsPerPage, tracks.TotalPages, tracks.TotalCount);
 

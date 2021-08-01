@@ -1,5 +1,6 @@
 ﻿using DisJockey.Discord;
 using DisJockey.Extensions;
+using DisJockey.Shared.Extensions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Authorization.Policy;
 using Microsoft.AspNetCore.Http;

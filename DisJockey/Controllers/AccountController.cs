@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authentication;
 using AspNet.Security.OAuth.Discord;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using DisJockey.Extensions;
+using DisJockey.Shared.Extensions;
 
 namespace DisJockey.Controllers {
     public class AccountController : BaseApiController {

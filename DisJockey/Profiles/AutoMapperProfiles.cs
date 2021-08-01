@@ -8,11 +8,15 @@ using DisJockey.Shared.DTOs.Track;
 using DisJockey.Core;
 using AutoMapper;
 using DisJockey.Shared.DTOs.PullUps;
+using DisJockey.Middleware;
 
-namespace DisJockey.Shared.Helpers {
+namespace DisJockey.Profiles {
     public class AutoMapperProfiles : Profile {
+
         public AutoMapperProfiles() {
-            CreateTrackListMappings();
+            ulong? discordId = null;
+
+            CreateTrackListMappings(discordId);
 
             CreateMemberListMappings();
 
@@ -21,7 +25,8 @@ namespace DisJockey.Shared.Helpers {
             CreatePullUpMappings();
         }
 
-        private void CreateTrackListMappings() {
+        private void CreateTrackListMappings(ulong? discordId) {
+
             CreateMap<Track, BaseTrackDto>();
 
             CreateMap<Track, TrackListDto>()
@@ -29,7 +34,8 @@ namespace DisJockey.Shared.Helpers {
                 .ForMember(dest => dest.UserLikes, opt => opt.MapFrom(src => src.Likes))
                 .ForMember(dest => dest.Likes, opt => opt.MapFrom(src => src.Likes.Where(x => x.Liked == true).Count()))
                 .ForMember(dest => dest.Dislikes, opt => opt.MapFrom(src => src.Likes.Where(x => x.Liked == false).Count()))
-                .ForMember(dest => dest.LastPlayed, opt => opt.MapFrom(src => src.TrackPlays.Count > 0 ? src.TrackPlays.Max(x => x.LastPlayed) : DateTime.MinValue));
+                .ForMember(dest => dest.LastPlayed, opt => opt.MapFrom(src => src.TrackPlays.Count > 0 ? src.TrackPlays.Max(x => x.LastPlayed) : DateTime.MinValue))
+                .ForMember(dest => dest.LikedByUser, opt => opt.MapFrom(src => src.Likes.FirstOrDefault(x => x.User.DiscordId == discordId).Liked));
 
             // Mappings for TrackPlay
             CreateMap<TrackPlay, TrackPlayDto>()
@@ -92,6 +98,10 @@ namespace DisJockey.Shared.Helpers {
             CreateMap<PullUp, PullUpTrackDto>()
                 .ForMember(dest => dest.DatePulled, opt => opt.MapFrom(src => src.CreatedOn))
                 .ForMember(dest => dest.TimePulled, opt => opt.MapFrom(src => src.TimePulled));
+        }
+
+        private static ulong? GetLikedByUser() {
+            return null;
         }
     }
 }
