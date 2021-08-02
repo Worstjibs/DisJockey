@@ -8,15 +8,14 @@ using DisJockey.Shared.DTOs.Track;
 using DisJockey.Core;
 using AutoMapper;
 using DisJockey.Shared.DTOs.PullUps;
-using DisJockey.Middleware;
 
 namespace DisJockey.Profiles {
     public class AutoMapperProfiles : Profile {
 
         public AutoMapperProfiles() {
-            ulong? discordId = null;
+            ulong? DiscordId = null;
 
-            CreateTrackListMappings(discordId);
+            CreateTrackListMappings(DiscordId);
 
             CreateMemberListMappings();
 
@@ -25,17 +24,17 @@ namespace DisJockey.Profiles {
             CreatePullUpMappings();
         }
 
-        private void CreateTrackListMappings(ulong? discordId) {
-
-            CreateMap<Track, BaseTrackDto>();
-
-            CreateMap<Track, TrackListDto>()
-                .ForMember(dest => dest.Users, opt => opt.MapFrom(src => src.TrackPlays.OrderByDescending(tp => tp.LastPlayed)))
-                .ForMember(dest => dest.UserLikes, opt => opt.MapFrom(src => src.Likes))
+        private void CreateTrackListMappings(ulong? DiscordId) {
+            CreateMap<Track, BaseTrackDto>()
                 .ForMember(dest => dest.Likes, opt => opt.MapFrom(src => src.Likes.Where(x => x.Liked == true).Count()))
                 .ForMember(dest => dest.Dislikes, opt => opt.MapFrom(src => src.Likes.Where(x => x.Liked == false).Count()))
-                .ForMember(dest => dest.LastPlayed, opt => opt.MapFrom(src => src.TrackPlays.Count > 0 ? src.TrackPlays.Max(x => x.LastPlayed) : DateTime.MinValue))
-                .ForMember(dest => dest.LikedByUser, opt => opt.MapFrom(src => src.Likes.FirstOrDefault(x => x.User.DiscordId == discordId).Liked));
+                .ForMember(dest => dest.LikedByUser, opt => opt.MapFrom(src => src.Likes.FirstOrDefault(x => x.User.DiscordId == DiscordId).Liked));
+
+            CreateMap<Track, TrackListDto>()
+                .IncludeBase<Track, BaseTrackDto>()
+                .ForMember(dest => dest.Users, opt => opt.MapFrom(src => src.TrackPlays.OrderByDescending(tp => tp.LastPlayed)))
+                .ForMember(dest => dest.UserLikes, opt => opt.MapFrom(src => src.Likes))
+                .ForMember(dest => dest.LastPlayed, opt => opt.MapFrom(src => src.TrackPlays.Count > 0 ? src.TrackPlays.Max(x => x.LastPlayed) : DateTime.MinValue));
 
             // Mappings for TrackPlay
             CreateMap<TrackPlay, TrackPlayDto>()
@@ -98,10 +97,6 @@ namespace DisJockey.Profiles {
             CreateMap<PullUp, PullUpTrackDto>()
                 .ForMember(dest => dest.DatePulled, opt => opt.MapFrom(src => src.CreatedOn))
                 .ForMember(dest => dest.TimePulled, opt => opt.MapFrom(src => src.TimePulled));
-        }
-
-        private static ulong? GetLikedByUser() {
-            return null;
         }
     }
 }

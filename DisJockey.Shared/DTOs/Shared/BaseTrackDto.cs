@@ -13,5 +13,8 @@ namespace DisJockey.Shared.DTOs.Shared {
         public string SmallThumbnail { get; set; }
         public string MediumThumbnail { get; set; }
         public string LargeThumbnail { get; set; }
+        public bool? LikedByUser { get; set; }
+        public int Likes { get; set; }
+        public int Dislikes { get; set; }
     }
 }

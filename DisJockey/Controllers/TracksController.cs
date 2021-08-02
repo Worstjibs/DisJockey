@@ -28,16 +28,8 @@ namespace DisJockey.Controllers {
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<TrackListDto>>> GetTracks([FromQuery] PaginationParams paginationParams) {
+        public async Task<ActionResult<PagedList<TrackListDto>>> GetTracks([FromQuery] PaginationParams paginationParams) {
             var tracks = await _unitOfWork.TrackRepository.GetTracks(paginationParams);
-
-            //var discordId = User.GetDiscordId();
-            //if (discordId.HasValue) {
-            //    // Set Liked Flag on Tracks
-            //    foreach (var track in tracks) {
-            //        track.LikedByUser = track.UserLikes.FirstOrDefault(user => user.DiscordId == discordId.Value)?.Liked;
-            //    }
-            //}
 
             Response.AddPaginationHeader(tracks.CurrentPage, tracks.ItemsPerPage, tracks.TotalPages, tracks.TotalCount);
 

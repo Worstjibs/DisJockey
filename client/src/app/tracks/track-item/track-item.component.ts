@@ -1,6 +1,8 @@
-import { ElementRef, EventEmitter, ViewChild } from '@angular/core';
+import { ElementRef, EventEmitter } from '@angular/core';
 import { Component, Input, OnInit, Output } from '@angular/core';
 import { Track } from 'src/app/_models/track';
+import { TrackLikeEvent } from '../../_events/trackLikeEvent';
+import { TrackPlayEvent } from '../../_events/trackPlayEvent';
 
 @Component({
 	selector: 'app-track-item',
@@ -9,8 +11,8 @@ import { Track } from 'src/app/_models/track';
 })
 export class TrackItemComponent implements OnInit {
 	@Input() track: Track;
-	@Output() trackLiked = new EventEmitter<{ track: Track, liked: boolean }>();
-	@Output() trackPlayed = new EventEmitter<{ track: Track, playNow: boolean }>();
+	@Output() trackLiked = new EventEmitter<TrackLikeEvent>();
+	@Output() trackPlayed = new EventEmitter<TrackPlayEvent>();
 	@Output() trackExpanded = new EventEmitter<Track>();
 
 	showDetail: boolean;

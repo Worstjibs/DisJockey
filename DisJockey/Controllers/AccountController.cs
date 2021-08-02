@@ -37,7 +37,7 @@ namespace DisJockey.Controllers {
 
                 var userDto = new UserDto {
                     AvatarUrl = avatarUrl,
-                    DiscordId = discordId.Value,
+                    DiscordId = discordId.Value.ToString(),
                     Username = username
                 };
 

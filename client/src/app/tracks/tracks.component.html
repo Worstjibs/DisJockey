@@ -1,5 +1,5 @@
-<div class="d-flex justify-content-between">
-    <h3>Tracks played on DisJockey</h3>
+<div class="d-flex justify-content-between mb-3">
+    <h3 class="mb-0">Tracks played on DisJockey</h3>
 
     <div dropdown class="btn-group">
         <button dropdownToggle class="btn btn-primary dropdown-toggle" type="button">Sort By</button>
@@ -11,17 +11,4 @@
     </div>
 </div>
 
-<div class="my-2" #scrollableList id="scrollable-list">
-    <div *ngFor="let track of results">
-        <app-track-item #trackItem
-                        [track]="track"
-                        (trackLiked)="likeTrack($event)"
-                        (trackPlayed)="playTrack($event)"
-                        (trackExpanded)="trackExpanded($event)">
-        </app-track-item>
-    </div>
-
-    <div class="d-flex justify-content-center" *ngIf="pagination && !noMoreResults">
-        <button class="btn btn-primary my-3" *ngIf="results.length > 0" (click)="loadMore()">Load More</button>
-    </div>
-</div>
+<app-track-list></app-track-list>

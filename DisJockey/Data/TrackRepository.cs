@@ -7,7 +7,6 @@ using Microsoft.EntityFrameworkCore;
 using DisJockey.Shared.DTOs.Track;
 using DisJockey.Shared.Helpers;
 using DisJockey.Services.Interfaces;
-using DisJockey.Shared.DTOs.Shared;
 using DisJockey.Shared.DTOs.PullUps;
 using Microsoft.AspNetCore.Http;
 using DisJockey.Shared.Extensions;
@@ -18,10 +17,14 @@ namespace DisJockey.Data {
         private readonly IMapper _mapper;
         private readonly IHttpContextAccessor _httpContext;
 
+        private ulong? DiscordId;
+
         public TrackRepository(DataContext context, IMapper mapper, IHttpContextAccessor httpContext) {
             _mapper = mapper;
             _httpContext = httpContext;
             _context = context;
+
+            DiscordId = _httpContext.HttpContext.User.GetDiscordId();
         }
 
         public async Task<Track> GetTrackByIdAsync(int id) {
@@ -37,12 +40,11 @@ namespace DisJockey.Data {
         }
 
         public async Task<PagedList<TrackListDto>> GetTracks(PaginationParams paginationParams) {
-            var discordId = _httpContext.HttpContext.User.GetDiscordId();
 
             var query = _context.Tracks.AsNoTracking()
                 .Include(x => x.TrackPlays)
                 .Where(x => x.TrackPlays.Count > 0)
-                .ProjectTo<TrackListDto>(_mapper.ConfigurationProvider, new { discordId });
+                .ProjectTo<TrackListDto>(_mapper.ConfigurationProvider, new { DiscordId });
 
             return await CreatePagedList(paginationParams, query);
         }
@@ -50,7 +52,7 @@ namespace DisJockey.Data {
         public async Task<PagedList<TrackListDto>> GetTrackPlaysForMember(PaginationParams paginationParams, ulong discordId) {
             var query = _context.Tracks.AsNoTracking()
                 .Where(x => x.TrackPlays.Any(tp => tp.User.DiscordId == discordId))
-                .ProjectTo<TrackListDto>(_mapper.ConfigurationProvider);
+                .ProjectTo<TrackListDto>(_mapper.ConfigurationProvider, new { DiscordId });
 
             return await CreatePagedList(paginationParams, query);
         }
@@ -62,7 +64,7 @@ namespace DisJockey.Data {
         public async Task<PagedList<PullUpDto>> GetPullUpsForMember(PaginationParams paginationParams, ulong discordId) {
             var query = _context.Tracks.AsNoTracking()
                 .Where(x => x.PullUps.Any(tp => tp.User.DiscordId == discordId))
-                .ProjectTo<PullUpDto>(_mapper.ConfigurationProvider);
+                .ProjectTo<PullUpDto>(_mapper.ConfigurationProvider, new { DiscordId });
 
             query = paginationParams.SortBy switch {
                 "title" => query.OrderBy(x => x.Title),
