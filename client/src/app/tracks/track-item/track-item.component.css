@@ -59,10 +59,26 @@
         }
 
 .track-cols {
-    transition: all ease 0.5s;
+    transition: all ease .7s;
 }
 
 #track-thumbnail-img {
     transform: scale(1);
     transition: all .5s ease-in-out;
+}
+
+#user-list {
+    max-height: 500px;
+    opacity: 1;
+    overflow-y: auto;
+    transition: opacity .2s linear, max-height .5s ease-in-out;
+}
+
+    #user-list .list-group {
+        overflow: hidden;
+    }
+
+.user-list-closed {
+    opacity: 0 !important;
+    max-height: 0 !important;
 }

@@ -28,9 +28,9 @@
         </div>
     </div>
 
-    <div class="m-2" [hidden]="!showDetail">
+    <div id="user-list" class="m-2" [ngClass]="{'user-list-closed': !showDetail}" >
         <ul class="list-group">
-            <li class="track-user list-group-item" [ngClass]="{'h-0': !showDetail}" *ngFor="let user of track.users">
+            <li class="track-user list-group-item" [ngClass]="{'user-expanded': showDetail}" *ngFor="let user of track.users">
                 {{user.username}}, played {{user.timesPlayed}} times, last played {{user.lastPlayed | timeago}}
             </li>
         </ul>
