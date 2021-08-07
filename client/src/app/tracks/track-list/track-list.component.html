@@ -1,4 +1,4 @@
-<div class="my-2 tab-container-content" #scrollableList id="scrollable-list">
+<div [ngClass]="{'tab-container-content': !innerContainer}" #scrollableList id="scrollable-list">
     <div *ngFor="let track of results">
         <app-track-item #trackItem
                         [track]="track"

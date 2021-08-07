@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using DisJockey.Services.Interfaces;
 using DisJockey.Shared.DTOs.Shared;
 using DisJockey.Shared.Helpers;
+using DisJockey.Shared.DTOs.Track;
 
 namespace DisJockey.Data {
     public class PlaylistRepository : IPlaylistRepository {
@@ -69,13 +70,13 @@ namespace DisJockey.Data {
             return await _context.Playlists.AsQueryable().AnyAsync(x => x.YoutubeId == playlistId);
         }
 
-        public async Task<PagedList<BaseTrackDto>> GetPlaylistTracks(PaginationParams paginationParams, string youtubeId) {
-            var source = _context.PlaylistTracks.AsNoTracking()
-                .Where(x => x.Playlist.YoutubeId == youtubeId)
-                .ProjectTo<BaseTrackDto>(_mapper.ConfigurationProvider)
+        public async Task<PagedList<TrackListDto>> GetPlaylistTracks(PaginationParams paginationParams, string youtubeId) {
+            var source = _context.Tracks.AsNoTracking()
+                .Where(x => x.Playlists.Any(p => p.Playlist.YoutubeId == youtubeId))
+                .ProjectTo<TrackListDto>(_mapper.ConfigurationProvider)
                 .OrderBy(x => x.Title);
 
-            return await PagedList<BaseTrackDto>.CreateAsync(source, paginationParams.PageNumber, paginationParams.PageSize);
+            return await PagedList<TrackListDto>.CreateAsync(source, paginationParams.PageNumber, paginationParams.PageSize);
         }
     }
 }

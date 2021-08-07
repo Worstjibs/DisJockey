@@ -16,8 +16,6 @@ import { NotFoundComponent } from './errors/not-found/not-found.component';
 import { ServerErrorComponent } from './errors/server-error/server-error.component';
 import { MemberDetailComponent } from './members/member-detail/member-detail.component';
 import { MemberPlaylistsComponent } from './members/member-playlists/member-playlists.component';
-import { MemberPlaylistsTrackListComponent } from './members/member-playlists-track-list/member-playlists-track-list.component';
-import { MemberTrackListComponent } from './members/member-track-list/member-track-list.component';
 import { MemberCardComponent } from './members/member-card/member-card.component';
 import { UnauthorizedComponent } from './errors/unauthorized/unauthorized.component';
 import { TrackListComponent } from './tracks/track-list/track-list.component';
@@ -35,8 +33,6 @@ import { TrackListComponent } from './tracks/track-list/track-list.component';
         ServerErrorComponent,
         MemberDetailComponent,
         MemberPlaylistsComponent,
-        MemberPlaylistsTrackListComponent,
-        MemberTrackListComponent,
         MemberCardComponent,
         UnauthorizedComponent,
         TrackListComponent

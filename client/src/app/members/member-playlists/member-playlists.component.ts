@@ -5,7 +5,6 @@ import { TracksService } from 'src/app/_services/tracks.service';
 import { Playlist } from '../../_models/playlist';
 import { AccountService } from '../../_services/account.service';
 import { PlaylistsService } from '../../_services/playlists.service';
-import { MemberPlaylistsTrackListComponent } from '../member-playlists-track-list/member-playlists-track-list.component';
 
 @Component({
 	selector: 'app-member-playlists',
@@ -19,15 +18,13 @@ export class MemberPlaylistsComponent implements OnInit {
 
 	addPlaylistEnabled: boolean;
 
-	@ViewChild('playlistTrackList') playlistTrackComponent: MemberPlaylistsTrackListComponent;
-
 	constructor(
 		private readonly playlistsService: PlaylistsService,
 		private readonly accountService: AccountService,
         private readonly tracksService: TracksService
 	) { }
 
-	isCurrentUser() {
+	get isCurrentUser() {
 		return this.accountService.currentUser$.pipe(take(1)).pipe(map(user => user.discordId === this.discordId));
 	}
 

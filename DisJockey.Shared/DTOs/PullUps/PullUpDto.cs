@@ -1,4 +1,5 @@
 ﻿using DisJockey.Shared.DTOs.Shared;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;

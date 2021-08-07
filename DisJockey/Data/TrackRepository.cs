@@ -24,7 +24,7 @@ namespace DisJockey.Data {
             _httpContext = httpContext;
             _context = context;
 
-            DiscordId = _httpContext.HttpContext.User.GetDiscordId();
+            DiscordId = _httpContext.HttpContext?.User.GetDiscordId();
         }
 
         public async Task<Track> GetTrackByIdAsync(int id) {

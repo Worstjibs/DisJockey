@@ -1,20 +1,19 @@
 <div id="playlist-container" *ngIf="playlists" class="tab-container-content row border rounded">
-    <ul id="playlist-list" class="list-group col-3">
+    <ul id="playlist-list" class="list-group col-2">
         <li class="list-group-item"
             [ngClass]="{'active': selectedPlaylist === playlist && !addPlaylistEnabled}"
             *ngFor="let playlist of playlists"
             (click)="playlistClicked(playlist)">{{playlist.name}}</li>
         <li class="list-group-item"
-            *ngIf="(isCurrentUser() | async)"
+            *ngIf="(isCurrentUser | async)"
             (click)="enableAddMode()"
             [ngClass]="{'active': addPlaylistEnabled}">Add Playlist</li>
     </ul>
 
-    <div id="playlist-tracks" class="col-9 list-group">
+    <div id="playlist-tracks" class="col-10 list-group">
         <ul *ngIf="!addPlaylistEnabled">
-            <app-member-playlists-track-list [playlist]="selectedPlaylist"
-                                             #playlistTrackList>
-            </app-member-playlists-track-list>
+            <app-track-list [playlist]="selectedPlaylist"
+                            [innerContainer]="true"></app-track-list>
         </ul>
 
         <div class="m-2 text-center" *ngIf="addPlaylistEnabled">

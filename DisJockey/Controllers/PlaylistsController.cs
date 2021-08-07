@@ -4,10 +4,10 @@ using DisJockey.Extensions;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using DisJockey.Services.Interfaces;
-using DisJockey.Shared.DTOs.Shared;
 using DisJockey.Shared.Helpers;
 using Microsoft.AspNetCore.Authorization;
 using DisJockey.Shared.Extensions;
+using DisJockey.Shared.DTOs.Track;
 
 namespace DisJockey.Controllers {
     [Authorize]
@@ -53,7 +53,7 @@ namespace DisJockey.Controllers {
         }
 
         [HttpGet("{youtubeId}")]
-        public async Task<ActionResult<PagedList<BaseTrackDto>>> GetPlaylistTracks([FromQuery] PaginationParams paginationParams, string youtubeId) {
+        public async Task<ActionResult<PagedList<TrackListDto>>> GetPlaylistTracks([FromQuery] PaginationParams paginationParams, string youtubeId) {
             var playlistTracks = await _unitOfWork.PlaylistRepository.GetPlaylistTracks(paginationParams, youtubeId);
 
             Response.AddPaginationHeader(playlistTracks.CurrentPage, playlistTracks.ItemsPerPage, playlistTracks.TotalPages, playlistTracks.TotalCount);
