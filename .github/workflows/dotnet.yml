@@ -28,7 +28,7 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      working-directory: ./client
+      working-directory: ./DisJockey/ClientApp
 
     steps:
     - uses: actions/checkout@v2.3.2
