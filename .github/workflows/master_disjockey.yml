@@ -17,6 +17,18 @@ jobs:
     - name: 'Checkout Github Action'
       uses: actions/checkout@master
 
+    - name: Use Node.js 14 LTS
+      uses: actions/setup-node@v2
+      with:
+        node-version: '14'
+      
+    - name: Install NPM Modules
+      run: npm install
+      working-directory: ./DisJockey/ClientApp
+
+    - name: Build Angular Project
+      run: npm run build-prod
+      working-directory: ./DisJockey/ClientApp
 
     - name: Set up .NET Core
       uses: actions/setup-dotnet@v1
