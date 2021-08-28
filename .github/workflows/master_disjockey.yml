@@ -9,7 +9,7 @@ on:
       - master
 
 jobs:
-  build-and-deploy:
+  build-api:
     runs-on: windows-latest
 
     steps:
@@ -23,17 +23,49 @@ jobs:
       with:
         dotnet-version: '5.0.x'
 
+    - name: Restore dependencies
+      run: dotnet restore
+
     - name: Build with dotnet
-      run: dotnet build --configuration Release
+      run: dotnet build --no-restore
 
     - name: dotnet publish
       run: dotnet publish -c Release -o ${{env.DOTNET_ROOT}}/myapp
 
-    - name: Run Azure webapp deploy action using publish profile credentials
-      uses: azure/webapps-deploy@v2
+  build-angular:
+
+    runs-on: windows-latest
+
+    env:
+      working-directory: ./client
+
+    steps:
+    - uses: actions/checkout@v2.3.2
+
+    - name: Use Node.js 14 LTS
+      uses: actions/setup-node@v2
       with:
-        app-name: disjockey
-        slot-name: Production
-        publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_3ECCAA35A552408D85B2F5C2A2945220 }}
-        package: ${{env.DOTNET_ROOT}}/myapp
+        node-version: '14'
+      
+    - name: Install NPM Modules
+      run: npm install
+      working-directory: ${{env.working-directory}}
+
+    - name: Build Project
+      run: npm run build-prod
+      working-directory: ${{env.working-directory}}
+
+  deploy:
+
+    runs-on: windows-latest
+
+    steps:
+
+      - name: Run Azure webapp deploy action using publish profile credentials
+        uses: azure/webapps-deploy@v2
+        with:
+          app-name: disjockey
+          slot-name: Production
+          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_3ECCAA35A552408D85B2F5C2A2945220 }}
+          package: ${{env.DOTNET_ROOT}}/myapp
 
