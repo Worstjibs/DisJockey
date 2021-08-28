@@ -14,8 +14,6 @@ namespace DisJockey.Data {
             }
 
             if (File.Exists("Data/SeedData.json")) {
-                var random = new Random();
-
                 var seedDataString = await System.IO.File.ReadAllTextAsync("Data/SeedData.json");
 
                 var json = JsonSerializer.Deserialize<SeedData>(seedDataString);
@@ -28,75 +26,91 @@ namespace DisJockey.Data {
                 var users = await context.Users.ToListAsync();
                 var tracks = await context.Tracks.ToListAsync();
 
-                var dateToSet = DateTime.UtcNow;
+                await SeedTrackPlays(users, tracks, context);
 
-                tracks.ForEach(track => {
-                    track.TrackPlays = new List<TrackPlay>();
-                    var trackPlays = (List<TrackPlay>)track.TrackPlays;
+                await SeedPlaylists(users, tracks, context);
+            }
+        }
 
-                    track.PullUps = new List<PullUp>();
-                    var pullUps = (List<PullUp>)track.PullUps;
+        private static async Task SeedTrackPlays(List<AppUser> users, List<Track> tracks, DataContext context)
+        {
+            var random = new Random();
 
-                    users.ForEach(user => {
-                        var trackPlay = new TrackPlay {
-                            AppUserId = user.Id,
-                            User = user,
-                            TrackId = track.Id,
-                            Track = track,
-                            TrackPlayHistory = new List<TrackPlayHistory>() {
+            var dateToSet = DateTime.UtcNow;
+
+            tracks.ForEach(track => {
+                track.TrackPlays = new List<TrackPlay>();
+                var trackPlays = (List<TrackPlay>)track.TrackPlays;
+
+                track.PullUps = new List<PullUp>();
+                var pullUps = (List<PullUp>)track.PullUps;
+
+                users.ForEach(user => {
+                    var trackPlay = new TrackPlay
+                    {
+                        AppUserId = user.Id,
+                        User = user,
+                        TrackId = track.Id,
+                        Track = track,
+                        TrackPlayHistory = new List<TrackPlayHistory>() {
                                 new TrackPlayHistory {
                                     CreatedOn = dateToSet
                                 }
                             },
-                            LastPlayed = dateToSet
-                        };
+                        LastPlayed = dateToSet
+                    };
 
-                        track.TrackPlays.Add(trackPlay);
-                        track.CreatedOn = dateToSet;
+                    track.TrackPlays.Add(trackPlay);
+                    track.CreatedOn = dateToSet;
 
-                        var pullUp = new PullUp {
-                            UserId = user.Id,
-                            User = user,
-                            TrackId = track.Id,
-                            Track = track,
-                            CreatedOn = dateToSet,
-                            TimePulled = random.NextDouble() * 60
-                        };
+                    var pullUp = new PullUp
+                    {
+                        UserId = user.Id,
+                        User = user,
+                        TrackId = track.Id,
+                        Track = track,
+                        CreatedOn = dateToSet,
+                        TimePulled = random.NextDouble() * 60
+                    };
 
-                        pullUps.Add(pullUp);
+                    pullUps.Add(pullUp);
 
-                        dateToSet = dateToSet.AddDays(-1);
-                    });
-
+                    dateToSet = dateToSet.AddDays(-1);
                 });
 
-                await context.SaveChangesAsync();
+            });
 
-                users.ForEach(user => {
-                    user.Playlists = new List<Playlist>();
+            await context.SaveChangesAsync();
+        }
 
-                    for (int i = 0; i < 5; i++) {
-                        var playlist = new Playlist {
-                            Name = $"{user.UserName}: Playlist {i}",
-                            YoutubeId = $"{user.DiscordId}{i}"
-                        };
+        private static async Task SeedPlaylists(List<AppUser> users, List<Track> tracks, DataContext context)
+        {
+            users.ForEach(user => {
+                user.Playlists = new List<Playlist>();
 
-                        playlist.Tracks = tracks.Select(t => new PlaylistTrack {
-                            Playlist = playlist,
-                            PlaylistId = playlist.Id,
-                            Track = t,
-                            TrackId = t.Id,
-                            CreatedBy = user,
-                            CreatedOn = DateTime.UtcNow
-                        }).ToList();
+                for (int i = 0; i < 5; i++)
+                {
+                    var playlist = new Playlist
+                    {
+                        Name = $"{user.UserName}: Playlist {i}",
+                        YoutubeId = $"{user.DiscordId}{i}"
+                    };
 
-                        user.Playlists.Add(playlist);
-                    }
-                });
+                    playlist.Tracks = tracks.Select(t => new PlaylistTrack
+                    {
+                        Playlist = playlist,
+                        PlaylistId = playlist.Id,
+                        Track = t,
+                        TrackId = t.Id,
+                        CreatedBy = user,
+                        CreatedOn = DateTime.UtcNow
+                    }).ToList();
 
-                await context.SaveChangesAsync();
-            }
+                    user.Playlists.Add(playlist);
+                }
+            });
 
+            await context.SaveChangesAsync();
         }
     }
 }

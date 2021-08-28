@@ -19,7 +19,6 @@ namespace DisJockey.Discord {
         private readonly IServiceProvider _services;
         private readonly LavaNode _lavaNode;
 
-
         public DiscordService(DiscordSocketClient client, BotSettings botSettings, CommandService cmdService, IServiceProvider services, LavaNode lavaNode) {
             _cmdService = cmdService;
             _services = services;

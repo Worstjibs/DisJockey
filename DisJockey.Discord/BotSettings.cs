@@ -1,3 +1,5 @@
+using Discord;
+
 namespace DisJockey.Discord
 {
     public class BotSettings
@@ -9,5 +11,6 @@ namespace DisJockey.Discord
         public ushort LavalinkPort { get; set; }
         public string LavalinkPassword { get; set; }
         public bool LavalinkIsSSL { get; set; }
+        public LogSeverity LogLevel { get; set; }
     }
 }

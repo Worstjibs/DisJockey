@@ -17,13 +17,13 @@ namespace DisJockey.Extensions {
             services.AddSingleton(botSettings);
 
             var client = new DiscordSocketClient(new DiscordSocketConfig {
-                LogLevel = LogSeverity.Verbose,
+                LogLevel = botSettings.LogLevel,
                 AlwaysDownloadUsers = false
             });
             services.AddSingleton(client);
 
             var commandService = new CommandService(new CommandServiceConfig {
-                LogLevel = LogSeverity.Verbose,
+                LogLevel = botSettings.LogLevel,
                 CaseSensitiveCommands = false
             });
             services.AddSingleton(commandService);
@@ -35,7 +35,8 @@ namespace DisJockey.Extensions {
                 x.IsSSL = botSettings.LavalinkIsSSL;
                 x.Hostname = botSettings.LavalinkHost;
                 x.Port = botSettings.LavalinkPort;
-                x.Authorization = botSettings.LavalinkPassword;                
+                x.Authorization = botSettings.LavalinkPassword;
+                x.LogSeverity = botSettings.LogLevel;
             });
 
             services.AddSingleton<MusicService>();

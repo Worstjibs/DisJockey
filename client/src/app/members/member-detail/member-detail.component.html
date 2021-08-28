@@ -5,16 +5,13 @@
 
     <div class="col-9">
         <tabset>
-            <tab heading="Playlists">
-                <app-member-playlists [playlists]="member.playlists"
-                                        [discordId]="member.discordId">
-                </app-member-playlists>
-            </tab>
             <tab heading="Tracks Played">
                 <app-track-list [member]="member"></app-track-list>
             </tab>
-            <tab heading="Pull Ups">
-                Pull Ups
+            <tab heading="Playlists" *ngIf="isPlaylistsEnabled | async">
+                <app-member-playlists [playlists]="member.playlists"
+                                      [discordId]="member.discordId">
+                </app-member-playlists>
             </tab>
         </tabset>
     </div>
