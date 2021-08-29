@@ -18,11 +18,11 @@ Finally, you need to add `{Application Hostname}/signin-discord` to the redirect
 
 # Running
 
-You can launch the app by running `dotnet run` from inside the API folder. I've also included vscode launch options so you can debug through that.
+You can launch the app by running `dotnet run` from inside `/DisJockey`. I've also included vscode launch options so you can debug through that too.
 
-I've started using Visual Studio 2019, so have included the Angular App as an existing Website to view within the IDE.
+I've started using Visual Studio 2019, so have included the Angular App in `/DisJockey/ClientApp`.
 
-To make changes to Angular, you'll need to run `ng build` inside the client folder, as the API needs to serve static HTML files for Discord Authentication to work (this might be possible with `ng serve` but I haven't managed it). You can use the argument `--watch` to automatically build the Angular solution when you make changes to it.
+To make changes to Angular, you'll need to run `ng build` inside the client folder, as the API needs to serve static HTML files for Discord Authentication to work (this might be possible with `ng serve` but I haven't managed it). You can use the argument `--watch` to automatically build the Angular solution when you make changes to it. I may modify this at some point to serve up the Angular App as an SPA, but it wasn't high priority as the current approach works well.
 
 # Contributing
 
