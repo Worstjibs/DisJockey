@@ -1,6 +1,5 @@
-using System.Net.Http;
-using DisJockey.Data;
 using DisJockey.Extensions;
+using DisJockey.Middleware;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -33,13 +32,6 @@ namespace DisJockey {
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env) {
-
-            if (env.IsDevelopment()) {
-                app.UseDeveloperExceptionPage();
-                // app.UseSwagger();
-                // app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "API v1"));
-            }
-
             app.UseHttpsRedirection();
 
             app.UseRouting();
@@ -51,6 +43,8 @@ namespace DisJockey {
 
             app.UseDefaultFiles();
             app.UseStaticFiles();
+
+            app.UseMiddleware<ExceptionMiddleware>();
 
             app.UseEndpoints(endpoints => {
                 endpoints.MapControllers();

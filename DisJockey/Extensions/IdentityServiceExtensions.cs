@@ -12,7 +12,7 @@ namespace DisJockey.Extensions {
     public static class IdentityServiceExtensions {
         public static IServiceCollection AddIdentityServices(this IServiceCollection services, IConfiguration config) {
             var authenticationSettings = config.GetSection("AuthenticationSettings").Get<AuthenticationSettings>();
-            services.AddSingleton<AuthenticationSettings>(authenticationSettings);
+            services.AddSingleton(authenticationSettings);
 
             services.AddAuthentication(options => {
                 options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
