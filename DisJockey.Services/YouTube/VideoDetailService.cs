@@ -12,6 +12,9 @@ using GoogleData = Google.Apis.YouTube.v3.Data;
 
 namespace DisJockey.Services.YouTube {
     public class VideoDetailService : IVideoDetailService {
+        private const int MAX_ITEMS = 10000;
+        private const int MAX_RESULTS = 50;
+
         private readonly YouTubeService _youTubeService;
         public VideoDetailService(IOptions<YoutubeSettings> config) {
             _youTubeService = new YouTubeService(new BaseClientService.Initializer() {
@@ -20,7 +23,7 @@ namespace DisJockey.Services.YouTube {
         }
 
         public async Task<Playlist> GetPlaylistDetails(string playlistId) {
-            var playlistRequest = _youTubeService.Playlists.List("snippet");
+            var playlistRequest = _youTubeService.Playlists.List("snippet,contentDetails");
             playlistRequest.Id = playlistId;
 
             var playlistResponse = await playlistRequest.ExecuteAsync();
@@ -29,18 +32,21 @@ namespace DisJockey.Services.YouTube {
                 return null;
             }
 
+            var playlistResult = playlistResponse.Items.First();
+
             var playlist = new Playlist {
-                Name = playlistResponse.Items.First().Snippet.Title,
+                Name = playlistResult.Snippet.Title,
                 YoutubeId = playlistId,
                 Tracks = new List<PlaylistTrack>()
             };
 
             var pageToken = "";
+            var playlistItemCount = playlistResult.ContentDetails.ItemCount;
 
             do {
                 var playlistItemsRequest = _youTubeService.PlaylistItems.List("snippet,contentDetails");
                 playlistItemsRequest.PlaylistId = playlistId;
-                playlistItemsRequest.MaxResults = 50;
+                playlistItemsRequest.MaxResults = playlistItemCount < MAX_ITEMS ? playlistItemCount : MAX_ITEMS;
                 playlistItemsRequest.PageToken = pageToken;
 
                 var playlistItemsResponse = await playlistItemsRequest.ExecuteAsync();
@@ -48,7 +54,7 @@ namespace DisJockey.Services.YouTube {
                 var playlistTracks = playlistItemsResponse?.Items;
 
                 ProcessTracks(playlist, playlistTracks);
-                pageToken = playlistItemsResponse.NextPageToken;
+                pageToken = playlist.Tracks.Count >= MAX_ITEMS || playlist.Tracks.Count == playlistItemCount ? null : playlistItemsResponse.NextPageToken;
             } while (pageToken != null);
 
             return playlist;
