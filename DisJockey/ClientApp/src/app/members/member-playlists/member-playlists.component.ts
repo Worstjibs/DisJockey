@@ -2,6 +2,7 @@ import { Component, Input, OnInit, ViewChild } from '@angular/core';
 import { map, take } from 'rxjs/operators';
 import { Track } from 'src/app/_models/track';
 import { TracksService } from 'src/app/_services/tracks.service';
+import { TrackListComponent } from '../../tracks/track-list/track-list.component';
 import { Playlist } from '../../_models/playlist';
 import { AccountService } from '../../_services/account.service';
 import { PlaylistsService } from '../../_services/playlists.service';
@@ -12,6 +13,8 @@ import { PlaylistsService } from '../../_services/playlists.service';
 	styleUrls: ['./member-playlists.component.css']
 })
 export class MemberPlaylistsComponent implements OnInit {
+	@ViewChild('trackListComponent') trackListComponent: TrackListComponent;
+
 	@Input() playlists: Playlist[];
 	@Input() discordId: string;
 	selectedPlaylist: Playlist;
@@ -67,8 +70,12 @@ export class MemberPlaylistsComponent implements OnInit {
         this.tracksService.playTrack(track, true);
     }    
 
-    queueTrack(track: Track) {
-        this.tracksService.playTrack(track, false);
+	queueTrack(track: Track) {
+		this.tracksService.playTrack(track, false);
+	}
+
+	onScroll(event) {
+		this.trackListComponent.onScroll(event);
     }
 
 }

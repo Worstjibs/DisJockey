@@ -1,4 +1,4 @@
-<div [ngClass]="{'tab-container-content': !innerContainer}" #scrollableList id="scrollable-list">
+<div [ngClass]="{'tab-container-content': !innerContainer}" (scroll)="onScroll($event)" id="scrollable-list">
     <div *ngFor="let track of results">
         <app-track-item #trackItem
                         [track]="track"
@@ -6,9 +6,5 @@
                         (trackPlayed)="playTrack($event)"
                         (trackExpanded)="trackExpanded($event)">
         </app-track-item>
-    </div>
-
-    <div class="d-flex justify-content-center" *ngIf="pagination && !noMoreResults">
-        <button class="btn btn-primary my-3" *ngIf="results.length > 0" (click)="loadMore()">Load More</button>
     </div>
 </div>

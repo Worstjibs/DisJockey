@@ -38,9 +38,11 @@ export abstract class BaseListComponent<T> {
     }
 
     loadMore(): void {
-        this.userParams.pageNumber++;
+        if (!this.noMoreResults) {
+            this.userParams.pageNumber++;
 
-        this.loadData();
+            this.loadData();
+        }
     }
 
     abstract loadServiceData(): Observable<PaginatedResult<T>>;

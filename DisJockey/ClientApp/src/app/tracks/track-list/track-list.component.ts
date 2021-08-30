@@ -17,12 +17,12 @@ import { TrackItemComponent } from '../track-item/track-item.component';
 	styleUrls: ['./track-list.component.css']
 })
 export class TrackListComponent extends BaseListComponent<Track> implements OnInit {
-	@Input() member: Member;
+	@ViewChildren('trackItem') trackItemComponents: TrackItemComponent[];
 
+	@Input() member: Member;
 	@Input() innerContainer: boolean;
 
 	_playlist: Playlist;
-
 	@Input() set playlist(playlist: Playlist) {
 		let loadPlaylistData = this._playlist ? true : false;
 
@@ -33,7 +33,7 @@ export class TrackListComponent extends BaseListComponent<Track> implements OnIn
         }		
 	}
 
-	@ViewChildren('trackItem') trackItemComponents: TrackItemComponent[];
+	scrollTimeout: boolean;
 
 	constructor(
 		private readonly tracksService: TracksService,
@@ -76,6 +76,17 @@ export class TrackListComponent extends BaseListComponent<Track> implements OnIn
 		window.setTimeout(() => {
 			element.scrollIntoView({ behavior: 'smooth', block: 'center' });
 		}, 600);
+	}
+
+	onScroll(event): void {
+		if (!this.scrollTimeout) {
+			if (event.target.offsetHeight + event.target.scrollTop >= event.target.scrollHeight) {
+				this.loadMore();
+
+				this.scrollTimeout = true;
+				window.setTimeout(() => { this.scrollTimeout = false; }, 50);
+			}
+		}
 	}
 
 	loadServiceData(): Observable<PaginatedResult<Track>> {

@@ -10,9 +10,10 @@
             [ngClass]="{'active': addPlaylistEnabled}">Add Playlist</li>
     </ul>
 
-    <div id="playlist-tracks" class="col-10 list-group">
+    <div (scroll)="onScroll($event)" id="playlist-tracks" class="col-10 list-group">
         <ul *ngIf="!addPlaylistEnabled">
-            <app-track-list [playlist]="selectedPlaylist"
+            <app-track-list #trackListComponent
+                            [playlist]="selectedPlaylist"
                             [innerContainer]="true"></app-track-list>
         </ul>
 
