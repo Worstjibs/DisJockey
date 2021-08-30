@@ -24,8 +24,13 @@ export class TrackListComponent extends BaseListComponent<Track> implements OnIn
 	_playlist: Playlist;
 
 	@Input() set playlist(playlist: Playlist) {
+		let loadPlaylistData = this._playlist ? true : false;
+
 		this._playlist = playlist;
-		this.resetUserParams();
+
+		if (loadPlaylistData) {
+			this.resetUserParams();
+        }		
 	}
 
 	@ViewChildren('trackItem') trackItemComponents: TrackItemComponent[];
