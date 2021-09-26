@@ -1,3 +1,5 @@
+using System.Text.Json;
+
 namespace DisJockey.Shared.Helpers {
     public class PaginationHeader {
         public int CurrentPage { get; set; }
@@ -9,6 +11,14 @@ namespace DisJockey.Shared.Helpers {
             ItemsPerPage = itemsPerPage;
             TotalPages = totalPages;
             TotalItems = totalItems;
+        }
+
+        public override string ToString() {
+            var options = new JsonSerializerOptions {
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+            };
+
+            return JsonSerializer.Serialize(this, options);
         }
     }
 }

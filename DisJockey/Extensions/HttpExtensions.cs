@@ -7,11 +7,14 @@ namespace DisJockey.Extensions {
         public static void AddPaginationHeader(this HttpResponse response, int currentPage, int itemsPerPage, int totalPages, int totalItems) {
             var paginationHeader = new PaginationHeader(currentPage, itemsPerPage, totalPages, totalItems);
 
-            var options = new JsonSerializerOptions {
-                PropertyNamingPolicy = JsonNamingPolicy.CamelCase
-            };
+            response.Headers.Add("Pagination", paginationHeader.ToString());
+            response.Headers.Add("Access-Control-Expose-Headers", "Pagination");
+        }
 
-            response.Headers.Add("Pagination", JsonSerializer.Serialize(paginationHeader, options));
+        public static void AddYouTubePaginationHeader(this HttpResponse response, string currentPageToken, string nextPageToken, string previousPageToken) {
+            var paginationHeader = new YouTubePaginationHeader(currentPageToken, nextPageToken, previousPageToken);
+
+            response.Headers.Add("Pagination", paginationHeader.ToString());
             response.Headers.Add("Access-Control-Expose-Headers", "Pagination");
         }
     }

@@ -10,6 +10,7 @@ using DisJockey.Services.Interfaces;
 using DisJockey.Shared.DTOs.PullUps;
 using Microsoft.AspNetCore.Http;
 using DisJockey.Shared.Extensions;
+using System.Collections.Generic;
 
 namespace DisJockey.Data {
     public class TrackRepository : ITrackRepository {
@@ -73,6 +74,15 @@ namespace DisJockey.Data {
             };
 
             return await PagedList<PullUpDto>.CreateAsync(query, paginationParams.PageNumber, paginationParams.PageSize);
+        }
+
+        public async Task<IEnumerable<Track>> GetTracksByYouTubeIdAsync(IEnumerable<string> youTubeIds) {
+            var query = await _context.Tracks.AsNoTracking()
+                .Include(x => x.TrackPlays).ThenInclude(x => x.User)
+                .Where(x => youTubeIds.Contains(x.YoutubeId))
+                .ToListAsync();
+
+            return query;
         }
 
         private static async Task<PagedList<TrackListDto>> CreatePagedList(PaginationParams paginationParams, IQueryable<TrackListDto> query) {

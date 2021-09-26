@@ -13,7 +13,6 @@ using GoogleData = Google.Apis.YouTube.v3.Data;
 namespace DisJockey.Services.YouTube {
     public class VideoDetailService : IVideoDetailService {
         private const int MAX_ITEMS = 10000;
-        private const int MAX_RESULTS = 50;
 
         private readonly YouTubeService _youTubeService;
         public VideoDetailService(IOptions<YoutubeSettings> config) {
@@ -22,7 +21,7 @@ namespace DisJockey.Services.YouTube {
             });
         }
 
-        public async Task<Playlist> GetPlaylistDetails(string playlistId) {
+        public async Task<Playlist> GetPlaylistDetailsAsync(string playlistId) {
             var playlistRequest = _youTubeService.Playlists.List("snippet,contentDetails");
             playlistRequest.Id = playlistId;
 
@@ -60,7 +59,7 @@ namespace DisJockey.Services.YouTube {
             return playlist;
         }
 
-        public async Task<Track> GetVideoDetails(Track track) {
+        public async Task<Track> GetVideoDetailsAsync(Track track) {
             var searchRequest = _youTubeService.Videos.List("snippet");
             searchRequest.Id = track.YoutubeId;
 
@@ -71,7 +70,7 @@ namespace DisJockey.Services.YouTube {
             if (youtubeVideo != null) {
                 track.Title = youtubeVideo.Snippet.Title;
                 track.Description = youtubeVideo.Snippet.Description;
-                track.ChannelTitle = youtubeVideo.Snippet. ChannelTitle;
+                track.ChannelTitle = youtubeVideo.Snippet.ChannelTitle;
                 track.SmallThumbnail = youtubeVideo.Snippet.Thumbnails.Medium?.Url;
                 track.MediumThumbnail = youtubeVideo.Snippet.Thumbnails.High?.Url;
                 track.LargeThumbnail = youtubeVideo.Snippet.Thumbnails.Standard?.Url;
@@ -81,6 +80,27 @@ namespace DisJockey.Services.YouTube {
 
             throw new Exception("Invalid Youtube Id");
         }
+
+        public async Task<YouTubePagedList<Track>> QueryTracksAsync(PaginationParams paginationParams) {
+            var searchRequest = _youTubeService.Search.List("snippet");
+            searchRequest.Q = paginationParams.Query;
+            searchRequest.Type = "video";
+            searchRequest.MaxResults = paginationParams.PageSize;
+            searchRequest.PageToken = paginationParams.PageToken;
+
+            var searchResponse = await searchRequest.ExecuteAsync();
+
+            if (!searchResponse.Items.Any()) {
+                return null;
+            }
+
+            var tracks = searchResponse.Items.Select(MapSearchResultToTrack);
+
+            var pagedList = new YouTubePagedList<Track>(tracks, paginationParams.PageToken, searchResponse.NextPageToken, searchResponse.PrevPageToken);
+
+            return pagedList;
+        }
+
 
         private static void ProcessTracks(Playlist playlist, IList<GoogleData.PlaylistItem> playlistItems) {
             var playlistTracks = playlistItems.Select(x => new PlaylistTrack {
@@ -98,6 +118,20 @@ namespace DisJockey.Services.YouTube {
             });
 
             ((List<PlaylistTrack>)playlist.Tracks).AddRange(playlistTracks);
+        }
+
+        private Track MapSearchResultToTrack(GoogleData.SearchResult result) {
+            var snippet = result.Snippet;
+
+            return new Track {
+                YoutubeId = result.Id.VideoId,
+                Title = snippet.Title,
+                Description = snippet.Description,
+                ChannelTitle = snippet.ChannelTitle,
+                SmallThumbnail = snippet.Thumbnails.Medium?.Url,
+                MediumThumbnail = snippet.Thumbnails.High?.Url,
+                LargeThumbnail = snippet.Thumbnails.Standard?.Url
+            };
         }
     }
 }

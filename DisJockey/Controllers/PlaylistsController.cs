@@ -28,7 +28,7 @@ namespace DisJockey.Controllers {
                 return Conflict($"Playlist with Id {playlistDto.PlaylistId} already exists");
             }
 
-            var playlist = await _videoDetailService.GetPlaylistDetails(playlistDto.PlaylistId);
+            var playlist = await _videoDetailService.GetPlaylistDetailsAsync(playlistDto.PlaylistId);
 
             if (playlist == null) {
                 return BadRequest("Playlist Id Invalid");

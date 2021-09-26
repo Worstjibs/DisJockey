@@ -49,7 +49,7 @@ namespace DisJockey.Services {
                 };
 
                 try {
-                    track = await _videoService.GetVideoDetails(track);
+                    track = await _videoService.GetVideoDetailsAsync(track);
                 } catch (Exception e) {
                     Console.WriteLine(e);
                 }
