@@ -4,6 +4,7 @@ import { TracksService } from '../_services/tracks.service';
 import { Track } from '../_models/track';
 import { UserParams } from '../_models/userParams';
 import { TrackListComponent } from './track-list/track-list.component';
+import { TrackListType } from '../_enums/trackListType';
 
 @Component({
 	selector: 'app-tracks',
@@ -12,6 +13,8 @@ import { TrackListComponent } from './track-list/track-list.component';
 })
 export class TracksComponent {
 	@ViewChild(TrackListComponent) trackListComponent: TrackListComponent;
+
+	TrackListType = TrackListType;
 
 	constructor() {   
 	}

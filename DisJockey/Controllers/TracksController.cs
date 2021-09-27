@@ -81,9 +81,9 @@ namespace DisJockey.Controllers {
 
         [HttpPost("play")]
         public async Task<ActionResult> PlayTrack(TrackPlayRequestDto trackPlayDto) {
-            var track = await _unitOfWork.TrackRepository.GetTrackByYoutubeIdAsync(trackPlayDto.YoutubeId);
+            //var track = await _unitOfWork.TrackRepository.GetTrackByYoutubeIdAsync(trackPlayDto.YoutubeId);
 
-            if (track == null) return NotFound("Track with YoutubeId " + trackPlayDto.YoutubeId + "Not Found");
+            //if (track == null) return NotFound("Track with YoutubeId " + trackPlayDto.YoutubeId + "Not Found");
 
             var discordId = User.GetDiscordId();
             if (!discordId.HasValue) {
@@ -97,7 +97,7 @@ namespace DisJockey.Controllers {
                 return BadRequest("You must be connected to a Voice channel to play a track");
             }
 
-            await _musicService.PlayTrack("https://youtu.be/" + track.YoutubeId, user, guild, trackPlayDto.PlayNow);
+            await _musicService.PlayTrack("https://youtu.be/" + trackPlayDto.YoutubeId, user, guild, trackPlayDto.PlayNow);
             return Ok();
 
         }

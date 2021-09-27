@@ -76,10 +76,10 @@ namespace DisJockey.Data {
             return await PagedList<PullUpDto>.CreateAsync(query, paginationParams.PageNumber, paginationParams.PageSize);
         }
 
-        public async Task<IEnumerable<Track>> GetTracksByYouTubeIdAsync(IEnumerable<string> youTubeIds) {
+        public async Task<IEnumerable<TrackListDto>> GetTracksByYouTubeIdAsync(IEnumerable<string> youTubeIds) {
             var query = await _context.Tracks.AsNoTracking()
-                .Include(x => x.TrackPlays).ThenInclude(x => x.User)
                 .Where(x => youTubeIds.Contains(x.YoutubeId))
+                .ProjectTo<TrackListDto>(_mapper.ConfigurationProvider)
                 .ToListAsync();
 
             return query;

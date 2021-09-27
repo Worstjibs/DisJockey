@@ -1,6 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { map, take } from 'rxjs/operators';
+import { TrackListType } from '../../_enums/trackListType';
 import { Member } from '../../_models/member';
 import { Playlist } from '../../_models/playlist';
 import { AccountService } from '../../_services/account.service';
@@ -13,6 +14,8 @@ import { PlaylistsService } from '../../_services/playlists.service';
 })
 export class MemberDetailComponent implements OnInit {
 	member: Member;
+
+	TrackListType = TrackListType;
 
 	constructor(
 		private readonly route: ActivatedRoute,

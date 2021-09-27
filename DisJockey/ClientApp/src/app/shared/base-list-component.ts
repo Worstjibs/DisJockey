@@ -8,7 +8,7 @@ export abstract class BaseListComponent<T> {
     results: T[];
 
     get noMoreResults() {
-        return this.pagination.currentPage == this.pagination.totalPages;
+        return this.pagination.noMoreResults();
     }
 
     loadData(): void {
@@ -39,7 +39,7 @@ export abstract class BaseListComponent<T> {
 
     loadMore(): void {
         if (!this.noMoreResults) {
-            this.userParams.pageNumber++;
+            this.userParams.incrementPage(this.pagination);
 
             this.loadData();
         }

@@ -6,7 +6,8 @@ import { PaginatedResult } from '../_models/pagination';
 import { Playlist } from '../_models/playlist';
 import { Track } from '../_models/track';
 import { UserParams } from '../_models/userParams';
-import { getPaginatedResult, getPaginationHeaders } from './paginationHelper';
+import { getPaginatedResult, getPaginationHeaders } from '../_helper/paginationHelper';
+import { PaginationType } from '../_enums/paginationType';
 
 @Injectable({
 	providedIn: 'root'
@@ -19,7 +20,7 @@ export class PlaylistsService {
 	getPlaylistTracks(userParams: UserParams, youtubeId: string): Observable<PaginatedResult<Track>> {
 		let params = getPaginationHeaders(userParams.pageNumber, userParams.pageSize, userParams.sortBy);
 
-		return getPaginatedResult<Track>(`${this.baseUrl}/${youtubeId}`, params, this.http);
+		return getPaginatedResult<Track>(`${this.baseUrl}/${youtubeId}`, params, this.http, PaginationType.DisJockey);
 	}
 
 	addPlaylist(youtubeId: string): Observable<Playlist> {

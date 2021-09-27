@@ -19,6 +19,7 @@ import { MemberPlaylistsComponent } from './members/member-playlists/member-play
 import { MemberCardComponent } from './members/member-card/member-card.component';
 import { UnauthorizedComponent } from './errors/unauthorized/unauthorized.component';
 import { TrackListComponent } from './tracks/track-list/track-list.component';
+import { SearchComponent } from './search/search.component';
 
 
 @NgModule({
@@ -35,7 +36,8 @@ import { TrackListComponent } from './tracks/track-list/track-list.component';
         MemberPlaylistsComponent,
         MemberCardComponent,
         UnauthorizedComponent,
-        TrackListComponent
+        TrackListComponent,
+        SearchComponent
     ],
     imports: [
         BrowserModule,

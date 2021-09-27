@@ -9,6 +9,7 @@ using Microsoft.Extensions.Options;
 using Google.Apis.Services;
 using Google.Apis.YouTube.v3;
 using GoogleData = Google.Apis.YouTube.v3.Data;
+using System.Web;
 
 namespace DisJockey.Services.YouTube {
     public class VideoDetailService : IVideoDetailService {
@@ -125,12 +126,12 @@ namespace DisJockey.Services.YouTube {
 
             return new Track {
                 YoutubeId = result.Id.VideoId,
-                Title = snippet.Title,
+                Title = HttpUtility.HtmlDecode(snippet.Title),
                 Description = snippet.Description,
                 ChannelTitle = snippet.ChannelTitle,
                 SmallThumbnail = snippet.Thumbnails.Medium?.Url,
-                MediumThumbnail = snippet.Thumbnails.High?.Url,
-                LargeThumbnail = snippet.Thumbnails.Standard?.Url
+                MediumThumbnail = snippet.Thumbnails.Medium?.Url,
+                LargeThumbnail = snippet.Thumbnails.High?.Url
             };
         }
     }

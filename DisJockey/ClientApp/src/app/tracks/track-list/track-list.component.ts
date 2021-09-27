@@ -1,13 +1,17 @@
 import { Component, Input, OnInit, ViewChildren } from '@angular/core';
 import { Observable } from 'rxjs';
 import { BaseListComponent } from '../../shared/base-list-component';
+import { PaginationType } from '../../_enums/paginationType';
+import { TrackListType } from '../../_enums/trackListType';
 import { TrackLikeEvent } from '../../_events/trackLikeEvent';
 import { TrackPlayEvent } from '../../_events/trackPlayEvent';
 import { Member } from '../../_models/member';
 import { PaginatedResult } from '../../_models/pagination';
 import { Playlist } from '../../_models/playlist';
 import { Track } from '../../_models/track';
+import { UserParams } from '../../_models/userParams';
 import { PlaylistsService } from '../../_services/playlists.service';
+import { SearchService } from '../../_services/search.service';
 import { TracksService } from '../../_services/tracks.service';
 import { TrackItemComponent } from '../track-item/track-item.component';
 
@@ -18,6 +22,9 @@ import { TrackItemComponent } from '../track-item/track-item.component';
 })
 export class TrackListComponent extends BaseListComponent<Track> implements OnInit {
 	@ViewChildren('trackItem') trackItemComponents: TrackItemComponent[];
+
+	TrackListType = TrackListType;
+	@Input() trackListType: TrackListType;
 
 	@Input() member: Member;
 	@Input() innerContainer: boolean;
@@ -37,13 +44,16 @@ export class TrackListComponent extends BaseListComponent<Track> implements OnIn
 
 	constructor(
 		private readonly tracksService: TracksService,
-		private readonly playlistsService: PlaylistsService
+		private readonly playlistsService: PlaylistsService,
+		private readonly searchService: SearchService
 	) {
 		super();
 	}
 
 	ngOnInit(): void {
-		this.resetUserParams();
+		if (this.trackListType !== TrackListType.Search) {
+			this.resetUserParams();
+		}		
 	}
 
 	likeTrack(event): void {
@@ -89,14 +99,25 @@ export class TrackListComponent extends BaseListComponent<Track> implements OnIn
 		}
 	}
 
-	loadServiceData(): Observable<PaginatedResult<Track>> {
-		if (this.member) {
-			return this.tracksService.getTrackPlaysForMember(this.userParams, this.member.discordId);
-		} else if (this._playlist) {
-			return this.playlistsService.getPlaylistTracks(this.userParams, this._playlist.youtubeId);
-		}
+	search(query: string) {
+		const userParams = new UserParams(query);
 
-		return this.tracksService.getTracks(this.userParams);
+		this.resetUserParams(userParams);
+    }
+
+	loadServiceData(): Observable<PaginatedResult<Track>> {
+		switch (this.trackListType) {
+			case (TrackListType.Tracks):
+				return this.tracksService.getTracks(this.userParams);
+			case (TrackListType.MemberTracks):
+				return this.tracksService.getTrackPlaysForMember(this.userParams, this.member.discordId);
+			case (TrackListType.Playlist):
+				return this.playlistsService.getPlaylistTracks(this.userParams, this._playlist.youtubeId);
+			case (TrackListType.Search):
+				return this.searchService.searchTracks(this.userParams);
+			default:
+				throw "Invalid TrackListType";
+        }		
 	}
 
 }

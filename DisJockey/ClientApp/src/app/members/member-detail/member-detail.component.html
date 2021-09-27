@@ -6,7 +6,7 @@
     <div class="col-9">
         <tabset>
             <tab heading="Tracks Played">
-                <app-track-list [member]="member"></app-track-list>
+                <app-track-list [trackListType]="TrackListType.MemberTracks" [member]="member"></app-track-list>
             </tab>
             <tab heading="Playlists" *ngIf="isPlaylistsEnabled | async">
                 <app-member-playlists [playlists]="member.playlists"

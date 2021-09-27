@@ -13,6 +13,7 @@
     <div (scroll)="onScroll($event)" id="playlist-tracks" class="col-10 list-group">
         <ul *ngIf="!addPlaylistEnabled">
             <app-track-list #trackListComponent
+                            [trackListType]="TrackListType.Playlist"
                             [playlist]="selectedPlaylist"
                             [innerContainer]="true"></app-track-list>
         </ul>

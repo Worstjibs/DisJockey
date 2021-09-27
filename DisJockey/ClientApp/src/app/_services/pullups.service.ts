@@ -5,7 +5,8 @@ import { environment } from '../../environments/environment.prod';
 import { PullUp } from '../_models/pullUp';
 import { PaginatedResult } from '../_models/pagination';
 import { UserParams } from '../_models/userParams';
-import { getPaginatedResult, getPaginationHeaders } from './paginationHelper';
+import { getPaginatedResult, getPaginationHeaders } from '../_helper/paginationHelper';
+import { PaginationType } from '../_enums/paginationType';
 
 @Injectable({
 	providedIn: 'root'
@@ -18,6 +19,6 @@ export class PullupsService {
 	getPullupsForMember(userParams: UserParams, discordId: string): Observable<PaginatedResult<PullUp>> {
         let params = getPaginationHeaders(userParams.pageNumber, userParams.pageSize, userParams.sortBy);
 
-		return getPaginatedResult<PullUp>(`${this.baseUrl}/${discordId}`, params, this.http);
+		return getPaginatedResult<PullUp>(`${this.baseUrl}/${discordId}`, params, this.http, PaginationType.DisJockey);
 	}
 }

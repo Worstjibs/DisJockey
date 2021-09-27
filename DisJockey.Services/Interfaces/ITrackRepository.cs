@@ -13,7 +13,7 @@ namespace DisJockey.Services.Interfaces {
         Task<PagedList<TrackListDto>> GetTracks(PaginationParams paginationParams);
         Task<PagedList<TrackListDto>> GetTrackPlaysForMember(PaginationParams paginationParams, ulong discordId);
         Task<PagedList<PullUpDto>> GetPullUpsForMember (PaginationParams paginationParams, ulong discordId);
-        Task<IEnumerable<Track>> GetTracksByYouTubeIdAsync(IEnumerable<string> youTubeIds);
+        Task<IEnumerable<TrackListDto>> GetTracksByYouTubeIdAsync(IEnumerable<string> youTubeIds);
         void AddTrack(Track track);
     }
 }

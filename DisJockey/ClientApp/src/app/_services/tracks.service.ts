@@ -5,9 +5,10 @@ import { map, take } from 'rxjs/operators';
 import { Track } from '../_models/track';
 import { Observable, of } from 'rxjs';
 import { UserParams } from '../_models/userParams';
-import { getPaginatedResult, getPaginationHeaders } from './paginationHelper';
+import { getPaginatedResult, getPaginationHeaders } from '../_helper/paginationHelper';
 import { PaginatedResult } from '../_models/pagination';
 import { ToastrService } from 'ngx-toastr';
+import { PaginationType } from '../_enums/paginationType';
 
 @Injectable({
     providedIn: 'root'
@@ -37,7 +38,7 @@ export class TracksService {
 
         let params = getPaginationHeaders(userParams.pageNumber, userParams.pageSize, userParams.sortBy);
 
-        return getPaginatedResult<Track>(url, params, this.http);
+        return getPaginatedResult<Track>(url, params, this.http, PaginationType.DisJockey);
     }
 
     postTrackLike(track: Track, liked: boolean) {        

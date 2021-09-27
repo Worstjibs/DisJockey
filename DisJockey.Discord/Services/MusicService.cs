@@ -28,7 +28,7 @@ namespace DisJockey.Discord.Services {
             }
             var player = _lavaNode.GetPlayer(guild);
 
-            var results = await _lavaNode.SearchYouTubeAsync(query);
+            var results = await _lavaNode.SearchYouTubeAsync($"\"{query}\"");
 
             if (results.LoadStatus == LoadStatus.LoadFailed || results.LoadStatus == LoadStatus.NoMatches) {
                 return "No matches found";
@@ -116,7 +116,7 @@ namespace DisJockey.Discord.Services {
                 return;
             }
 
-            if (!(queueable is LavaTrack track)) {
+            if (queueable is not LavaTrack track) {
                 await player.TextChannel.SendMessageAsync("Something wrong with the next track");
                 return;
             }
