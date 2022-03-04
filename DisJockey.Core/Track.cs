@@ -18,5 +18,6 @@ namespace DisJockey.Core {
         public ICollection<TrackLike> Likes { get; set; }
         public ICollection<PlaylistTrack> Playlists { get; set; }
         public ICollection<PullUp> PullUps { get; set; }
+        public bool Blacklisted { get; set; }
     }
 }

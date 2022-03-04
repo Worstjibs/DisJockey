@@ -27,6 +27,9 @@ namespace DisJockey.Data {
                 .WithOne(tp => tp.Track)
                 .HasForeignKey(tp => tp.TrackId);
 
+            builder.Entity<Track>()
+                .HasQueryFilter(x => !x.Blacklisted);
+
             // AppUserTrack configuration:
             // Add Foreign keys for AppUser
             builder.Entity<TrackPlay>()

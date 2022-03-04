@@ -13,22 +13,26 @@ using DisJockey.Services.Interfaces;
 using DisJockey.Shared.Helpers;
 using DisJockey.Shared.Extensions;
 
-namespace DisJockey.Controllers {
+namespace DisJockey.Controllers
+{
     [Authorize]
-    public class TracksController : BaseApiController {
+    public class TracksController : BaseApiController
+    {
         private readonly IUnitOfWork _unitOfWork;
         private readonly DiscordSocketClient _client;
         private readonly MusicService _musicService;
 
         public TracksController(IUnitOfWork unitOfWork, DiscordSocketClient client,
-            MusicService musicService) {
+            MusicService musicService)
+        {
             _musicService = musicService;
             _unitOfWork = unitOfWork;
             _client = client;
         }
 
         [HttpGet]
-        public async Task<ActionResult<PagedList<TrackListDto>>> GetTracks([FromQuery] PaginationParams paginationParams) {
+        public async Task<ActionResult<PagedList<TrackListDto>>> GetTracks([FromQuery] PaginationParams paginationParams)
+        {
             var tracks = await _unitOfWork.TrackRepository.GetTracks(paginationParams);
 
             Response.AddPaginationHeader(tracks.CurrentPage, tracks.ItemsPerPage, tracks.TotalPages, tracks.TotalCount);
@@ -37,7 +41,8 @@ namespace DisJockey.Controllers {
         }
 
         [HttpGet("{discordId}")]
-        public async Task<ActionResult<PagedList<TrackListDto>>> GetTrackPlaysForMember([FromQuery] PaginationParams paginationParams, ulong discordId) {
+        public async Task<ActionResult<PagedList<TrackListDto>>> GetTrackPlaysForMember([FromQuery] PaginationParams paginationParams, ulong discordId)
+        {
             var tracks = await _unitOfWork.TrackRepository.GetTrackPlaysForMember(paginationParams, discordId);
 
             Response.AddPaginationHeader(tracks.CurrentPage, tracks.ItemsPerPage, tracks.TotalPages, tracks.TotalCount);
@@ -46,13 +51,15 @@ namespace DisJockey.Controllers {
         }
 
         [HttpPost("like")]
-        public async Task<ActionResult> LikeTrack(TrackLikeAddDto trackLikeDto) {
+        public async Task<ActionResult> LikeTrack(TrackLikeAddDto trackLikeDto)
+        {
             var track = await _unitOfWork.TrackRepository.GetTrackByYoutubeIdAsync(trackLikeDto.YoutubeId);
 
             if (track == null) return BadRequest("Track does not exist");
 
             var discordId = User.GetDiscordId();
-            if (!discordId.HasValue) {
+            if (!discordId.HasValue)
+            {
                 return BadRequest("Invalid DiscordId");
             }
 
@@ -62,8 +69,10 @@ namespace DisJockey.Controllers {
 
             var trackLike = track.Likes.FirstOrDefault(t => t.User.DiscordId == discordId);
 
-            if (trackLike == null) {
-                trackLike = new TrackLike {
+            if (trackLike == null)
+            {
+                trackLike = new TrackLike
+                {
                     UserId = user.Id,
                     TrackId = track.Id
                 };
@@ -80,26 +89,41 @@ namespace DisJockey.Controllers {
         }
 
         [HttpPost("play")]
-        public async Task<ActionResult> PlayTrack(TrackPlayRequestDto trackPlayDto) {
-            //var track = await _unitOfWork.TrackRepository.GetTrackByYoutubeIdAsync(trackPlayDto.YoutubeId);
-
-            //if (track == null) return NotFound("Track with YoutubeId " + trackPlayDto.YoutubeId + "Not Found");
-
+        public async Task<ActionResult> PlayTrack(TrackPlayRequestDto trackPlayDto)
+        {
             var discordId = User.GetDiscordId();
-            if (!discordId.HasValue) {
+            if (!discordId.HasValue)
+            {
                 return BadRequest("Invalid DiscordId");
             }
 
             var user = _client.GetUser(discordId.Value);
 
             var guild = _client.Guilds.FirstOrDefault(x => x.VoiceChannels.Any(v => v.Users.Any(u => u.Id == user.Id)));
-            if (guild == null) {
+            if (guild == null)
+            {
                 return BadRequest("You must be connected to a Voice channel to play a track");
             }
 
             await _musicService.PlayTrack("https://youtu.be/" + trackPlayDto.YoutubeId, user, guild, trackPlayDto.PlayNow);
             return Ok();
 
+        }
+
+        [HttpPut("{id}/blacklist")]
+        public async Task<ActionResult> BlacklistTrack(int trackId)
+        {
+            var track = await _unitOfWork.TrackRepository.GetTrackByIdAsync(trackId);
+
+            if (track == null)
+                return NotFound($"Track with Id {trackId} not found.");
+
+            if (track.Blacklisted)
+                return BadRequest($"Track with Id {trackId} already blacklisted.");
+
+            track.Blacklisted = true;
+
+            return NoContent();
         }
     }
 }
