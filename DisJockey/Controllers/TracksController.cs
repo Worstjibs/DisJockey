@@ -105,6 +105,11 @@ namespace DisJockey.Controllers
                 return BadRequest("You must be connected to a Voice channel to play a track");
             }
 
+            if (await _unitOfWork.TrackRepository.IsTrackBlacklisted(trackPlayDto.YoutubeId))
+            {
+                return BadRequest("This track is blacklisted.");
+            }
+
             await _musicService.PlayTrack("https://youtu.be/" + trackPlayDto.YoutubeId, user, guild, trackPlayDto.PlayNow);
             return Ok();
 
@@ -122,6 +127,8 @@ namespace DisJockey.Controllers
                 return BadRequest($"Track with Id {trackId} already blacklisted.");
 
             track.Blacklisted = true;
+
+            await _unitOfWork.Complete();
 
             return NoContent();
         }

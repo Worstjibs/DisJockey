@@ -39,6 +39,11 @@ namespace DisJockey.Services {
             var youtubeId = GetYouTubeId(url);
             if (youtubeId == null) throw new InvalidUrlException("Something is wrong with the URL provided");
 
+            if (await _unitOfWork.TrackRepository.IsTrackBlacklisted(youtubeId))
+            {
+                throw new Exception("This track is blacklisted.");
+            }
+
             var track = await _unitOfWork.TrackRepository.GetTrackByYoutubeIdAsync(youtubeId);
 
             if (track == null) {

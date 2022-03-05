@@ -34,6 +34,7 @@ namespace DisJockey.Data {
 
         public async Task<Track> GetTrackByYoutubeIdAsync(string youtubeId) {
             return await _context.Tracks
+                .IgnoreQueryFilters()
                 .Include(x => x.Likes).ThenInclude(x => x.User)
                 .Include(x => x.TrackPlays).ThenInclude(x => x.TrackPlayHistory)
                 .Include(x => x.PullUps)
@@ -83,6 +84,16 @@ namespace DisJockey.Data {
                 .ToListAsync();
 
             return query;
+        }
+
+        public async Task<bool> IsTrackBlacklisted(string youtubeId)
+        {
+            return await _context.Tracks
+                .IgnoreQueryFilters()
+                .AsQueryable()
+                .Where(x => x.YoutubeId == youtubeId)
+                .Select(x => x.Blacklisted)
+                .FirstOrDefaultAsync();
         }
 
         private static async Task<PagedList<TrackListDto>> CreatePagedList(PaginationParams paginationParams, IQueryable<TrackListDto> query) {

@@ -14,6 +14,7 @@ namespace DisJockey.Services.Interfaces {
         Task<PagedList<TrackListDto>> GetTrackPlaysForMember(PaginationParams paginationParams, ulong discordId);
         Task<PagedList<PullUpDto>> GetPullUpsForMember (PaginationParams paginationParams, ulong discordId);
         Task<IEnumerable<TrackListDto>> GetTracksByYouTubeIdAsync(IEnumerable<string> youTubeIds);
+        Task<bool> IsTrackBlacklisted(string youtubeId);
         void AddTrack(Track track);
     }
 }

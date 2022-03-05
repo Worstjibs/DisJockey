@@ -9,12 +9,16 @@ using Victoria.Enums;
 using Victoria.EventArgs;
 using DisJockey.Services.Interfaces;
 
-namespace DisJockey.Discord.Services {
-    public class MusicService {
+namespace DisJockey.Discord.Services
+{
+    public class MusicService
+    {
         private readonly LavaNode _lavaNode;
         private readonly IServiceScopeFactory _serviceScope;
-        private LavaTrack _pulledTrack;        
-        public MusicService(LavaNode lavaNode, IServiceScopeFactory serviceScope) {
+        private LavaTrack _pulledTrack;
+
+        public MusicService(LavaNode lavaNode, IServiceScopeFactory serviceScope)
+        {
             _serviceScope = serviceScope;
             _lavaNode = lavaNode;
 
@@ -22,54 +26,64 @@ namespace DisJockey.Discord.Services {
             _pulledTrack = null;
         }
 
-        public async Task<string> PlayTrack(string query, SocketUser user, SocketGuild guild, bool skipQueue) {
-            if (!_lavaNode.HasPlayer(guild)) {
+        public async Task<string> PlayTrack(string query, SocketUser user, SocketGuild guild, bool skipQueue)
+        {
+            if (!_lavaNode.HasPlayer(guild))
+            {
                 await ConnectToChannelAsync(user, guild);
             }
             var player = _lavaNode.GetPlayer(guild);
 
             var results = await _lavaNode.SearchYouTubeAsync($"\"{query}\"");
 
-            if (results.LoadStatus == LoadStatus.LoadFailed || results.LoadStatus == LoadStatus.NoMatches) {
+            if (results.LoadStatus == LoadStatus.LoadFailed || results.LoadStatus == LoadStatus.NoMatches)
+            {
                 return "No matches found";
             }
 
+            using var scope = _serviceScope.CreateScope();
+
+            var unitOfWork = scope.ServiceProvider.GetService<IUnitOfWork>();
+
             var track = results.Tracks.FirstOrDefault();
 
-            string returnMessage = "";
+            if (await unitOfWork.TrackRepository.IsTrackBlacklisted(track.Id))
+            {
+                return "This track is blacklisted";
+            }
 
-            if (player.PlayerState == PlayerState.Playing && !skipQueue) {
+            string returnMessage;
+            if (player.PlayerState == PlayerState.Playing && !skipQueue)
+            {
                 player.Queue.Enqueue(track);
                 returnMessage = $"Track {track.Title} is queued";
-            } else {
+            } else
+            {
                 await player.PlayAsync(track);
                 returnMessage = $"Track {track.Title} is now playing";
             }
 
-            using (var scope = _serviceScope.CreateScope()) {
-                try {
-                    var discordTrackService = scope.ServiceProvider.GetService<IDiscordTrackService>();
+            var discordTrackService = scope.ServiceProvider.GetService<IDiscordTrackService>();
 
-                    try {
-                        await discordTrackService.AddTrackAsync(user, track.Url);
-                    } catch (InvalidUrlException e) {
-                        returnMessage = e.ToString();
-                    } catch (DataContextException e) {
-                        returnMessage = e.ToString();
-                    }
-                } catch (Exception e) {
-                    Console.WriteLine(e);
-                }
+            try
+            {
+                await discordTrackService.AddTrackAsync(user, track.Url);
+            } catch (Exception e)
+            {
+                returnMessage = e.Message;
             }
 
             return returnMessage;
         }
 
-        public async Task<string> PullUpTrackAsync(LavaPlayer player, LavaTrack track, SocketUser user) {
+        public async Task<string> PullUpTrackAsync(LavaPlayer player, LavaTrack track, SocketUser user)
+        {
             LavaTrack wheelUpSound;
-            try {
+            try
+            {
                 wheelUpSound = await GetWheelUpSoundAsync();
-            } catch {
+            } catch
+            {
                 return "Something went wrong getting the Wheel Up Sound";
             }
 
@@ -80,18 +94,24 @@ namespace DisJockey.Discord.Services {
             await player.PlayAsync(wheelUpSound);
             _pulledTrack = track;
 
-            using (var scope = _serviceScope.CreateScope()) {
-                try {
+            using (var scope = _serviceScope.CreateScope())
+            {
+                try
+                {
                     var discordTrackService = scope.ServiceProvider.GetService<IDiscordTrackService>();
 
-                    try {
+                    try
+                    {
                         await discordTrackService.PullUpTrackAsync(user, track.Url, currentPosition);
-                    } catch (InvalidUrlException e) {
+                    } catch (InvalidUrlException e)
+                    {
                         returnMessage = e.ToString();
-                    } catch (DataContextException e) {
+                    } catch (DataContextException e)
+                    {
                         returnMessage = e.ToString();
                     }
-                } catch (Exception e) {
+                } catch (Exception e)
+                {
                     Console.WriteLine(e);
                 }
             }
@@ -99,24 +119,29 @@ namespace DisJockey.Discord.Services {
             return returnMessage;
         }
 
-        private async Task OnTrackEnded(TrackEndedEventArgs args) {
-            if (!args.Reason.ShouldPlayNext()) {
+        private async Task OnTrackEnded(TrackEndedEventArgs args)
+        {
+            if (!args.Reason.ShouldPlayNext())
+            {
                 return;
             }
 
             var player = args.Player;
 
-            if (_pulledTrack != null) {
+            if (_pulledTrack != null)
+            {
                 await player.PlayAsync(_pulledTrack);
                 _pulledTrack = null;
                 return;
             }
 
-            if (!player.Queue.TryDequeue(out var queueable)) {
+            if (!player.Queue.TryDequeue(out var queueable))
+            {
                 return;
             }
 
-            if (queueable is not LavaTrack track) {
+            if (queueable is not LavaTrack track)
+            {
                 await player.TextChannel.SendMessageAsync("Something wrong with the next track");
                 return;
             }
@@ -124,7 +149,8 @@ namespace DisJockey.Discord.Services {
             await player.PlayAsync(track);
         }
 
-        private async Task ConnectToChannelAsync(SocketUser user, SocketGuild guild) {
+        private async Task ConnectToChannelAsync(SocketUser user, SocketGuild guild)
+        {
             var voiceChannel = guild.VoiceChannels.FirstOrDefault(x => x.Users.FirstOrDefault(u => u.Id == user.Id) != null);
 
             if (voiceChannel == null) throw new Exception("You must be connected to a Voice Channel to play a track");
@@ -132,14 +158,17 @@ namespace DisJockey.Discord.Services {
             await _lavaNode.JoinAsync(voiceChannel, guild.DefaultChannel);
         }
 
-        private async Task<LavaTrack> GetWheelUpSoundAsync() {
+        private async Task<LavaTrack> GetWheelUpSoundAsync()
+        {
             return await SearchForTrackAsync("https://youtu.be/LfbJs4uoHF0");
         }
 
-        private async Task<LavaTrack> SearchForTrackAsync(string query) {
+        private async Task<LavaTrack> SearchForTrackAsync(string query)
+        {
             var results = await _lavaNode.SearchYouTubeAsync(query);
 
-            if (results.LoadStatus == LoadStatus.LoadFailed || results.LoadStatus == LoadStatus.NoMatches) {
+            if (results.LoadStatus == LoadStatus.LoadFailed || results.LoadStatus == LoadStatus.NoMatches)
+            {
                 throw new Exception("Something went wrong with the search");
             }
 
