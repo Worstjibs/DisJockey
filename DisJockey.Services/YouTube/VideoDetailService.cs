@@ -131,7 +131,9 @@ namespace DisJockey.Services.YouTube {
                 ChannelTitle = snippet.ChannelTitle,
                 SmallThumbnail = snippet.Thumbnails.Medium?.Url,
                 MediumThumbnail = snippet.Thumbnails.Medium?.Url,
-                LargeThumbnail = snippet.Thumbnails.High?.Url
+                LargeThumbnail = snippet.Thumbnails.High?.Url,
+                TrackPlays = new List<TrackPlay>(),
+                Likes = new List<TrackLike>()
             };
         }
     }
