@@ -8,6 +8,7 @@ using Victoria;
 using Victoria.Enums;
 using Victoria.EventArgs;
 using DisJockey.Services.Interfaces;
+using Victoria.Responses.Search;
 
 namespace DisJockey.Discord.Services
 {
@@ -36,7 +37,7 @@ namespace DisJockey.Discord.Services
 
             var results = await _lavaNode.SearchYouTubeAsync($"\"{query}\"");
 
-            if (results.LoadStatus == LoadStatus.LoadFailed || results.LoadStatus == LoadStatus.NoMatches)
+            if (results.Status is SearchStatus.LoadFailed or SearchStatus.NoMatches)
             {
                 return "No matches found";
             }
@@ -121,7 +122,7 @@ namespace DisJockey.Discord.Services
 
         private async Task OnTrackEnded(TrackEndedEventArgs args)
         {
-            if (!args.Reason.ShouldPlayNext())
+            if (args.Reason != TrackEndReason.Finished)
             {
                 return;
             }
@@ -167,7 +168,7 @@ namespace DisJockey.Discord.Services
         {
             var results = await _lavaNode.SearchYouTubeAsync(query);
 
-            if (results.LoadStatus == LoadStatus.LoadFailed || results.LoadStatus == LoadStatus.NoMatches)
+            if (results.Status is SearchStatus.LoadFailed or SearchStatus.NoMatches)
             {
                 throw new Exception("Something went wrong with the search");
             }

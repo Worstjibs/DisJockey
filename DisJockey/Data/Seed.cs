@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
 using DisJockey.Core;
+using Microsoft.EntityFrameworkCore;
 
 namespace DisJockey.Data {
     public class Seed {

@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using DisJockey.Shared.DTOs;
@@ -98,6 +97,10 @@ namespace DisJockey.Controllers
             }
 
             var user = _client.GetUser(discordId.Value);
+            if (user == null)
+            {
+                return BadRequest("You must be connected to a Voice channel to play a track");
+            }
 
             var guild = _client.Guilds.FirstOrDefault(x => x.VoiceChannels.Any(v => v.Users.Any(u => u.Id == user.Id)));
             if (guild == null)

@@ -32,7 +32,7 @@ namespace DisJockey.Extensions {
 
             services.AddLavaNode(x => {
                 x.SelfDeaf = true;
-                x.IsSSL = botSettings.LavalinkIsSSL;
+                x.IsSsl = botSettings.LavalinkIsSSL;
                 x.Hostname = botSettings.LavalinkHost;
                 x.Port = botSettings.LavalinkPort;
                 x.Authorization = botSettings.LavalinkPassword;

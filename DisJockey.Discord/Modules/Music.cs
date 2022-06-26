@@ -1,10 +1,8 @@
 using System;
-using System.Linq;
 using System.Threading.Tasks;
 using DisJockey.Discord.Services;
 using Discord;
 using Discord.Commands;
-using Discord.WebSocket;
 using Victoria;
 using Victoria.Enums;
 
@@ -117,9 +115,8 @@ namespace DisJockey.Discord.Modules {
             await ReplyAsync($"Currently playing {player.Track.Title}");
         }
 
-        private LavaPlayer TryGetCurrentPlayer() {            
-            LavaPlayer player;
-            _lavaNode.TryGetPlayer(Context.Guild, out player);
+        private LavaPlayer? TryGetCurrentPlayer() {
+            _lavaNode.TryGetPlayer(Context.Guild, out var player);
 
             return player;
         }

@@ -20,7 +20,6 @@ namespace DisJockey.Extensions {
 
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddScoped<IVideoDetailService, VideoDetailService>();
-            services.AddScoped<ITokenService, TokenService>();
 
             services.AddDbContext<DataContext>(options => {
                 options.UseSqlServer(config.GetConnectionString("DefaultConnection"));
