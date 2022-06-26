@@ -18,7 +18,8 @@ namespace DisJockey.Extensions {
 
             var client = new DiscordSocketClient(new DiscordSocketConfig {
                 LogLevel = botSettings.LogLevel,
-                AlwaysDownloadUsers = false
+                AlwaysDownloadUsers = false,
+                GatewayIntents = GatewayIntents.All
             });
             services.AddSingleton(client);
 

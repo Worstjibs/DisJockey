@@ -24,7 +24,8 @@ namespace DisJockey.Middleware {
         }
 
         public async Task HandleAsync(RequestDelegate next, HttpContext context, AuthorizationPolicy policy, PolicyAuthorizationResult authorizeResult) {
-            if (!_env.IsDevelopment()) {
+            if (!_env.IsDevelopment())
+            {
                 var discordId = context.User.GetDiscordId();
 
                 if (!discordId.HasValue) {
