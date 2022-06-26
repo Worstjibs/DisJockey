@@ -102,7 +102,7 @@ namespace DisJockey.Controllers
                 return BadRequest("You must be connected to a Voice channel to play a track");
             }
 
-            var guild = _client.Guilds.FirstOrDefault(x => x.VoiceChannels.Any(v => v.Users.Any(u => u.Id == user.Id)));
+            var guild = _client.Guilds.FirstOrDefault(x => x.VoiceChannels.Any(v => v.ConnectedUsers.Any(u => u.Id == user.Id)));
             if (guild == null)
             {
                 return BadRequest("You must be connected to a Voice channel to play a track");
