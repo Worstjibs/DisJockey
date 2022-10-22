@@ -27,7 +27,7 @@ namespace DisJockey.Discord.Services
             _pulledTrack = null;
         }
 
-        public async Task<string> PlayTrack(string query, SocketUser user, SocketGuild guild, bool skipQueue)
+        public async Task<string> PlayTrack(string query, SocketUser user, SocketGuild guild, bool skipQueue, SearchType searchType)
         {
             if (!_lavaNode.HasPlayer(guild))
             {
@@ -35,7 +35,7 @@ namespace DisJockey.Discord.Services
             }
             var player = _lavaNode.GetPlayer(guild);
 
-            var results = await _lavaNode.SearchYouTubeAsync($"\"{query}\"");
+            var results = await _lavaNode.SearchAsync(searchType, $"\"{query}\"");
 
             if (results.Status is SearchStatus.LoadFailed or SearchStatus.NoMatches)
             {
@@ -64,14 +64,17 @@ namespace DisJockey.Discord.Services
                 returnMessage = $"Track {track.Title} is now playing";
             }
 
-            var discordTrackService = scope.ServiceProvider.GetService<IDiscordTrackService>();
+            if (searchType == SearchType.YouTube)
+            {
+                var discordTrackService = scope.ServiceProvider.GetService<IDiscordTrackService>();
 
-            try
-            {
-                await discordTrackService.AddTrackAsync(user, track.Url);
-            } catch (Exception e)
-            {
-                returnMessage = e.Message;
+                try
+                {
+                    await discordTrackService.AddTrackAsync(user, track.Url);
+                } catch (Exception e)
+                {
+                    returnMessage = e.Message;
+                }
             }
 
             return returnMessage;

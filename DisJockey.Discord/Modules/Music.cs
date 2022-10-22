@@ -5,6 +5,7 @@ using Discord;
 using Discord.Commands;
 using Victoria;
 using Victoria.Enums;
+using Victoria.Responses.Search;
 
 namespace DisJockey.Discord.Modules {
     public class Music : ModuleBase<SocketCommandContext> {
@@ -57,7 +58,21 @@ namespace DisJockey.Discord.Modules {
                 return;
             }
 
-            var response = await _musicService.PlayTrack(query, Context.User, Context.Guild, false);
+            var response = await _musicService.PlayTrack(query, Context.User, Context.Guild, false, SearchType.YouTube);
+            await ReplyAsync(response);
+        }
+
+        [Command("Playsc")]
+        public async Task PlaySoundcloud([Remainder] string query)
+        {
+            var user = Context.User as IVoiceState;
+            if (user?.VoiceChannel is null)
+            {
+                await ReplyAsync("You need to connect to a voice channel first");
+                return;
+            }
+
+            var response = await _musicService.PlayTrack(query, Context.User, Context.Guild, false, SearchType.SoundCloud);
             await ReplyAsync(response);
         }
 

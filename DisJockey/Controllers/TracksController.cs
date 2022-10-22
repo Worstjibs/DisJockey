@@ -11,6 +11,7 @@ using DisJockey.Shared.DTOs.Track;
 using DisJockey.Services.Interfaces;
 using DisJockey.Shared.Helpers;
 using DisJockey.Shared.Extensions;
+using Victoria.Responses.Search;
 
 namespace DisJockey.Controllers
 {
@@ -113,7 +114,7 @@ namespace DisJockey.Controllers
                 return BadRequest("This track is blacklisted.");
             }
 
-            await _musicService.PlayTrack("https://youtu.be/" + trackPlayDto.YoutubeId, user, guild, trackPlayDto.PlayNow);
+            await _musicService.PlayTrack("https://youtu.be/" + trackPlayDto.YoutubeId, user, guild, trackPlayDto.PlayNow, SearchType.YouTube);
             return Ok();
 
         }
