@@ -7,41 +7,51 @@ using Victoria;
 using Victoria.Enums;
 using Victoria.Responses.Search;
 
-namespace DisJockey.Discord.Modules {
-    public class Music : ModuleBase<SocketCommandContext> {
+namespace DisJockey.Discord.Modules
+{
+    public class Music : ModuleBase<SocketCommandContext>
+    {
         private readonly LavaNode _lavaNode;
         private readonly MusicService _musicService;
 
-        public Music(LavaNode lavaNode, MusicService musicService) {
+        public Music(LavaNode lavaNode, MusicService musicService)
+        {
             _musicService = musicService;
             _lavaNode = lavaNode;
         }
 
         [Command("Join")]
-        public async Task JoinAsync() {
+        public async Task JoinAsync()
+        {
             var user = Context.User as IVoiceState;
 
-            if (_lavaNode.HasPlayer(Context.Guild)) {
+            if (_lavaNode.HasPlayer(Context.Guild))
+            {
                 await ReplyAsync("I'm already conntected your voice channel!");
                 return;
             }
 
-            if (user?.VoiceChannel is null) {
+            if (user?.VoiceChannel is null)
+            {
                 await ReplyAsync("You need to connect to a voice channel first");
                 return;
             }
 
-            try {
+            try
+            {
                 await _lavaNode.JoinAsync(user.VoiceChannel, Context.Channel as ITextChannel);
                 await ReplyAsync($"Joined {user.VoiceChannel.Name}");
-            } catch (Exception e) {
+            } catch (Exception e)
+            {
                 await ReplyAsync(e.Message);
             }
         }
 
         [Command("Leave")]
-        public async Task LeaveAsync() {
-            if (!_lavaNode.HasPlayer(Context.Guild)) {
+        public async Task LeaveAsync()
+        {
+            if (!_lavaNode.HasPlayer(Context.Guild))
+            {
                 await ReplyAsync("I'm not connected to a channel");
                 return;
             }
@@ -51,9 +61,11 @@ namespace DisJockey.Discord.Modules {
         }
 
         [Command("Play")]
-        public async Task Play([Remainder] string query) {
+        public async Task Play([Remainder] string query)
+        {
             var user = Context.User as IVoiceState;
-            if (user?.VoiceChannel is null) {
+            if (user?.VoiceChannel is null)
+            {
                 await ReplyAsync("You need to connect to a voice channel first");
                 return;
             }
@@ -77,27 +89,32 @@ namespace DisJockey.Discord.Modules {
         }
 
         [Command("Skip")]
-        public async Task SkipAsync() {
+        public async Task SkipAsync()
+        {
             var player = TryGetCurrentPlayer();
 
-            if (player.PlayerState != PlayerState.Playing) {
+            if (player.PlayerState != PlayerState.Playing)
+            {
                 await ReplyAsync("I am not playing anything");
                 return;
             }
 
-            if (!player.Queue.TryDequeue(out var queueable)) {                
+            if (!player.Queue.TryDequeue(out var queueable))
+            {
                 await ReplyAsync("There is nothing in the queue");
                 return;
             }
-            
+
             await player.PlayAsync(queueable);
         }
 
         [Command("Stop")]
-        public async Task StopAsync() {
+        public async Task StopAsync()
+        {
             var player = TryGetCurrentPlayer();
 
-            if (player?.PlayerState != PlayerState.Playing) {
+            if (player?.PlayerState != PlayerState.Playing)
+            {
                 await ReplyAsync("I am not playing anything");
                 return;
             }
@@ -106,10 +123,12 @@ namespace DisJockey.Discord.Modules {
         }
 
         [Command("PullIt")]
-        public async Task PullItAsync() {
+        public async Task PullItAsync()
+        {
             var player = TryGetCurrentPlayer();
 
-            if (player?.PlayerState != PlayerState.Playing) {
+            if (player?.PlayerState != PlayerState.Playing)
+            {
                 await ReplyAsync("I am not playing anything");
                 return;
             }
@@ -119,10 +138,12 @@ namespace DisJockey.Discord.Modules {
         }
 
         [Command("TrackId")]
-        public async Task TrackIdAsync() {
-            var player = TryGetCurrentPlayer();            
+        public async Task TrackIdAsync()
+        {
+            var player = TryGetCurrentPlayer();
 
-            if (player?.PlayerState != PlayerState.Playing) {
+            if (player?.PlayerState != PlayerState.Playing)
+            {
                 await ReplyAsync("I am not playing anything");
                 return;
             }
@@ -130,7 +151,8 @@ namespace DisJockey.Discord.Modules {
             await ReplyAsync($"Currently playing {player.Track.Title}");
         }
 
-        private LavaPlayer? TryGetCurrentPlayer() {
+        private LavaPlayer? TryGetCurrentPlayer()
+        {
             _lavaNode.TryGetPlayer(Context.Guild, out var player);
 
             return player;
