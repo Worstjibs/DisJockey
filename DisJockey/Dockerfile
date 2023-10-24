@@ -1,8 +1,28 @@
-FROM mcr.microsoft.com/dotnet/aspnet:5.0
+#See https://aka.ms/customizecontainer to learn how to customize your debug container and how Visual Studio uses this Dockerfile to build your images for faster debugging.
 
-ENV ASPNETCORE_ENVIRONMENT="Production"
-ENV ConnectionStrings:DefaultConnection="Server=host.docker.internal; Database=disjockey; User Id=sa; Password=i5EQqqn2MPXOK5kRwoxJ;"
+FROM mcr.microsoft.com/dotnet/aspnet:6.0 AS base
+WORKDIR /app
+EXPOSE 80
+EXPOSE 443
 
-COPY bin/Release/net5.0/publish/ App/
-WORKDIR /App
-ENTRYPOINT ["dotnet", "API.dll"]
+FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
+ARG BUILD_CONFIGURATION=Release
+WORKDIR /src
+COPY ["DisJockey/DisJockey.csproj", "DisJockey/"]
+COPY ["DisJockey.Core/DisJockey.Core.csproj", "DisJockey.Core/"]
+COPY ["DisJockey.Discord/DisJockey.Discord.csproj", "DisJockey.Discord/"]
+COPY ["DisJockey.Services/DisJockey.Services.csproj", "DisJockey.Services/"]
+COPY ["DisJockey.Shared/DisJockey.Shared.csproj", "DisJockey.Shared/"]
+RUN dotnet restore "./DisJockey/./DisJockey.csproj"
+COPY . .
+WORKDIR "/src/DisJockey"
+RUN dotnet build "./DisJockey.csproj" -c $BUILD_CONFIGURATION -o /app/build
+
+FROM build AS publish
+ARG BUILD_CONFIGURATION=Release
+RUN dotnet publish "./DisJockey.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
+
+FROM base AS final
+WORKDIR /app
+COPY --from=publish /app/publish .
+ENTRYPOINT ["dotnet", "DisJockey.dll"]

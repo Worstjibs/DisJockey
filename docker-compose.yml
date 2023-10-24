@@ -1,0 +1,38 @@
+version: '3.4'
+
+services:
+  disjockey.api:
+    container_name: disjockey.api
+    image: ${DOCKER_REGISTRY-}disjockey
+    build:
+      context: .
+      dockerfile: DisJockey/Dockerfile
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=https://+:443;http://+:80
+      - ConnectionStrings__DefaultConnection=Server=mssql;Database=disjockey;User Id=sa;Password=Sn39QAi9h1htMYFI79Mf;
+    ports:
+      - 5000:80
+      - 5001:443
+    volumes:
+      - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
+      - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
+    depends_on:
+      - mssql
+    networks:
+      - disjockey-network
+
+  mssql:
+    container_name: mssql
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    environment:
+      - MSSQL_SA_PASSWORD=Sn39QAi9h1htMYFI79Mf
+      - ACCEPT_EULA=Y
+    ports:
+      - "1433:1433"
+    networks:
+      - disjockey-network
+
+networks:
+  disjockey-network:
+    driver: bridge
