@@ -1,0 +1,38 @@
+<div #container id="track-item-container" class="border border-rounded border-dark" (click)="expandTrackItem()">
+    <div class="row p-3">
+        <div class="track-cols" [ngClass]="{'col-4': showDetail, 'col-2': !showDetail}">
+            <div class="img-wrapper">
+                <img [src]="!showDetail ? track.smallThumbnail : track.largeThumbnail" alt="" id="track-thumbnail-img" class="img-fluid">
+            </div>
+        </div>
+
+        <div id="track-info" class="track-cols pl-0" [ngClass]="{'col-8': showDetail, 'col-10': !showDetail}">
+            <div>
+                <h4>{{track.title}}</h4>
+                <h5>{{track.channelTitle}}</h5>
+                <p>First posted on {{track.createdOn | date: 'dd MMMM yyyy'}}</p>
+            </div>
+
+            <div *ngIf="showDetail" class="w-50">
+                <div class="d-flex justify-content-around align-items-center">
+                    <div>
+                        <span><i class="fas fa-thumbs-up fa-lg like-icon" (click)="likeTrack(track)"></i><span class="like-num" [class.liked-by-user]="track.likedByUser">{{track.likes}}</span></span>
+                    </div>
+                    <div>
+                        <span><i class="fas fa-thumbs-down fa-lg like-icon" (click)="dislikeTrack(track)"></i><span class="like-num" [class.liked-by-user]="track.likedByUser === false">{{track.dislikes}}</span></span>
+                    </div>
+                    <button class="btn btn-success play-button" (click)="playTrack(track)">Play Now</button>
+                    <button class="btn btn-primary play-button" (click)="queueTrack(track)">Queue</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="user-list" class="m-2" [ngClass]="{'user-list-closed': !showDetail}" >
+        <ul class="list-group">
+            <li class="track-user list-group-item" [ngClass]="{'user-expanded': showDetail}" *ngFor="let user of track.users">
+                {{user.username}}, played {{user.timesPlayed}} times, last played {{user.lastPlayed | timeago}}
+            </li>
+        </ul>
+    </div>
+</div>

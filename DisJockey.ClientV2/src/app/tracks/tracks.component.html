@@ -1,0 +1,14 @@
+<div class="d-flex justify-content-between mb-3">
+    <h3 class="mb-0">Tracks played on DisJockey</h3>
+
+    <div dropdown class="btn-group">
+        <button dropdownToggle class="btn btn-primary dropdown-toggle" type="button">Sort By</button>
+        <ul class="dropdown-menu dropdown-menu-right" *dropdownMenu>
+            <li class="dropdown-item" (click)="sortBy('lastPlayed')">Last Played</li>
+            <li class="dropdown-item" (click)="sortBy('firstPlayed')">First Played</li>
+            <li class="dropdown-item" (click)="sortBy('title')">Track Title</li>
+        </ul>
+    </div>
+</div>
+
+<app-track-list [trackListType]="TrackListType.Tracks"></app-track-list>

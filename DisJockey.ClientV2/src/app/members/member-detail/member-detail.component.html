@@ -1,0 +1,18 @@
+<div class="row">
+    <div class="col-3">
+        <app-member-card [member]="member"></app-member-card>
+    </div>
+
+    <div class="col-9">
+        <tabset>
+            <tab heading="Tracks Played">
+                <app-track-list [trackListType]="TrackListType.MemberTracks" [member]="member"></app-track-list>
+            </tab>
+            <tab heading="Playlists" *ngIf="isPlaylistsEnabled | async">
+                <app-member-playlists [playlists]="member.playlists"
+                                      [discordId]="member.discordId">
+                </app-member-playlists>
+            </tab>
+        </tabset>
+    </div>
+</div>

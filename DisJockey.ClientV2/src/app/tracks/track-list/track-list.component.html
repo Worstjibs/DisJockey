@@ -1,0 +1,12 @@
+<div [ngClass]="{'tab-container-content': !innerContainer}" (scroll)="onScroll($event)" id="scrollable-list">
+    <div *ngFor="let track of results">
+        <app-track-item #trackItem
+                        [track]="track"
+                        (trackLiked)="likeTrack($event)"
+                        (trackPlayed)="playTrack($event)"
+                        (trackExpanded)="trackExpanded($event)">
+        </app-track-item>
+    </div>
+
+    <div *ngIf="trackListType === TrackListType.Playlist"></div>
+</div>

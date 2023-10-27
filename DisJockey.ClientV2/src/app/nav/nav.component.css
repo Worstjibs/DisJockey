@@ -1,0 +1,22 @@
+#logo {
+    max-height: 20px;
+    margin-bottom: 5%;
+}
+
+#avatar {
+    max-height: 30px;
+    border-radius: 50%;
+}
+
+.dropdown-toggle {
+    text-decoration: none !important;
+    color: inherit;
+}
+
+.dropdown-toggle, .dropdown-item {
+    cursor: pointer
+}
+
+.container {
+    max-width: 1300px;
+}

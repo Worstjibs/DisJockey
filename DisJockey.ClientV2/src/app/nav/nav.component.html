@@ -1,0 +1,35 @@
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+    <div class="container">
+        <a class="navbar-brand" routerLink="/"><img id="logo" src="./assets/icon.png" alt=""> DisJockey</a>
+
+        <ul class="navbar-nav mr-auto" *ngIf="accountService.currentUser$ | async">
+            <li class="nav-item">
+                <a class="nav-link" routerLinkActive="active" routerLink="/users">Users</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" routerLinkActive="active" routerLink="/tracks">Tracks</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" routerLinkActive="active" routerLink="/search">Search</a>
+            </li>
+        </ul>
+
+        <div class="dropdown" dropdown *ngIf="(accountService.currentUser$ | async) as user">
+            <a class="dropdown-toggle" dropdownToggle>
+                <img id="avatar" src="{{user.avatarUrl}}" alt="{{user.username}}"> 
+                {{user.username}}
+            </a>
+            <div class="dropdown-menu dropdown-menu-right mt-3" *dropdownMenu>
+                <div class="dropdown-item" (click)="logout()">Logout</div>
+                <a class="dropdown-item" routerLink="/users/{{user.discordId}}">View Profile</a>
+            </div>
+        </div>
+
+        <div class="dropdown" dropdown *ngIf="(accountService.currentUser$ | async) == null">
+            <a class="dropdown-toggle" dropdownToggle>Welcome</a>
+            <div class="dropdown-menu dropdown-menu-right mt-3" *dropdownMenu>
+                <a class="dropdown-item" href="{{baseUrl}}account/login">Login</a>
+            </div>
+        </div>
+    </div>
+</nav>

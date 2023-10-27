@@ -1,0 +1,37 @@
+<div id="playlist-container" *ngIf="playlists" class="tab-container-content row border rounded">
+    <ul id="playlist-list" class="list-group col-2">
+        <li class="list-group-item"
+            [ngClass]="{'active': selectedPlaylist === playlist && !addPlaylistEnabled}"
+            *ngFor="let playlist of playlists"
+            (click)="playlistClicked(playlist)">{{playlist.name}}</li>
+        <li class="list-group-item"
+            *ngIf="(isCurrentUser | async)"
+            (click)="enableAddMode()"
+            [ngClass]="{'active': addPlaylistEnabled}">Add Playlist</li>
+    </ul>
+
+    <div (scroll)="onScroll($event)" id="playlist-tracks" class="col-10 list-group">
+        <ul *ngIf="!addPlaylistEnabled">
+            <app-track-list #trackListComponent
+                            [trackListType]="TrackListType.Playlist"
+                            [playlist]="selectedPlaylist"
+                            [innerContainer]="true"></app-track-list>
+        </ul>
+
+        <div class="m-2 text-center" *ngIf="addPlaylistEnabled">
+            <h3>Add a YouTube Playlist to DisJockey</h3>
+            <h5>Paste the YouTube Playlist Id in below</h5>
+            <hr />
+
+            <form #newPlaylist="ngForm" (ngSubmit)="addPlaylist(newPlaylist.value)">
+                <div class="form-group">
+                    <label>YouTube Playlist Id</label>
+                    <input required class="form-control" type="text" name="youtubeId" placeholder="Playlist Id" ngModel />
+                </div>
+                <div class="form-group">
+                    <button class="form-control" type="submit">Submit</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

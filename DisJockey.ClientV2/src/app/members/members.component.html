@@ -1,0 +1,5 @@
+<div class="row">
+    <div *ngFor="let member of members$ | async" class="col-3 mb-4" routerLink="/users/{{member.discordId}}">
+        <app-member-card [member]="member"></app-member-card>
+    </div>
+</div>
