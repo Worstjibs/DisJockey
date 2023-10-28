@@ -5,7 +5,8 @@
       "commandVersion": "1.0",
       "serviceActions": {
         "disjockey.api": "StartDebugging",
-        "mssql": "StartWithoutDebugging"
+        "mssql": "StartWithoutDebugging",
+        "disjockey.botservice": "StartDebugging"
       }
     }
   }

@@ -7,6 +7,33 @@ services:
     build:
       context: .
       dockerfile: DisJockey/Dockerfile
+    environment:
+      - BotSettings__LavalinkHost=lavalink
+      - BotSettings__LavalinkPort=2333
+      - BotSettings__LavalinkIsSSL=false
+      - BotSettings__LavalinkPassword=youshallnotpass
+    volumes:
+      - ./DisJockey/wwwroot:/app/wwwroot
+    networks:
+      - disjockey-network
+
+  disjockey.botservice:
+    container_name: disjockey.botservice
+    image: ${DOCKER_REGISTRY-}disjockeybotservice
+    build:
+      context: .
+      dockerfile: DisJockey.BotService/Dockerfile
+    networks:
+      - disjockey-network
+
+  lavalink:
+    container_name: lavalink
+    image: ghcr.io/lavalink-devs/lavalink:4.0.0-beta.4 # pin the image version to Lavalink v4
+    restart: unless-stopped
+    environment:
+      - _JAVA_OPTIONS=-Xmx6G # set Java options here
+      - SERVER_PORT=2333 # set lavalink server port
+      - LAVALINK_SERVER_PASSWORD=youshallnotpass # set password for lavalink
     networks:
       - disjockey-network
 

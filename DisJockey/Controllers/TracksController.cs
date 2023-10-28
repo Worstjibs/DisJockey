@@ -19,15 +19,14 @@ namespace DisJockey.Controllers
     public class TracksController : BaseApiController
     {
         private readonly IUnitOfWork _unitOfWork;
-        private readonly DiscordSocketClient _client;
-        private readonly MusicService _musicService;
+        //private readonly DiscordSocketClient _client;
+        //private readonly MusicService _musicService;
 
-        public TracksController(IUnitOfWork unitOfWork, DiscordSocketClient client,
-            MusicService musicService)
+        public TracksController(IUnitOfWork unitOfWork)
         {
-            _musicService = musicService;
             _unitOfWork = unitOfWork;
-            _client = client;
+            //_musicService = musicService;
+            //_client = client;
         }
 
         [HttpGet]
@@ -76,7 +75,8 @@ namespace DisJockey.Controllers
                     UserId = user.Id,
                     TrackId = track.Id
                 };
-            } else if (trackLike.Liked == trackLikeDto.Liked)
+            }
+            else if (trackLike.Liked == trackLikeDto.Liked)
                 return BadRequest("You already like this track");
 
             trackLike.Liked = trackLikeDto.Liked;
@@ -88,36 +88,36 @@ namespace DisJockey.Controllers
             return BadRequest("Error saving like");
         }
 
-        [HttpPost("play")]
-        public async Task<ActionResult> PlayTrack(TrackPlayRequestDto trackPlayDto)
-        {
-            var discordId = User.GetDiscordId();
-            if (!discordId.HasValue)
-            {
-                return BadRequest("Invalid DiscordId");
-            }
+        //[HttpPost("play")]
+        //public async Task<ActionResult> PlayTrack(TrackPlayRequestDto trackPlayDto)
+        //{
+        //    var discordId = User.GetDiscordId();
+        //    if (!discordId.HasValue)
+        //    {
+        //        return BadRequest("Invalid DiscordId");
+        //    }
 
-            var user = _client.GetUser(discordId.Value);
-            if (user == null)
-            {
-                return BadRequest("You must be connected to a Voice channel to play a track");
-            }
+        //    var user = _client.GetUser(discordId.Value);
+        //    if (user == null)
+        //    {
+        //        return BadRequest("You must be connected to a Voice channel to play a track");
+        //    }
 
-            var guild = _client.Guilds.FirstOrDefault(x => x.VoiceChannels.Any(v => v.ConnectedUsers.Any(u => u.Id == user.Id)));
-            if (guild == null)
-            {
-                return BadRequest("You must be connected to a Voice channel to play a track");
-            }
+        //    var guild = _client.Guilds.FirstOrDefault(x => x.VoiceChannels.Any(v => v.ConnectedUsers.Any(u => u.Id == user.Id)));
+        //    if (guild == null)
+        //    {
+        //        return BadRequest("You must be connected to a Voice channel to play a track");
+        //    }
 
-            if (await _unitOfWork.TrackRepository.IsTrackBlacklisted(trackPlayDto.YoutubeId))
-            {
-                return BadRequest("This track is blacklisted.");
-            }
+        //    if (await _unitOfWork.TrackRepository.IsTrackBlacklisted(trackPlayDto.YoutubeId))
+        //    {
+        //        return BadRequest("This track is blacklisted.");
+        //    }
 
-            await _musicService.PlayTrack("https://youtu.be/" + trackPlayDto.YoutubeId, user, guild, trackPlayDto.PlayNow, SearchType.YouTube);
-            return Ok();
+        //    await _musicService.PlayTrack("https://youtu.be/" + trackPlayDto.YoutubeId, user, guild, trackPlayDto.PlayNow, SearchType.YouTube);
+        //    return Ok();
 
-        }
+        //}
 
         [HttpPut("{id}/blacklist")]
         public async Task<ActionResult> BlacklistTrack(int trackId)
