@@ -31,8 +31,6 @@ namespace DisJockey.Extensions {
                 };
             });
 
-            //services.AddScoped<IAuthorizationMiddlewareResultHandler, DisJockeyAuthorizationMiddlewareResultHandler>();
-
             services.AddTransient<IHttpContextAccessor, HttpContextAccessor>();
 
             return services;

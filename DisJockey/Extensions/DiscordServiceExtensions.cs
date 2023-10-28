@@ -9,6 +9,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Victoria;
 using DisJockey.Services.Interfaces;
 using Discord.Rest;
+using Microsoft.AspNetCore.Authorization;
+using DisJockey.Middleware;
 
 namespace DisJockey.Extensions
 {
@@ -50,6 +52,8 @@ namespace DisJockey.Extensions
 
             services.AddSingleton<DiscordService>();
             services.AddHostedService(provider => provider.GetService<DiscordService>());
+
+            services.AddScoped<IAuthorizationMiddlewareResultHandler, DisJockeyAuthorizationMiddlewareResultHandler>();
         }
     }
 }
