@@ -1,5 +1,6 @@
 using Discord;
 using Discord.WebSocket;
+using DisJockey.BotService.Services;
 using Microsoft.Extensions.Options;
 
 namespace DisJockey.BotService;
@@ -9,18 +10,21 @@ internal class HostedBotService : BackgroundService
     private readonly ILogger<HostedBotService> _logger;
     private readonly DiscordSocketClient _client;
     private readonly InteractionHandler _interactionHandler;
+    private readonly IMusicService _musicService;
     private readonly BotSettings _settings;
 
     public HostedBotService(
         ILogger<HostedBotService> logger,
         DiscordSocketClient client,
         InteractionHandler interactionHandler,
+        IMusicService musicService,
         IOptions<BotSettings> options
     )
     {
         _logger = logger;
         _client = client;
         _interactionHandler = interactionHandler;
+        _musicService = musicService;
         _settings = options.Value;
     }
 
@@ -29,6 +33,8 @@ internal class HostedBotService : BackgroundService
         _client.Log += LogAsync;
 
         await _interactionHandler.InitialiseAsync();
+
+        await _musicService.LoadPullUpSound();
 
         await _client.LoginAsync(TokenType.Bot, _settings.BotToken);
         await _client.StartAsync();

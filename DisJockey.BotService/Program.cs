@@ -2,6 +2,10 @@ using Discord;
 using Discord.Interactions;
 using Discord.WebSocket;
 using DisJockey.BotService;
+using DisJockey.BotService.Services;
+using Lavalink4NET.Extensions;
+using Lavalink4NET.Players.Queued;
+using Lavalink4NET.Players.Vote;
 
 var builder = Host.CreateApplicationBuilder(args);
 
@@ -17,6 +21,16 @@ builder.Services.AddSingleton(new DiscordSocketClient(new DiscordSocketConfig
 
 builder.Services.AddSingleton<InteractionService>();
 builder.Services.AddSingleton<InteractionHandler>();
+
+builder.Services.AddLavalink();
+builder.Services.ConfigureLavalink(config =>
+{
+    config.BaseAddress = new Uri("http://lavalink:2333");
+});
+
+builder.Services.Configure<QueuedLavalinkPlayerOptions>(x => new QueuedLavalinkPlayerOptions());
+
+builder.Services.AddSingleton<IMusicService, MusicService>();
 
 builder.Services.AddHostedService<HostedBotService>();
 
