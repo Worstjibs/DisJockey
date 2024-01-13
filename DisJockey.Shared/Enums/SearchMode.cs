@@ -1,4 +1,4 @@
-﻿namespace DisJockey.BotService.Modules;
+﻿namespace DisJockey.Shared.Enums;
 
 public enum SearchMode
 {

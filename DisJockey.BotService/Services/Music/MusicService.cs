@@ -4,8 +4,11 @@ using Lavalink4NET.Players.Queued;
 using Lavalink4NET.Players;
 using Lavalink4NET.Rest.Entities.Tracks;
 using Microsoft.Extensions.Options;
-using DisJockey.BotService.Modules;
 using DisJockey.BotService.Services.WheelUp;
+using MassTransit;
+using DisJockey.Shared.Enums;
+using DisJockey.Shared.Events;
+using Discord.WebSocket;
 
 namespace DisJockey.BotService.Services.Music;
 
@@ -14,19 +17,22 @@ public class MusicService : IMusicService
     private readonly IAudioService _audioService;
     private readonly IOptions<QueuedLavalinkPlayerOptions> _queuePlayerOptions;
     private readonly WheelUpService _wheelUpService;
+    private readonly IBus _bus;
 
     public MusicService(
         IAudioService audioService,
         IOptions<QueuedLavalinkPlayerOptions> queuePlayerOptions,
-        WheelUpService wheelUpService
+        WheelUpService wheelUpService,
+        IBus bus
     )
     {
         _audioService = audioService;
         _queuePlayerOptions = queuePlayerOptions;
         _wheelUpService = wheelUpService;
+        _bus = bus;
     }
 
-    public async Task PlayTrackAsync(string query, IInteractionContext context, SearchMode? searchMode = null)
+    public async Task PlayTrackAsync(string query, IInteractionContext context, SearchMode searchMode = SearchMode.YouTube)
     {
         var player = await GetQueuedPlayerAsync(context, connectToVoiceChannel: true).ConfigureAwait(false);
         if (player is null)
@@ -42,6 +48,18 @@ public class MusicService : IMusicService
         }
 
         var position = await player.PlayAsync(track);
+
+        var socketUser = (context.User as SocketUser)!;
+
+        await _bus.Publish(new TrackPlayedEvent
+        {
+            SearchMode = searchMode,
+            TrackId = track.Identifier,
+            DiscordId = socketUser.Id,
+            AvatarUrl = socketUser.GetAvatarUrl(),
+            UserName = socketUser.Username
+        });
+
         if (position is 0)
         {
             await context.Interaction.FollowupAsync($"🔈 Playing: {track.Uri}").ConfigureAwait(false);

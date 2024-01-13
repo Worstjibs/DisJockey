@@ -1,6 +1,7 @@
 ﻿using Discord;
 using Discord.Interactions;
 using DisJockey.BotService.Services.Music;
+using DisJockey.Shared.Enums;
 
 namespace DisJockey.BotService.Modules;
 
@@ -14,7 +15,7 @@ public class MusicModule : InteractionModuleBase<SocketInteractionContext>
     }
 
     [SlashCommand("play", description: "Plays music", runMode: RunMode.Async)]
-    public async Task Play(string query, [MinLength(0)] SearchMode? searchMode = null) =>
+    public async Task Play(string query, [MinLength(0)] SearchMode searchMode = SearchMode.YouTube) =>
         await DeferActionAsync(async () => await _musicService.PlayTrackAsync(query, Context, searchMode));
 
     [SlashCommand("stop", description: "Stops music", runMode: RunMode.Async)]

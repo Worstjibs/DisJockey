@@ -5,13 +5,10 @@ using DisJockey.Core;
 using DisJockey.Extensions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Discord.WebSocket;
-using DisJockey.Discord.Services;
 using DisJockey.Shared.DTOs.Track;
 using DisJockey.Services.Interfaces;
 using DisJockey.Shared.Helpers;
 using DisJockey.Shared.Extensions;
-using Victoria.Responses.Search;
 
 namespace DisJockey.Controllers
 {
@@ -19,14 +16,10 @@ namespace DisJockey.Controllers
     public class TracksController : BaseApiController
     {
         private readonly IUnitOfWork _unitOfWork;
-        //private readonly DiscordSocketClient _client;
-        //private readonly MusicService _musicService;
 
         public TracksController(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
-            //_musicService = musicService;
-            //_client = client;
         }
 
         [HttpGet]
@@ -88,6 +81,7 @@ namespace DisJockey.Controllers
             return BadRequest("Error saving like");
         }
 
+        // TODO - Use MassTransit
         //[HttpPost("play")]
         //public async Task<ActionResult> PlayTrack(TrackPlayRequestDto trackPlayDto)
         //{

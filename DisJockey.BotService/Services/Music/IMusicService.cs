@@ -1,11 +1,11 @@
 ﻿using Discord;
-using DisJockey.BotService.Modules;
+using DisJockey.Shared.Enums;
 
 namespace DisJockey.BotService.Services.Music;
 
 public interface IMusicService
 {
-    Task PlayTrackAsync(string query, IInteractionContext context, SearchMode? searchMode = null);
+    Task PlayTrackAsync(string query, IInteractionContext context, SearchMode searchMode = SearchMode.YouTube);
     Task StopAsync(IInteractionContext context);
     Task SkipAsync(IInteractionContext context);
     Task PullUpTrackAsync(IInteractionContext context);

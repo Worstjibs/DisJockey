@@ -1,40 +1,21 @@
-using Discord;
-using Discord.Interactions;
-using Discord.WebSocket;
 using DisJockey.BotService;
-using DisJockey.BotService.Services.Music;
-using DisJockey.BotService.Services.WheelUp;
-using Lavalink4NET.Extensions;
-using Lavalink4NET.Players.Queued;
-using Lavalink4NET.Players.Vote;
+using MassTransit;
 
 var builder = Host.CreateApplicationBuilder(args);
 
-builder.Services.Configure<BotSettings>(builder.Configuration.GetSection("BotSettings"));
+builder.Services.AddDiscordServices(builder.Configuration);
 
-builder.Services.AddSingleton(new DiscordSocketClient(new DiscordSocketConfig
+builder.Services.AddMassTransit(x =>
 {
-    AlwaysDownloadUsers = true,
-    LogLevel = LogSeverity.Debug,
-    GatewayIntents = GatewayIntents.All,
-    UseInteractionSnowflakeDate = true
-}));
-
-builder.Services.AddSingleton<InteractionService>();
-builder.Services.AddSingleton<InteractionHandler>();
-
-builder.Services.AddLavalink();
-builder.Services.ConfigureLavalink(config =>
-{
-    config.BaseAddress = new Uri("http://lavalink:2333");
+    x.UsingSqlServer((context, cfg) =>
+    {
+        cfg.ConfigureEndpoints(context);
+    });
 });
 
-builder.Services.Configure<QueuedLavalinkPlayerOptions>(x => new QueuedLavalinkPlayerOptions());
+builder.Services.Configure<SqlTransportOptions>(builder.Configuration.GetSection("MassTransitSettings:SqlSettings"));
 
-builder.Services.AddSingleton<IMusicService, MusicService>();
-builder.Services.AddSingleton<WheelUpService>();
-
-builder.Services.AddHostedService<HostedBotService>();
+builder.Services.AddSqlServerMigrationHostedService(create: true, delete: false);
 
 var host = builder.Build();
 
