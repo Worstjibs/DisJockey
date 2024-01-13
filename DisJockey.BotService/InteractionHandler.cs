@@ -66,7 +66,7 @@ internal class InteractionHandler
     private async Task ReadyAsync()
     {
         if (_environment.IsDevelopment())
-            await _interactionService.RegisterCommandsToGuildAsync(377749986986819584, true);
+            await _interactionService.RegisterCommandsToGuildAsync(254255016838299649, true);
         else
             await _interactionService.RegisterCommandsGloballyAsync(true);
     }

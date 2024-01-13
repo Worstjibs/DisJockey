@@ -2,7 +2,8 @@ using Discord;
 using Discord.Interactions;
 using Discord.WebSocket;
 using DisJockey.BotService;
-using DisJockey.BotService.Services;
+using DisJockey.BotService.Services.Music;
+using DisJockey.BotService.Services.WheelUp;
 using Lavalink4NET.Extensions;
 using Lavalink4NET.Players.Queued;
 using Lavalink4NET.Players.Vote;
@@ -31,6 +32,7 @@ builder.Services.ConfigureLavalink(config =>
 builder.Services.Configure<QueuedLavalinkPlayerOptions>(x => new QueuedLavalinkPlayerOptions());
 
 builder.Services.AddSingleton<IMusicService, MusicService>();
+builder.Services.AddSingleton<WheelUpService>();
 
 builder.Services.AddHostedService<HostedBotService>();
 

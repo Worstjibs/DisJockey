@@ -1,6 +1,6 @@
 ﻿using Discord;
 using Discord.Interactions;
-using DisJockey.BotService.Services;
+using DisJockey.BotService.Services.Music;
 
 namespace DisJockey.BotService.Modules;
 
@@ -25,6 +25,9 @@ public class MusicModule : InteractionModuleBase<SocketInteractionContext>
 
     [SlashCommand("pull-it", description: "If it's nice, play it twice", runMode: RunMode.Async)]
     public async Task PullIt() => await DeferActionAsync(async () => await _musicService.PullUpTrackAsync(Context).ConfigureAwait(false));
+
+    [SlashCommand("seek", description: "Seek a track to a given time in seconds", runMode: RunMode.Async)]
+    public async Task Seek(int time) => await DeferActionAsync(async () => await _musicService.SeekAsync(Context, time).ConfigureAwait(false));
 
     private async Task DeferActionAsync(Func<Task> deferredAction)
     {

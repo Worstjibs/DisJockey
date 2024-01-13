@@ -1,6 +1,6 @@
 using Discord;
 using Discord.WebSocket;
-using DisJockey.BotService.Services;
+using DisJockey.BotService.Services.Music;
 using Microsoft.Extensions.Options;
 
 namespace DisJockey.BotService;
@@ -33,8 +33,6 @@ internal class HostedBotService : BackgroundService
         _client.Log += LogAsync;
 
         await _interactionHandler.InitialiseAsync();
-
-        await _musicService.LoadPullUpSound();
 
         await _client.LoginAsync(TokenType.Bot, _settings.BotToken);
         await _client.StartAsync();

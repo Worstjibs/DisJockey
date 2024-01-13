@@ -4,34 +4,26 @@ using Lavalink4NET.Players.Queued;
 using Lavalink4NET.Players;
 using Lavalink4NET.Rest.Entities.Tracks;
 using Microsoft.Extensions.Options;
-using Lavalink4NET.Tracks;
 using DisJockey.BotService.Modules;
-using System.Security;
+using DisJockey.BotService.Services.WheelUp;
 
-namespace DisJockey.BotService.Services;
+namespace DisJockey.BotService.Services.Music;
 
 public class MusicService : IMusicService
 {
     private readonly IAudioService _audioService;
     private readonly IOptions<QueuedLavalinkPlayerOptions> _queuePlayerOptions;
-    private readonly ILogger<MusicService> _logger;
-    private LavalinkTrack? _pullUpSound;
+    private readonly WheelUpService _wheelUpService;
 
     public MusicService(
         IAudioService audioService,
-        IOptions<QueuedLavalinkPlayerOptions> queuePlayerOptions
+        IOptions<QueuedLavalinkPlayerOptions> queuePlayerOptions,
+        WheelUpService wheelUpService
     )
     {
         _audioService = audioService;
         _queuePlayerOptions = queuePlayerOptions;
-    }
-
-    public async Task LoadPullUpSound()
-    {
-        var track = await _audioService.Tracks.LoadTrackAsync("7263YsyaDBc", TrackSearchMode.YouTube).ConfigureAwait(false);
-
-        if (track is not null)
-            _pullUpSound = track;
+        _wheelUpService = wheelUpService;
     }
 
     public async Task PlayTrackAsync(string query, IInteractionContext context, SearchMode? searchMode = null)
@@ -111,9 +103,24 @@ public class MusicService : IMusicService
             return;
         }
 
-        if (_pullUpSound is null)
+        var currentTrack = player.CurrentTrack;
+        if (currentTrack is null)
         {
-            await context.Interaction.FollowupAsync("Pull up track has not been loaded");
+            await context.Interaction.FollowupAsync("Player is not currently playing");
+            return;
+        }
+
+        await context.Interaction.FollowupAsync("Wheel that one up");
+
+        await _wheelUpService.PullUp(currentTrack, player).ConfigureAwait(false);
+    }
+
+    public async Task SeekAsync(IInteractionContext context, int time)
+    {
+        var player = await GetQueuedPlayerAsync(context, connectToVoiceChannel: false).ConfigureAwait(false);
+        if (player is null)
+        {
+            await context.Interaction.FollowupAsync("Player is not currently playing");
             return;
         }
 
@@ -124,9 +131,9 @@ public class MusicService : IMusicService
             return;
         }
 
-        await context.Interaction.FollowupAsync("Wheel that one up");
+        await player.SeekAsync(TimeSpan.FromSeconds(time));
 
-        await PlayPercy(currentTrack, player).ConfigureAwait(false);
+        await context.Interaction.FollowupAsync($"Track seeked to {time} seconds");
     }
 
     private async ValueTask<QueuedLavalinkPlayer?> GetQueuedPlayerAsync(IInteractionContext context, bool connectToVoiceChannel = true)
@@ -154,21 +161,6 @@ public class MusicService : IMusicService
         }
 
         return result.Player;
-    }
-
-    private async Task PlayPercy(LavalinkTrack currentTrack, IQueuedLavalinkPlayer player)
-    {
-        // Possibly the most skuffed code anyone has ever written
-        var percyTrack = await _audioService.Tracks.LoadTrackAsync("pWHY04eWimU", TrackSearchMode.YouTube);
-
-        await player.Queue.InsertAsync(0, new TrackQueueItem(new TrackReference(currentTrack))).ConfigureAwait(false);
-        await player.Queue.InsertAsync(0, new TrackQueueItem(new TrackReference(percyTrack!))).ConfigureAwait(false);
-
-        await player.SkipAsync().ConfigureAwait(false);
-
-        await Task.Delay(TimeSpan.FromMilliseconds(13500)).ConfigureAwait(false);
-
-        await player.SkipAsync().ConfigureAwait(false);
     }
 
     private TrackSearchMode MapToTrackSearchMode(SearchMode? searchMode)

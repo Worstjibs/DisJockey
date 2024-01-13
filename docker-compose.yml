@@ -29,7 +29,7 @@ services:
   lavalink:
     container_name: lavalink
     pull_policy: always
-    image: ghcr.io/lavalink-devs/lavalink:4.0.0-beta.5 # pin the image version to Lavalink v4
+    image: ghcr.io/lavalink-devs/lavalink:4.0.0 # pin the image version to Lavalink v4
     restart: unless-stopped
     environment:
       - _JAVA_OPTIONS=-Xmx6G # set Java options here
