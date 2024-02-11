@@ -1,4 +1,3 @@
-using Discord.Rest;
 using DisJockey.Extensions;
 using DisJockey.Middleware;
 using DisJockey.Services;
@@ -8,7 +7,6 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using System.Reflection;
 
 namespace DisJockey
@@ -16,6 +14,7 @@ namespace DisJockey
     public class Startup
     {
         private readonly IConfiguration _config;
+
         public Startup(IConfiguration config)
         {
             _config = config;
@@ -46,17 +45,7 @@ namespace DisJockey
                 });
             });
 
-            services.AddOptions<SqlTransportOptions>().Configure(options =>
-            {
-                options.Host = "mssql";
-                options.Database = "disjockey";
-                options.Schema = "transport";
-                options.Role = "transport";
-                options.Username = "masstransit";
-                options.Password = "5itBXrOpu@f8OUcE7%0!";
-                options.AdminUsername = "sa";
-                options.AdminPassword = "Sn39QAi9h1htMYFI79Mf";
-            });
+            services.Configure<SqlTransportOptions>(_config.GetSection("MassTransitSettings:SqlSettings"));
 
             services.AddScoped<IDiscordTrackService, DiscordTrackService>();
 

@@ -9,10 +9,14 @@ using Microsoft.Extensions.DependencyInjection;
 using DisJockey.Services.Interfaces;
 using DisJockey.Profiles;
 
-namespace DisJockey.Extensions {
-    public static class ApplicationServiceExtensions {
-        public static void AddApplicationServices(this IServiceCollection services, IConfiguration config) {
-            services.AddAutoMapper(configuration => {
+namespace DisJockey.Extensions
+{
+    public static class ApplicationServiceExtensions
+    {
+        public static void AddApplicationServices(this IServiceCollection services, IConfiguration config)
+        {
+            services.AddAutoMapper(configuration =>
+            {
                 configuration.AddProfile<AutoMapperProfiles>();
             });
 
@@ -21,8 +25,10 @@ namespace DisJockey.Extensions {
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddScoped<IVideoDetailService, VideoDetailService>();
 
-            services.AddDbContext<DataContext>(options => {
-                options.UseSqlServer(config.GetConnectionString("DefaultConnection"));
+            var dbConnectionString = config.GetConnectionString("DefaultConnection");
+            services.AddDbContext<DataContext>(options =>
+            {
+                options.UseSqlServer(dbConnectionString);
             });
         }
     }
