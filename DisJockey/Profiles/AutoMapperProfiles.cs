@@ -9,10 +9,13 @@ using DisJockey.Core;
 using AutoMapper;
 using DisJockey.Shared.DTOs.PullUps;
 
-namespace DisJockey.Profiles {
-    public class AutoMapperProfiles : Profile {
+namespace DisJockey.Profiles
+{
+    public class AutoMapperProfiles : Profile
+    {
 
-        public AutoMapperProfiles() {
+        public AutoMapperProfiles()
+        {
             ulong? DiscordId = null;
 
             CreateTrackListMappings(DiscordId);
@@ -24,7 +27,8 @@ namespace DisJockey.Profiles {
             CreatePullUpMappings();
         }
 
-        private void CreateTrackListMappings(ulong? DiscordId) {
+        private void CreateTrackListMappings(ulong? DiscordId)
+        {
             CreateMap<Track, BaseTrackDto>()
                 .ForMember(dest => dest.Likes, opt => opt.MapFrom(src => src.Likes.Where(x => x.Liked == true).Count()))
                 .ForMember(dest => dest.Dislikes, opt => opt.MapFrom(src => src.Likes.Where(x => x.Liked == false).Count()))
@@ -55,7 +59,8 @@ namespace DisJockey.Profiles {
                 .ForMember(dest => dest.Liked, opt => opt.MapFrom(src => src.Liked));
         }
 
-        private void CreateMemberListMappings() {
+        private void CreateMemberListMappings()
+        {
             CreateMap<AppUser, BaseMemberDto>()
                 .ForMember(dest => dest.DateJoined, opt => opt.MapFrom(src => src.CreatedOn));
 
@@ -68,7 +73,8 @@ namespace DisJockey.Profiles {
                 .ForMember(dest => dest.Playlists, opt => opt.MapFrom(src => src.Playlists));
         }
 
-        private void CreatePlaylistMappings() {
+        private void CreatePlaylistMappings()
+        {
             CreateMap<Playlist, BasePlaylistDto>()
                 .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Name))
                 .ForMember(dest => dest.YoutubeId, opt => opt.MapFrom(src => src.YoutubeId));
@@ -88,7 +94,8 @@ namespace DisJockey.Profiles {
                 .ForMember(dest => dest.YoutubeId, opt => opt.MapFrom(src => src.Track.YoutubeId));
         }
 
-        private void CreatePullUpMappings() {
+        private void CreatePullUpMappings()
+        {
             CreateMap<Track, PullUpDto>()
                 .IncludeBase<Track, BaseTrackDto>()
                 .ForMember(dest => dest.LastPulled, opt => opt.MapFrom(src => src.PullUps.Max(x => x.CreatedOn)))

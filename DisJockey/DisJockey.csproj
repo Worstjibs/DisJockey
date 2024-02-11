@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
 
     <PropertyGroup>
-        <TargetFramework>net6.0</TargetFramework>
+        <TargetFramework>net8.0</TargetFramework>
         <UserSecretsId>5c4af1e4-becd-4691-bad5-54e363aab345</UserSecretsId>
         <TypeScriptCompileBlocked>true</TypeScriptCompileBlocked>
         <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
@@ -10,17 +10,25 @@
 
     <ItemGroup>
         <PackageReference Include="AspNet.Security.OAuth.Discord" Version="5.0.3" />
-        <PackageReference Include="AutoMapper" Version="10.1.1" />
-        <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="8.1.1" />
+        
+        <PackageReference Include="AutoMapper" Version="13.0.1" />
+        <!--<PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="8.1.1" />-->
+        
         <PackageReference Include="Google.Apis.YouTube.v3" Version="1.52.0.2378" />
         <PackageReference Include="Microsoft.AspNetCore.Authentication" Version="2.2.0" />
         <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="5.0.9" />
         <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="5.0.4" />
-        <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="6.0.5">
+        
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.1">
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
             <PrivateAssets>all</PrivateAssets>
+        </PackageReference>        
+        <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.1" />        
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.1">
+          <PrivateAssets>all</PrivateAssets>
+          <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="6.0.5" />
+        
         <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.19.5" />
         <PackageReference Include="Swashbuckle.AspNetCore" Version="5.5.1" />
         <PackageReference Include="MassTransit" Version="8.1.4-develop.1646" />

@@ -14,6 +14,7 @@ services:
       - BotSettings__LavalinkPassword=youshallnotpass
     volumes:
       - ./DisJockey/wwwroot:/app/wwwroot
+      - ./DisJockey/appsettings.json:/app/appsettings.json
     networks:
       - disjockey-network
 
@@ -23,12 +24,13 @@ services:
     build:
       context: .
       dockerfile: DisJockey.BotService/Dockerfile
+    volumes:
+      - ./DisJockey.BotService/appsettings.json:/app/appsettings.json
     networks:
       - disjockey-network
 
   lavalink:
     container_name: lavalink
-    pull_policy: always
     image: ghcr.io/lavalink-devs/lavalink:4.0.0 # pin the image version to Lavalink v4
     restart: unless-stopped
     environment:
