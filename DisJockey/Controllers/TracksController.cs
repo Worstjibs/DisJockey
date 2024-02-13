@@ -85,45 +85,27 @@ public class TracksController : BaseApiController
         return BadRequest("Error saving like");
     }
 
-    // TODO - Use MassTransit
     [HttpPost("play")]
     public async Task<ActionResult> PlayTrack(TrackPlayRequestDto trackPlayDto)
     {
         var discordId = User.GetDiscordId();
+
         if (!discordId.HasValue)
-        {
             return BadRequest("Invalid DiscordId");
-        }
+
+        if (await _unitOfWork.TrackRepository.IsTrackBlacklisted(trackPlayDto.YoutubeId))
+            return BadRequest("Track is blacklisted");
 
         var playTrackEvent = new PlayTrackEvent
         {
             DiscordId = discordId.Value,
-            YoutubeId = trackPlayDto.YoutubeId
+            YoutubeId = trackPlayDto.YoutubeId,
+            Queue = trackPlayDto.PlayNow
         };
 
         await _bus.Publish(playTrackEvent);
 
-        //var user = _client.GetUser(discordId.Value);
-        //if (user == null)
-        //{
-        //    return BadRequest("You must be connected to a Voice channel to play a track");
-        //}
-
-        //var guild = _client.Guilds.FirstOrDefault(x => x.VoiceChannels.Any(v => v.ConnectedUsers.Any(u => u.Id == user.Id)));
-        //if (guild == null)
-        //{
-        //    return BadRequest("You must be connected to a Voice channel to play a track");
-        //}
-
-        //if (await _unitOfWork.TrackRepository.IsTrackBlacklisted(trackPlayDto.YoutubeId))
-        //{
-        //    return BadRequest("This track is blacklisted.");
-        //}
-
-        //await _musicService.PlayTrack("https://youtu.be/" + trackPlayDto.YoutubeId, user, guild, trackPlayDto.PlayNow, SearchType.YouTube);
-
         return Ok();
-
     }
 
     [HttpPut("{id}/blacklist")]

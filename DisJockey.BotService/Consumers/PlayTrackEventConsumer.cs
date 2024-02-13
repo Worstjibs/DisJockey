@@ -9,13 +9,11 @@ using Lavalink4NET.Players.Queued;
 using Lavalink4NET.Rest.Entities.Tracks;
 using MassTransit;
 using Microsoft.Extensions.Options;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace DisJockey.BotService.Consumers;
 
 public class PlayTrackEventConsumer : IConsumer<PlayTrackEvent>
 {
-    private readonly IMusicService _musicService;
     private readonly IAudioService _audioService;
     private readonly IDiscordClient _discordClient;
     private readonly IOptions<QueuedLavalinkPlayerOptions> _queuePlayerOptions;
