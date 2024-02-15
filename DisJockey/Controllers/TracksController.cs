@@ -5,136 +5,124 @@ using DisJockey.Core;
 using DisJockey.Extensions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Discord.WebSocket;
-using DisJockey.Discord.Services;
 using DisJockey.Shared.DTOs.Track;
 using DisJockey.Services.Interfaces;
 using DisJockey.Shared.Helpers;
 using DisJockey.Shared.Extensions;
-using Victoria.Responses.Search;
+using MassTransit;
+using DisJockey.Shared.Events;
 
-namespace DisJockey.Controllers
+namespace DisJockey.Controllers;
+
+[Authorize]
+public class TracksController : BaseApiController
 {
-    [Authorize]
-    public class TracksController : BaseApiController
+    private readonly IUnitOfWork _unitOfWork;
+    private readonly IBus _bus;
+
+    public TracksController(IUnitOfWork unitOfWork, IBus bus)
     {
-        private readonly IUnitOfWork _unitOfWork;
-        private readonly DiscordSocketClient _client;
-        private readonly MusicService _musicService;
+        _unitOfWork = unitOfWork;
+        _bus = bus;
+    }
 
-        public TracksController(IUnitOfWork unitOfWork, DiscordSocketClient client,
-            MusicService musicService)
+    [HttpGet]
+    public async Task<ActionResult<PagedList<TrackListDto>>> GetTracks([FromQuery] PaginationParams paginationParams)
+    {
+        var tracks = await _unitOfWork.TrackRepository.GetTracks(paginationParams);
+
+        Response.AddPaginationHeader(tracks.CurrentPage, tracks.ItemsPerPage, tracks.TotalPages, tracks.TotalCount);
+
+        return Ok(tracks);
+    }
+
+    [HttpGet("{discordId}")]
+    public async Task<ActionResult<PagedList<TrackListDto>>> GetTrackPlaysForMember([FromQuery] PaginationParams paginationParams, ulong discordId)
+    {
+        var tracks = await _unitOfWork.TrackRepository.GetTrackPlaysForMember(paginationParams, discordId);
+
+        Response.AddPaginationHeader(tracks.CurrentPage, tracks.ItemsPerPage, tracks.TotalPages, tracks.TotalCount);
+
+        return Ok(tracks);
+    }
+
+    [HttpPost("like")]
+    public async Task<ActionResult> LikeTrack(TrackLikeAddDto trackLikeDto)
+    {
+        var track = await _unitOfWork.TrackRepository.GetTrackByYoutubeIdAsync(trackLikeDto.YoutubeId);
+
+        if (track == null) return BadRequest("Track does not exist");
+
+        var discordId = User.GetDiscordId();
+        if (!discordId.HasValue)
         {
-            _musicService = musicService;
-            _unitOfWork = unitOfWork;
-            _client = client;
+            return BadRequest("Invalid DiscordId");
         }
 
-        [HttpGet]
-        public async Task<ActionResult<PagedList<TrackListDto>>> GetTracks([FromQuery] PaginationParams paginationParams)
+        var user = await _unitOfWork.UserRepository.GetUserByDiscordIdAsync(discordId.Value);
+
+        if (user == null) return Unauthorized("Invalid Token");
+
+        var trackLike = track.Likes.FirstOrDefault(t => t.User.DiscordId == discordId);
+
+        if (trackLike == null)
         {
-            var tracks = await _unitOfWork.TrackRepository.GetTracks(paginationParams);
-
-            Response.AddPaginationHeader(tracks.CurrentPage, tracks.ItemsPerPage, tracks.TotalPages, tracks.TotalCount);
-
-            return Ok(tracks);
+            trackLike = new TrackLike
+            {
+                UserId = user.Id,
+                TrackId = track.Id
+            };
         }
+        else if (trackLike.Liked == trackLikeDto.Liked)
+            return BadRequest("You already like this track");
 
-        [HttpGet("{discordId}")]
-        public async Task<ActionResult<PagedList<TrackListDto>>> GetTrackPlaysForMember([FromQuery] PaginationParams paginationParams, ulong discordId)
+        trackLike.Liked = trackLikeDto.Liked;
+
+        track.Likes.Add(trackLike);
+
+        if (await _unitOfWork.Complete()) return Ok();
+
+        return BadRequest("Error saving like");
+    }
+
+    [HttpPost("play")]
+    public async Task<ActionResult> PlayTrack(TrackPlayRequestDto trackPlayDto)
+    {
+        var discordId = User.GetDiscordId();
+
+        if (!discordId.HasValue)
+            return BadRequest("Invalid DiscordId");
+
+        if (await _unitOfWork.TrackRepository.IsTrackBlacklisted(trackPlayDto.YoutubeId))
+            return BadRequest("Track is blacklisted");
+
+        var playTrackEvent = new PlayTrackEvent
         {
-            var tracks = await _unitOfWork.TrackRepository.GetTrackPlaysForMember(paginationParams, discordId);
+            DiscordId = discordId.Value,
+            YoutubeId = trackPlayDto.YoutubeId,
+            Queue = trackPlayDto.PlayNow
+        };
 
-            Response.AddPaginationHeader(tracks.CurrentPage, tracks.ItemsPerPage, tracks.TotalPages, tracks.TotalCount);
+        await _bus.Publish(playTrackEvent);
 
-            return Ok(tracks);
-        }
+        return Ok();
+    }
 
-        [HttpPost("like")]
-        public async Task<ActionResult> LikeTrack(TrackLikeAddDto trackLikeDto)
-        {
-            var track = await _unitOfWork.TrackRepository.GetTrackByYoutubeIdAsync(trackLikeDto.YoutubeId);
+    [HttpPut("{id}/blacklist")]
+    public async Task<ActionResult> BlacklistTrack(int trackId)
+    {
+        var track = await _unitOfWork.TrackRepository.GetTrackByIdAsync(trackId);
 
-            if (track == null) return BadRequest("Track does not exist");
+        if (track == null)
+            return NotFound($"Track with Id {trackId} not found.");
 
-            var discordId = User.GetDiscordId();
-            if (!discordId.HasValue)
-            {
-                return BadRequest("Invalid DiscordId");
-            }
+        if (track.Blacklisted)
+            return BadRequest($"Track with Id {trackId} already blacklisted.");
 
-            var user = await _unitOfWork.UserRepository.GetUserByDiscordIdAsync(discordId.Value);
+        track.Blacklisted = true;
 
-            if (user == null) return Unauthorized("Invalid Token");
+        await _unitOfWork.Complete();
 
-            var trackLike = track.Likes.FirstOrDefault(t => t.User.DiscordId == discordId);
-
-            if (trackLike == null)
-            {
-                trackLike = new TrackLike
-                {
-                    UserId = user.Id,
-                    TrackId = track.Id
-                };
-            } else if (trackLike.Liked == trackLikeDto.Liked)
-                return BadRequest("You already like this track");
-
-            trackLike.Liked = trackLikeDto.Liked;
-
-            track.Likes.Add(trackLike);
-
-            if (await _unitOfWork.Complete()) return Ok();
-
-            return BadRequest("Error saving like");
-        }
-
-        [HttpPost("play")]
-        public async Task<ActionResult> PlayTrack(TrackPlayRequestDto trackPlayDto)
-        {
-            var discordId = User.GetDiscordId();
-            if (!discordId.HasValue)
-            {
-                return BadRequest("Invalid DiscordId");
-            }
-
-            var user = _client.GetUser(discordId.Value);
-            if (user == null)
-            {
-                return BadRequest("You must be connected to a Voice channel to play a track");
-            }
-
-            var guild = _client.Guilds.FirstOrDefault(x => x.VoiceChannels.Any(v => v.ConnectedUsers.Any(u => u.Id == user.Id)));
-            if (guild == null)
-            {
-                return BadRequest("You must be connected to a Voice channel to play a track");
-            }
-
-            if (await _unitOfWork.TrackRepository.IsTrackBlacklisted(trackPlayDto.YoutubeId))
-            {
-                return BadRequest("This track is blacklisted.");
-            }
-
-            await _musicService.PlayTrack("https://youtu.be/" + trackPlayDto.YoutubeId, user, guild, trackPlayDto.PlayNow, SearchType.YouTube);
-            return Ok();
-
-        }
-
-        [HttpPut("{id}/blacklist")]
-        public async Task<ActionResult> BlacklistTrack(int trackId)
-        {
-            var track = await _unitOfWork.TrackRepository.GetTrackByIdAsync(trackId);
-
-            if (track == null)
-                return NotFound($"Track with Id {trackId} not found.");
-
-            if (track.Blacklisted)
-                return BadRequest($"Track with Id {trackId} already blacklisted.");
-
-            track.Blacklisted = true;
-
-            await _unitOfWork.Complete();
-
-            return NoContent();
-        }
+        return NoContent();
     }
 }

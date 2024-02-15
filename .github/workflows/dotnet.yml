@@ -8,23 +8,35 @@ on:
 
 jobs:
   build-api:
-
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
     - name: Setup .NET
-      uses: actions/setup-dotnet@v1
+      uses: actions/setup-dotnet@v4
       with:
-        dotnet-version: 6.0.x
+        dotnet-version: 8.0.x
     - name: Restore dependencies
-      run: dotnet restore
+      run: dotnet restore ./DisJockey/DisJockey.csproj
     - name: Build
-      run: dotnet build --no-restore
+      run: dotnet build ./DisJockey/DisJockey.csproj --no-restore
+
+  build-bot:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: 8.0.x
+    - name: Restore dependencies
+      run: dotnet restore ./DisJockey.BotService/DisJockey.BotService.csproj
+    - name: Build
+      run: dotnet build ./DisJockey.BotService/DisJockey.BotService.csproj --no-restore
 
   
   build-angular:
-
     runs-on: ubuntu-latest
 
     env:

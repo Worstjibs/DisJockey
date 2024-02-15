@@ -1,0 +1,13 @@
+{
+  "profiles": {
+    "Docker Compose": {
+      "commandName": "DockerCompose",
+      "commandVersion": "1.0",
+      "serviceActions": {
+        "disjockey.api": "StartDebugging",
+        "mssql": "StartWithoutDebugging",
+        "disjockey.botservice": "StartDebugging"
+      }
+    }
+  }
+}

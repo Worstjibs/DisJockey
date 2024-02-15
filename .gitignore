@@ -446,3 +446,5 @@ botsettings.json
 
 /DisJockey/wwwroot
 /DisJockey/Data/SeedData.json
+
+/sql/*

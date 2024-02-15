@@ -1,49 +1,52 @@
 ﻿using AutoMapper;
-using DisJockey.Core;
 using DisJockey.Extensions;
 using DisJockey.Services.Interfaces;
 using DisJockey.Shared.DTOs.Track;
 using DisJockey.Shared.Helpers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace DisJockey.Controllers {
-    [Authorize]
-    public class SearchController : BaseApiController {
-        private readonly IVideoDetailService _videoDetailService;
-        private readonly IUnitOfWork _unitOfWork;
-        private readonly IMapper _mapper;
+namespace DisJockey.Controllers;
 
-        public SearchController(IVideoDetailService videoDetailService, IUnitOfWork unitOfWork, IMapper mapper) {
-            _videoDetailService = videoDetailService;
-            _unitOfWork = unitOfWork;
-            _mapper = mapper;
+[Authorize]
+public class SearchController : BaseApiController
+{
+    private readonly IVideoDetailService _videoDetailService;
+    private readonly IUnitOfWork _unitOfWork;
+    private readonly IMapper _mapper;
+
+    public SearchController(IVideoDetailService videoDetailService, IUnitOfWork unitOfWork, IMapper mapper)
+    {
+        _videoDetailService = videoDetailService;
+        _unitOfWork = unitOfWork;
+        _mapper = mapper;
+    }
+
+    [HttpGet]
+    public async Task<ActionResult<IEnumerable<TrackListDto>>> SearchTracks([FromQuery] PaginationParams paginationParams)
+    {
+        var results = await _videoDetailService.QueryTracksAsync(paginationParams);
+
+        if (results == null)
+        {
+            return NoContent();
         }
 
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<TrackListDto>>> SearchTracks([FromQuery] PaginationParams paginationParams) {
-            var results = await _videoDetailService.QueryTracksAsync(paginationParams);
+        var existingTracks = await _unitOfWork.TrackRepository.GetTracksByYouTubeIdAsync(results.Select(x => x.YoutubeId));
 
-            if (results == null) {
-                return NoContent();
-            }
+        var resultsDto = results.Select(x => _mapper.Map<TrackListDto>(x)).ToList();
 
-            var existingTracks = await _unitOfWork.TrackRepository.GetTracksByYouTubeIdAsync(results.Select(x => x.YoutubeId));
+        foreach (var existingTrack in existingTracks)
+        {
+            var index = resultsDto.IndexOf(resultsDto.First(x => x.YoutubeId == existingTrack.YoutubeId));
+            resultsDto[index] = existingTrack;
+        };
 
-            var resultsDto = results.Select(x => _mapper.Map<TrackListDto>(x)).ToList();
+        Response.AddYouTubePaginationHeader(results.CurrentPageToken, results.NextPageToken, results.PreviousPageToken);
 
-            foreach (var existingTrack in existingTracks) {
-                var index = resultsDto.IndexOf(resultsDto.First(x => x.YoutubeId == existingTrack.YoutubeId));
-                resultsDto[index] = existingTrack;
-            };
-
-            Response.AddYouTubePaginationHeader(results.CurrentPageToken, results.NextPageToken, results.PreviousPageToken);
-
-            return Ok(resultsDto);
-        }
+        return Ok(resultsDto);
     }
 }

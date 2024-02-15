@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.31005.135
+# Visual Studio Version 17
+VisualStudioVersion = 17.8.34219.65
 MinimumVisualStudioVersion = 15.0.26124.0
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DisJockey", "DisJockey\DisJockey.csproj", "{0E7691AA-E6F1-41E2-86B4-5178B87C568D}"
 EndProject
@@ -12,6 +12,15 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DisJockey.Shared", "DisJockey.Shared\DisJockey.Shared.csproj", "{F61F9FFE-B59D-45F1-BFB2-D878B047C0A3}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DisJockey.Services", "DisJockey.Services\DisJockey.Services.csproj", "{3398DBE9-8B86-4269-A4A4-DD9BB60FA7B6}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{69965E91-C2F3-4D6C-9251-2019D3BDAFBC}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+	EndProjectSection
+EndProject
+Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{EA706C75-32BE-43BE-97F5-E97555582290}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DisJockey.BotService", "DisJockey.BotService\DisJockey.BotService.csproj", "{3A0F2496-2629-46F5-A2E5-E92822017E8D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -83,6 +92,30 @@ Global
 		{3398DBE9-8B86-4269-A4A4-DD9BB60FA7B6}.Release|x64.Build.0 = Release|Any CPU
 		{3398DBE9-8B86-4269-A4A4-DD9BB60FA7B6}.Release|x86.ActiveCfg = Release|Any CPU
 		{3398DBE9-8B86-4269-A4A4-DD9BB60FA7B6}.Release|x86.Build.0 = Release|Any CPU
+		{EA706C75-32BE-43BE-97F5-E97555582290}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EA706C75-32BE-43BE-97F5-E97555582290}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EA706C75-32BE-43BE-97F5-E97555582290}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{EA706C75-32BE-43BE-97F5-E97555582290}.Debug|x64.Build.0 = Debug|Any CPU
+		{EA706C75-32BE-43BE-97F5-E97555582290}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{EA706C75-32BE-43BE-97F5-E97555582290}.Debug|x86.Build.0 = Debug|Any CPU
+		{EA706C75-32BE-43BE-97F5-E97555582290}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EA706C75-32BE-43BE-97F5-E97555582290}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EA706C75-32BE-43BE-97F5-E97555582290}.Release|x64.ActiveCfg = Release|Any CPU
+		{EA706C75-32BE-43BE-97F5-E97555582290}.Release|x64.Build.0 = Release|Any CPU
+		{EA706C75-32BE-43BE-97F5-E97555582290}.Release|x86.ActiveCfg = Release|Any CPU
+		{EA706C75-32BE-43BE-97F5-E97555582290}.Release|x86.Build.0 = Release|Any CPU
+		{3A0F2496-2629-46F5-A2E5-E92822017E8D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3A0F2496-2629-46F5-A2E5-E92822017E8D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3A0F2496-2629-46F5-A2E5-E92822017E8D}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{3A0F2496-2629-46F5-A2E5-E92822017E8D}.Debug|x64.Build.0 = Debug|Any CPU
+		{3A0F2496-2629-46F5-A2E5-E92822017E8D}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{3A0F2496-2629-46F5-A2E5-E92822017E8D}.Debug|x86.Build.0 = Debug|Any CPU
+		{3A0F2496-2629-46F5-A2E5-E92822017E8D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3A0F2496-2629-46F5-A2E5-E92822017E8D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3A0F2496-2629-46F5-A2E5-E92822017E8D}.Release|x64.ActiveCfg = Release|Any CPU
+		{3A0F2496-2629-46F5-A2E5-E92822017E8D}.Release|x64.Build.0 = Release|Any CPU
+		{3A0F2496-2629-46F5-A2E5-E92822017E8D}.Release|x86.ActiveCfg = Release|Any CPU
+		{3A0F2496-2629-46F5-A2E5-E92822017E8D}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

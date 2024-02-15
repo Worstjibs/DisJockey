@@ -11,6 +11,7 @@ using DisJockey.Shared.DTOs.PullUps;
 using Microsoft.AspNetCore.Http;
 using DisJockey.Shared.Extensions;
 using System.Collections.Generic;
+using DisJockey.Shared.DTOs.Shared;
 
 namespace DisJockey.Data {
     public class TrackRepository : ITrackRepository {
