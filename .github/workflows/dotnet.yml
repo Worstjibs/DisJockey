@@ -31,9 +31,9 @@ jobs:
       with:
         dotnet-version: 8.0.x
     - name: Restore dependencies
-      run: dotnet restore ./DisJockey/DisJockey.BotService.csproj
+      run: dotnet restore ./DisJockey.BotService/DisJockey.BotService.csproj
     - name: Build
-      run: dotnet build ./DisJockey/DisJockey.BotService.csproj --no-restore
+      run: dotnet build ./DisJockey.BotService/DisJockey.BotService.csproj --no-restore
 
   
   build-angular:
