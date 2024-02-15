@@ -8,7 +8,7 @@ FROM mcr.microsoft.com/dotnet/sdk:8.0-jammy AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
 COPY ["DisJockey.BotService/DisJockey.BotService.csproj", "DisJockey.BotService/"]
-RUN dotnet restore "./DisJockey.BotService/./DisJockey.BotService.csproj"
+RUN dotnet restore "./DisJockey.BotService/DisJockey.BotService.csproj"
 COPY . .
 WORKDIR "/src/DisJockey.BotService"
 RUN dotnet build "./DisJockey.BotService.csproj" -c $BUILD_CONFIGURATION -o /app/build

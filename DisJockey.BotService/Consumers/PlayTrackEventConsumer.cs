@@ -19,13 +19,11 @@ public class PlayTrackEventConsumer : IConsumer<PlayTrackEvent>
     private readonly IOptions<QueuedLavalinkPlayerOptions> _queuePlayerOptions;
 
     public PlayTrackEventConsumer(
-        IMusicService musicService,
         IAudioService audioService,
         DiscordSocketClient discordClient,
         IOptions<QueuedLavalinkPlayerOptions> queuePlayerOptions
     )
     {
-        _musicService = musicService;
         _audioService = audioService;
         _discordClient = discordClient;
         _queuePlayerOptions = queuePlayerOptions;
