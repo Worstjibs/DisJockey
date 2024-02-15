@@ -1,17 +1,19 @@
-namespace DisJockey.Shared.Helpers {
-    public class PaginationParams {
-        private const int MaxPageSize = 50;
+namespace DisJockey.Shared.Helpers;
 
-        public int PageNumber { get; set; } = 1;
+public class PaginationParams
+{
+    private const int MaxPageSize = 50;
 
-        private int _pageSize = 10;
-        public int PageSize { 
-            get => _pageSize;
-            set => _pageSize = (value > MaxPageSize) ? MaxPageSize : value;
-        }
+    public int PageNumber { get; set; } = 1;
 
-        public string SortBy { get; set; }
-        public string Query { get; set; }
-        public string PageToken { get; set; }
+    private int _pageSize = 10;
+    public int PageSize
+    {
+        get => _pageSize;
+        set => _pageSize = (value > MaxPageSize) ? MaxPageSize : value;
     }
+
+    public string SortBy { get; set; }
+    public string Query { get; set; }
+    public string PageToken { get; set; }
 }
