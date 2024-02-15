@@ -31,15 +31,18 @@ jobs:
       working-directory: ./DisJockey/ClientApp
 
     - name: Set up .NET Core
-      uses: actions/setup-dotnet@v1
+      uses: actions/setup-dotnet@v4
       with:
-        dotnet-version: '6.0.x'
+        dotnet-version: '8.0.x'
+
+    - name: Restore dependencies
+      run: dotnet restore ./DisJockey/DisJockey.csproj
 
     - name: Build with dotnet
-      run: dotnet build --configuration Release
+      run: dotnet build ./DisJockey/DisJockey.csproj --configuration Release --no-restore
 
     - name: dotnet publish
-      run: dotnet publish -c Release -o ${{env.DOTNET_ROOT}}/myapp
+      run: dotnet publish ./DisJockey/DisJockey.csproj -c Release -o ${{env.DOTNET_ROOT}}/myapp
 
     - name: Run Azure webapp deploy action using publish profile credentials
       uses: azure/webapps-deploy@v2
