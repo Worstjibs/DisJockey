@@ -32,18 +32,12 @@ public class WheelUpService : IWheelUpService
         if (item.Track is null)
             item.Track = await _audioService.Tracks.LoadTrackAsync(item.YoutubeId, TrackSearchMode.YouTube);
 
+        var trackPlayProperties = new TrackPlayProperties(
+                                            StartPosition: TimeSpan.FromMilliseconds(item.Start),
+                                            EndTime: item.End > 0 ? TimeSpan.FromMilliseconds(item.End) : null);
+
+        await player.PlayAsync(item.Track!, enqueue: false, properties: trackPlayProperties);
         await player.Queue.InsertAsync(0, new TrackQueueItem(new TrackReference(currentTrack))).ConfigureAwait(false);
-        await player.Queue.InsertAsync(0, new TrackQueueItem(new TrackReference(item.Track!))).ConfigureAwait(false);
-
-        await player.SkipAsync().ConfigureAwait(false);
-
-        await player.SeekAsync(TimeSpan.FromMilliseconds(item.Start)).ConfigureAwait(false);
-
-        if (item.End > 0)
-        {
-            await Task.Delay(TimeSpan.FromMilliseconds(item.End - item.Start)).ConfigureAwait(false);
-            await player.SkipAsync().ConfigureAwait(false);
-        }
 
         if (_current == _pullUpList.Count - 1)
             _current = 0;

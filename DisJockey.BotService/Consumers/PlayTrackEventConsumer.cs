@@ -17,16 +17,19 @@ public class PlayTrackEventConsumer : IConsumer<PlayTrackEvent>
     private readonly IAudioService _audioService;
     private readonly IDiscordClient _discordClient;
     private readonly IOptions<QueuedLavalinkPlayerOptions> _queuePlayerOptions;
+    private readonly IBus _bus;
 
     public PlayTrackEventConsumer(
         IAudioService audioService,
         DiscordSocketClient discordClient,
-        IOptions<QueuedLavalinkPlayerOptions> queuePlayerOptions
+        IOptions<QueuedLavalinkPlayerOptions> queuePlayerOptions,
+        IBus bus
     )
     {
         _audioService = audioService;
         _discordClient = discordClient;
         _queuePlayerOptions = queuePlayerOptions;
+        _bus = bus;
     }
 
     public async Task Consume(ConsumeContext<PlayTrackEvent> context)
@@ -53,6 +56,15 @@ public class PlayTrackEventConsumer : IConsumer<PlayTrackEvent>
         if (track is null)
             return;
 
-        var position = await playerResult.Player.PlayAsync(track);
+        await playerResult.Player.PlayAsync(track, enqueue: message.Queue);
+
+        await _bus.Publish(new TrackPlayedEvent
+        {
+            SearchMode = SearchMode.YouTube,
+            TrackId = track.Identifier,
+            DiscordId = discordUser.Id,
+            AvatarUrl = discordUser.GetAvatarUrl(),
+            UserName = discordUser.Username
+        });
     }
 }

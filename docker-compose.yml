@@ -6,12 +6,7 @@ services:
     image: ${DOCKER_REGISTRY-}disjockey
     build:
       context: .
-      dockerfile: DisJockey/Dockerfile
-    environment:
-      - BotSettings__LavalinkHost=lavalink
-      - BotSettings__LavalinkPort=2333
-      - BotSettings__LavalinkIsSSL=false
-      - BotSettings__LavalinkPassword=youshallnotpass
+      dockerfile: DisJockey/Dockerfile.local
     volumes:
       - ./DisJockey/wwwroot:/app/wwwroot
       - ./DisJockey/appsettings.json:/app/appsettings.json

@@ -100,7 +100,7 @@ public class TracksController : BaseApiController
         {
             DiscordId = discordId.Value,
             YoutubeId = trackPlayDto.YoutubeId,
-            Queue = trackPlayDto.PlayNow
+            Queue = !trackPlayDto.PlayNow
         };
 
         await _bus.Publish(playTrackEvent);
