@@ -1,4 +1,5 @@
 using DisJockey.BotService;
+using DisJockey.Shared.Settings;
 using MassTransit;
 using System.Reflection;
 
@@ -6,21 +7,18 @@ var builder = Host.CreateApplicationBuilder(args);
 
 builder.Services.AddDiscordServices(builder.Configuration);
 
+var massTransitSettings = builder.Configuration.GetRequiredSection("MassTransitSettings").Get<MassTransitSettings>()!;
 builder.Services.AddMassTransit(x =>
 {
     x.AddConsumers(Assembly.GetExecutingAssembly());
 
-    x.UsingSqlServer((context, cfg) =>
+    x.UsingAzureServiceBus((context, cfg) =>
     {
         cfg.ConfigureEndpoints(context);
+
+        cfg.Host(massTransitSettings.ServiceBusConnectionString);
     });
 });
-
-builder.Services.Configure<SqlTransportOptions>(builder.Configuration.GetSection("MassTransitSettings:SqlSettings"));
-
-var migrationSettings = builder.Configuration.GetRequiredSection("MassTransitSettings:MigrationSettings").Get<MigrationSettings>()!;
-
-builder.Services.AddSqlServerMigrationHostedService(create: migrationSettings.Create, delete: migrationSettings.Delete);
 
 var host = builder.Build();
 

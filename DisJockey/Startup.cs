@@ -2,6 +2,7 @@ using DisJockey.Extensions;
 using DisJockey.Middleware;
 using DisJockey.Services;
 using DisJockey.Services.Interfaces;
+using DisJockey.Shared.Settings;
 using MassTransit;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -35,21 +36,20 @@ namespace DisJockey
 
             services.AddIdentityServices(_config);
 
+            var massTransitSettings = _config.GetRequiredSection("MassTransitSettings").Get<MassTransitSettings>()!;
             services.AddMassTransit(x =>
             {
                 x.AddConsumers(Assembly.GetExecutingAssembly());
 
-                x.UsingSqlServer((context, cfg) =>
+                x.UsingAzureServiceBus((context, cfg) =>
                 {
                     cfg.ConfigureEndpoints(context);
+
+                    cfg.Host(massTransitSettings.ServiceBusConnectionString);
                 });
             });
 
-            services.Configure<SqlTransportOptions>(_config.GetSection("MassTransitSettings:SqlSettings"));
-
             services.AddScoped<IDiscordTrackService, DiscordTrackService>();
-
-            //services.AddDiscordServices(_config);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
