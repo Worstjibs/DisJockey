@@ -18,7 +18,9 @@ builder.Services.AddMassTransit(x =>
 
 builder.Services.Configure<SqlTransportOptions>(builder.Configuration.GetSection("MassTransitSettings:SqlSettings"));
 
-builder.Services.AddSqlServerMigrationHostedService(create: true, delete: false);
+var migrationSettings = builder.Configuration.GetRequiredSection("MassTransitSettings:MigrationSettings").Get<MigrationSettings>()!;
+
+builder.Services.AddSqlServerMigrationHostedService(create: migrationSettings.Create, delete: migrationSettings.Delete);
 
 var host = builder.Build();
 
