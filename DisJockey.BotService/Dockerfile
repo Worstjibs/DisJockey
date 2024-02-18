@@ -8,6 +8,7 @@ FROM mcr.microsoft.com/dotnet/sdk:8.0-jammy AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
 COPY ["DisJockey.BotService/DisJockey.BotService.csproj", "DisJockey.BotService/"]
+COPY ["DisJockey.MassTransit/DisJockey.MassTransit.csproj", "DisJockey.MassTransit/"]
 RUN dotnet restore "./DisJockey.BotService/DisJockey.BotService.csproj"
 COPY . .
 WORKDIR "/src/DisJockey.BotService"

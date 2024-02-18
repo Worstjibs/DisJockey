@@ -2,8 +2,7 @@ using DisJockey.Extensions;
 using DisJockey.Middleware;
 using DisJockey.Services;
 using DisJockey.Services.Interfaces;
-using DisJockey.Shared.Settings;
-using MassTransit;
+using DisJockey.MassTransit;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -15,10 +14,12 @@ namespace DisJockey
     public class Startup
     {
         private readonly IConfiguration _config;
+        private readonly IWebHostEnvironment _environment;
 
-        public Startup(IConfiguration config)
+        public Startup(IConfiguration config, IWebHostEnvironment environment)
         {
             _config = config;
+            _environment = environment;
         }
 
         // This method gets called by the runtime. Use this method to add services to the container.
@@ -36,18 +37,10 @@ namespace DisJockey
 
             services.AddIdentityServices(_config);
 
-            var massTransitSettings = _config.GetRequiredSection("MassTransitSettings").Get<MassTransitSettings>()!;
-            services.AddMassTransit(x =>
-            {
-                x.AddConsumers(Assembly.GetExecutingAssembly());
-
-                x.UsingAzureServiceBus((context, cfg) =>
-                {
-                    cfg.ConfigureEndpoints(context);
-
-                    cfg.Host(massTransitSettings.ServiceBusConnectionString);
-                });
-            });
+            services.AddMassTransit(
+                            _config,
+                            _environment,
+                            [Assembly.GetExecutingAssembly()]);
 
             services.AddScoped<IDiscordTrackService, DiscordTrackService>();
         }

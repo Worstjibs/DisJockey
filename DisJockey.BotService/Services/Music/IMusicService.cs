@@ -1,5 +1,5 @@
 ﻿using Discord;
-using DisJockey.Shared.Enums;
+using DisJockey.MassTransit.Enums;
 
 namespace DisJockey.BotService.Services.Music;
 

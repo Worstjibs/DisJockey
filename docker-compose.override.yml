@@ -18,7 +18,16 @@ services:
     environment:
       - DOTNET_ENVIRONMENT=Development
     volumes:
-      - ${APPDATA}/Microsoft/UserSecrets:/home/app/.microsoft/usersecrets:ro
+      - ${APPDATA}/Microsoft/UserSecrets:/home/app/.microsoft/usersecrets:ro  
+      
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    container_name: rabbitmq
+    ports:
+        - 5672:5672
+        - 15672:15672
+    networks:
+        - disjockey-network
 
   mssql:
     container_name: mssql

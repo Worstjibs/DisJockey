@@ -10,7 +10,7 @@ using DisJockey.Services.Interfaces;
 using DisJockey.Shared.Helpers;
 using DisJockey.Shared.Extensions;
 using MassTransit;
-using DisJockey.Shared.Events;
+using DisJockey.MassTransit.Events;
 
 namespace DisJockey.Controllers;
 

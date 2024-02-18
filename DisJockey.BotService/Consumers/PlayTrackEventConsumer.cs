@@ -1,8 +1,7 @@
 ﻿using Discord;
 using Discord.WebSocket;
-using DisJockey.BotService.Services.Music;
-using DisJockey.Shared.Enums;
-using DisJockey.Shared.Events;
+using DisJockey.MassTransit.Enums;
+using DisJockey.MassTransit.Events;
 using Lavalink4NET;
 using Lavalink4NET.Players;
 using Lavalink4NET.Players.Queued;

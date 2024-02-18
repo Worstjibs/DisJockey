@@ -1,6 +1,9 @@
 using Discord;
 using Discord.WebSocket;
-using DisJockey.BotService.Services.Music;
+using Lavalink4NET;
+using Lavalink4NET.Events.Players;
+using Lavalink4NET.Players;
+using Lavalink4NET.Players.Queued;
 using Microsoft.Extensions.Options;
 
 namespace DisJockey.BotService;
@@ -10,21 +13,21 @@ internal class HostedBotService : BackgroundService
     private readonly ILogger<HostedBotService> _logger;
     private readonly DiscordSocketClient _client;
     private readonly InteractionHandler _interactionHandler;
-    private readonly IMusicService _musicService;
+    private readonly IAudioService _audioService;
     private readonly BotSettings _settings;
 
     public HostedBotService(
         ILogger<HostedBotService> logger,
         DiscordSocketClient client,
         InteractionHandler interactionHandler,
-        IMusicService musicService,
+        IAudioService audioService,
         IOptions<BotSettings> options
     )
     {
         _logger = logger;
         _client = client;
         _interactionHandler = interactionHandler;
-        _musicService = musicService;
+        _audioService = audioService;
         _settings = options.Value;
     }
 
@@ -36,6 +39,16 @@ internal class HostedBotService : BackgroundService
 
         await _client.LoginAsync(TokenType.Bot, _settings.BotToken);
         await _client.StartAsync();
+
+        _audioService.TrackEnded += OnTrackEnded;
+    }
+
+    private async Task OnTrackEnded(object sender, TrackEndedEventArgs eventArgs)
+    {
+        var queuedPlayer = eventArgs.Player as IQueuedLavalinkPlayer;
+
+        if (queuedPlayer is not null && queuedPlayer.State == PlayerState.NotPlaying)
+            await queuedPlayer.DisconnectAsync();
     }
 
     private Task LogAsync(LogMessage message)

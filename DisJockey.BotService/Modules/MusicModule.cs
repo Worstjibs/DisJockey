@@ -1,7 +1,6 @@
-﻿using Discord;
-using Discord.Interactions;
+﻿using Discord.Interactions;
 using DisJockey.BotService.Services.Music;
-using DisJockey.Shared.Enums;
+using DisJockey.MassTransit.Enums;
 
 namespace DisJockey.BotService.Modules;
 
@@ -32,8 +31,14 @@ public class MusicModule : InteractionModuleBase<SocketInteractionContext>
 
     private async Task DeferActionAsync(Func<Task> deferredAction)
     {
-        await DeferAsync().ConfigureAwait(false);
-
-        await deferredAction().ConfigureAwait(false);
+        try
+        {
+            await DeferAsync().ConfigureAwait(false);
+            await deferredAction().ConfigureAwait(false);
+        }
+        catch (Exception)
+        {
+            await Context.Interaction.FollowupAsync("Something went wrong");
+        }
     }
 }

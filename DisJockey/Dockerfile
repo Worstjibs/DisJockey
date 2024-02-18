@@ -16,7 +16,7 @@ ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
 COPY ["DisJockey/DisJockey.csproj", "DisJockey/"]
 COPY ["DisJockey.Core/DisJockey.Core.csproj", "DisJockey.Core/"]
-COPY ["DisJockey.Discord/DisJockey.Discord.csproj", "DisJockey.Discord/"]
+COPY ["DisJockey.MassTransit/DisJockey.MassTransit.csproj", "DisJockey.MassTransit/"]
 COPY ["DisJockey.Services/DisJockey.Services.csproj", "DisJockey.Services/"]
 COPY ["DisJockey.Shared/DisJockey.Shared.csproj", "DisJockey.Shared/"]
 RUN dotnet restore "./DisJockey/DisJockey.csproj"

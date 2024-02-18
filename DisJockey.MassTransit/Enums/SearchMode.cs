@@ -1,4 +1,4 @@
-﻿namespace DisJockey.Shared.Enums;
+﻿namespace DisJockey.MassTransit.Enums;
 
 public enum SearchMode
 {

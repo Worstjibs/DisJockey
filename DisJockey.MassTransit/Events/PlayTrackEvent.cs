@@ -1,4 +1,4 @@
-﻿namespace DisJockey.Shared.Events;
+﻿namespace DisJockey.MassTransit.Events;
 
 public class PlayTrackEvent
 {

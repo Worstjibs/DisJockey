@@ -37,6 +37,7 @@
 
     <ItemGroup>
         <ProjectReference Include="..\DisJockey.Core\DisJockey.Core.csproj" />
+        <ProjectReference Include="..\DisJockey.MassTransit\DisJockey.MassTransit.csproj" />
         <ProjectReference Include="..\DisJockey.Services\DisJockey.Services.csproj" />
     </ItemGroup>
 

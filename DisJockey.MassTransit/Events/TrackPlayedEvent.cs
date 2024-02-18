@@ -1,6 +1,6 @@
-﻿using DisJockey.Shared.Enums;
+﻿using DisJockey.MassTransit.Enums;
 
-namespace DisJockey.Shared.Events;
+namespace DisJockey.MassTransit.Events;
 
 public class TrackPlayedEvent
 {

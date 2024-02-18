@@ -1,5 +1,5 @@
-﻿using DisJockey.Services.Interfaces;
-using DisJockey.Shared.Events;
+﻿using DisJockey.MassTransit.Events;
+using DisJockey.Services.Interfaces;
 using MassTransit;
 using System.Threading.Tasks;
 using static DisJockey.Services.Interfaces.IDiscordTrackService;

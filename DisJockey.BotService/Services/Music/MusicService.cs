@@ -6,9 +6,9 @@ using Lavalink4NET.Rest.Entities.Tracks;
 using Microsoft.Extensions.Options;
 using DisJockey.BotService.Services.WheelUp;
 using MassTransit;
-using DisJockey.Shared.Enums;
-using DisJockey.Shared.Events;
 using Discord.WebSocket;
+using DisJockey.MassTransit.Enums;
+using DisJockey.MassTransit.Events;
 
 namespace DisJockey.BotService.Services.Music;
 
@@ -109,6 +109,9 @@ public class MusicService : IMusicService
         if (newTrack is not null)
         {
             await context.Interaction.FollowupAsync($"Track skipped, 🔈 Now Playing: {newTrack?.Uri}").ConfigureAwait(false);
+        } else
+        {
+            await context.Interaction.FollowupAsync($"Nothing left in the queue, disconnecting").ConfigureAwait(false);
         }
     }
 
