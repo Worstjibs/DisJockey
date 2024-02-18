@@ -1,8 +1,8 @@
 ﻿using Discord;
 using Discord.Interactions;
 using Discord.WebSocket;
+using Microsoft.Extensions.Options;
 using System.Reflection;
-using System.Reflection.Metadata;
 
 namespace DisJockey.BotService;
 
@@ -12,18 +12,21 @@ internal class InteractionHandler
     private readonly DiscordSocketClient _client;
     private readonly IServiceProvider _serviceProvider;
     private readonly IHostEnvironment _environment;
+    private readonly BotSettings _settings;
 
     public InteractionHandler(
         InteractionService interactionService,
         DiscordSocketClient client,
         IServiceProvider serviceProvider,
-        IHostEnvironment environment
+        IHostEnvironment environment,
+        IOptions<BotSettings> settings
     )
     {
         _interactionService = interactionService;
         _client = client;
         _serviceProvider = serviceProvider;
         _environment = environment;
+        _settings = settings.Value;
     }
 
     public async Task InitialiseAsync()
@@ -65,8 +68,8 @@ internal class InteractionHandler
 
     private async Task ReadyAsync()
     {
-        if (_environment.IsDevelopment())
-            await _interactionService.RegisterCommandsToGuildAsync(377749986986819584, true);
+        if (_environment.IsDevelopment() && _settings.GuildId.HasValue)
+            await _interactionService.RegisterCommandsToGuildAsync(_settings.GuildId.Value, true);
         else
             await _interactionService.RegisterCommandsGloballyAsync(true);
     }
