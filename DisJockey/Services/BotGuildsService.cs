@@ -8,6 +8,26 @@ namespace DisJockey.Services;
 public class BotGuildsService
 {
     ConcurrentBag<ulong> _botGuildIds = new ConcurrentBag<ulong>();
+    ConcurrentDictionary<ulong, IEnumerable<ulong>> _cachedUserGuilds = new ConcurrentDictionary<ulong, IEnumerable<ulong>>();
+
+    public async Task<IEnumerable<ulong>?> TryGetUserGuilds(ulong userId)
+    {
+        return await Task.Run(() =>
+        {
+            if (!_cachedUserGuilds.TryGetValue(userId, out var guildIds))
+                return null;
+
+            return guildIds;
+        });
+    }
+
+    public async Task AddUserGuildsAsync(ulong userId, IEnumerable<ulong> guildIds)
+    {
+        await Task.Run(() =>
+        {
+            _cachedUserGuilds.TryAdd(userId, guildIds);
+        });
+    }
 
     public async Task<bool> IsPartOfGuildsAsync(IEnumerable<ulong> userGuildIds)
     {
@@ -19,7 +39,7 @@ public class BotGuildsService
         });
     }
 
-    public async Task AddGuildsAsync(IEnumerable<ulong> botGuilds)
+    public async Task AddBotGuildsAsync(IEnumerable<ulong> botGuilds)
     {
         await Task.Run(() =>
         {

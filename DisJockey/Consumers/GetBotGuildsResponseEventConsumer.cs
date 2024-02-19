@@ -18,6 +18,6 @@ public class GetBotGuildsResponseEventConsumer : IConsumer<GetBotGuildsEvent.Res
     {
         var message = context.Message;
 
-        await _botGuildsService.AddGuildsAsync(message.GuidIds);
+        await _botGuildsService.AddBotGuildsAsync(message.GuidIds);
     }
 }

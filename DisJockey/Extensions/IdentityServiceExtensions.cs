@@ -29,14 +29,11 @@ namespace DisJockey.Extensions
                 options.ClientSecret = authenticationSettings.DiscordClientSecret;
                 options.Scope.Add("guilds");
 
-                options.Events = new Microsoft.AspNetCore.Authentication.OAuth.OAuthEvents
+                options.Events.OnCreatingTicket = context =>
                 {
-                    OnCreatingTicket = ticketContext =>
-                    {
-                        ticketContext.Identity.AddClaim(new Claim("discord_token", ticketContext.AccessToken));
+                    context.Identity.AddClaim(new Claim("discord_token", context.AccessToken));
 
-                        return Task.CompletedTask;
-                    }
+                    return Task.CompletedTask;
                 };
             });
 
