@@ -13,6 +13,8 @@
         
         <PackageReference Include="AutoMapper" Version="13.0.1" />
         
+        <PackageReference Include="Discord.Net.Rest" Version="3.13.1" />
+        
         <PackageReference Include="Google.Apis.YouTube.v3" Version="1.52.0.2378" />
         <PackageReference Include="Microsoft.AspNetCore.Authentication" Version="2.2.0" />
         <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="5.0.9" />

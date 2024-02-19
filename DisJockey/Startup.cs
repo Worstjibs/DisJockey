@@ -8,6 +8,8 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System.Reflection;
+using Discord.Rest;
+using Microsoft.AspNetCore.Authorization;
 
 namespace DisJockey
 {
@@ -43,6 +45,11 @@ namespace DisJockey
                             [Assembly.GetExecutingAssembly()]);
 
             services.AddScoped<IDiscordTrackService, DiscordTrackService>();
+
+            services.AddScoped<DiscordRestClient>();
+            services.AddScoped<IAuthorizationMiddlewareResultHandler, DisJockeyAuthorizationMiddlewareResultHandler>();
+            services.AddSingleton<BotGuildsService>();
+            services.AddHostedService<BotGuildsScheduledService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

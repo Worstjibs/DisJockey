@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using System.Threading.Tasks;
 using DisJockey.Middleware;
 using DisJockey.Services;
@@ -8,23 +9,31 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace DisJockey.Extensions {
-    public static class IdentityServiceExtensions {
-        public static IServiceCollection AddIdentityServices(this IServiceCollection services, IConfiguration config) {
+namespace DisJockey.Extensions
+{
+    public static class IdentityServiceExtensions
+    {
+        public static IServiceCollection AddIdentityServices(this IServiceCollection services, IConfiguration config)
+        {
             var authenticationSettings = config.GetSection("AuthenticationSettings").Get<AuthenticationSettings>();
             services.AddSingleton(authenticationSettings);
 
-            services.AddAuthentication(options => {
+            services.AddAuthentication(options =>
+            {
                 options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
             })
             .AddCookie()
-            .AddDiscord(options => {
+            .AddDiscord(options =>
+            {
                 options.ClientId = authenticationSettings.DiscordClientId;
                 options.ClientSecret = authenticationSettings.DiscordClientSecret;
+                options.Scope.Add("guilds");
 
-                options.Events = new Microsoft.AspNetCore.Authentication.OAuth.OAuthEvents {
-                    OnCreatingTicket = ticketContext => {
-                        var context = ticketContext;
+                options.Events = new Microsoft.AspNetCore.Authentication.OAuth.OAuthEvents
+                {
+                    OnCreatingTicket = ticketContext =>
+                    {
+                        ticketContext.Identity.AddClaim(new Claim("discord_token", ticketContext.AccessToken));
 
                         return Task.CompletedTask;
                     }
