@@ -9,6 +9,7 @@ using MassTransit;
 using Discord.WebSocket;
 using DisJockey.MassTransit.Enums;
 using DisJockey.MassTransit.Events;
+using Lavalink4NET.Events.Players;
 
 namespace DisJockey.BotService.Services.Music;
 
@@ -70,6 +71,25 @@ public class MusicService : IMusicService
         }
     }
 
+    public async Task<bool> PlayTrackAsync(string youtubeId, SocketUser discordUser, SocketGuild guild, bool queue)
+    {
+        var voiceChannel = guild.VoiceChannels.First(x => x.ConnectedUsers.Any(u => u.Id == discordUser.Id));
+
+        var retrieveOptions = new PlayerRetrieveOptions(PlayerChannelBehavior.Join);
+
+        var playerResult = await _audioService.Players.RetrieveAsync(guild.Id, voiceChannel.Id, playerFactory: PlayerFactory.Queued, _queuePlayerOptions, retrieveOptions);
+        if (!playerResult.IsSuccess)
+            return false;
+
+        var track = await _audioService.Tracks.LoadTrackAsync(youtubeId, TrackSearchMode.YouTube);
+        if (track is null)
+            return false;
+
+        await playerResult.Player.PlayAsync(track, enqueue: queue);
+
+        return true;
+    }
+
     public async Task StopAsync(IInteractionContext context)
     {
         var player = await GetQueuedPlayerAsync(context, connectToVoiceChannel: false).ConfigureAwait(false);
@@ -109,7 +129,8 @@ public class MusicService : IMusicService
         if (newTrack is not null)
         {
             await context.Interaction.FollowupAsync($"Track skipped, 🔈 Now Playing: {newTrack?.Uri}").ConfigureAwait(false);
-        } else
+        }
+        else
         {
             await context.Interaction.FollowupAsync($"Nothing left in the queue, disconnecting").ConfigureAwait(false);
         }
@@ -192,5 +213,20 @@ public class MusicService : IMusicService
             SearchMode.SoundCloud => TrackSearchMode.SoundCloud,
             _ => TrackSearchMode.YouTube,
         };
+    }
+
+    public Task OnReadyAsync()
+    {
+        _audioService.TrackEnded += OnTrackEnded;
+
+        async Task OnTrackEnded(object sender, TrackEndedEventArgs eventArgs)
+        {
+            var queuedPlayer = eventArgs.Player as IQueuedLavalinkPlayer;
+
+            if (queuedPlayer is not null && queuedPlayer.State == PlayerState.NotPlaying)
+                await queuedPlayer.DisconnectAsync();
+        }
+
+        return Task.CompletedTask;
     }
 }

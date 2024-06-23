@@ -22,9 +22,18 @@ public static class ServicesExtensions
             UseInteractionSnowflakeDate = true
         }));
 
-        services.AddSingleton<InteractionService>();
+        services.AddSingleton(x => new InteractionService(x.GetRequiredService<DiscordSocketClient>()));
         services.AddSingleton<InteractionHandler>();
 
+        services.AddLavalink4NetServices();
+
+        services.AddHostedService<HostedBotService>();
+
+        return services;
+    }
+
+    private static IServiceCollection AddLavalink4NetServices(this IServiceCollection services)
+    {
         services.AddLavalink();
         services.ConfigureLavalink(config =>
         {
@@ -35,8 +44,6 @@ public static class ServicesExtensions
 
         services.AddSingleton<IMusicService, MusicService>();
         services.AddSingleton<WheelUpService>();
-
-        services.AddHostedService<HostedBotService>();
 
         return services;
     }
