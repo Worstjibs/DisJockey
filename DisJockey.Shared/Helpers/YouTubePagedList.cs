@@ -16,5 +16,7 @@ namespace DisJockey.Shared.Helpers {
             PreviousPageToken = previousPageToken;
             AddRange(items);
         }
+
+        public static YouTubePagedList<T> Empty() => new YouTubePagedList<T>(Enumerable.Empty<T>(), string.Empty, string.Empty, string.Empty);
     }
 }

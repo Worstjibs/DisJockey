@@ -30,9 +30,9 @@ public class SearchController : BaseApiController
     {
         var results = await _videoDetailService.QueryTracksAsync(paginationParams);
 
-        if (results == null)
+        if (results.Count == 0)
         {
-            return NoContent();
+            return Ok(Enumerable.Empty<TrackListDto>());
         }
 
         var existingTracks = await _unitOfWork.TrackRepository.GetTracksByYouTubeIdAsync(results.Select(x => x.YoutubeId));

@@ -10,6 +10,7 @@ using Discord.WebSocket;
 using DisJockey.MassTransit.Enums;
 using DisJockey.MassTransit.Events;
 using Lavalink4NET.Events.Players;
+using Lavalink4NET.Tracks;
 
 namespace DisJockey.BotService.Services.Music;
 
@@ -52,14 +53,17 @@ public class MusicService : IMusicService
 
         var socketUser = (context.User as SocketUser)!;
 
-        await _bus.Publish(new TrackPlayedEvent
+        if (track.Provider is StreamProvider.YouTube)
         {
-            SearchMode = searchMode,
-            TrackId = track.Identifier,
-            DiscordId = socketUser.Id,
-            AvatarUrl = socketUser.GetAvatarUrl(),
-            UserName = socketUser.Username
-        });
+            await _bus.Publish(new TrackPlayedEvent
+            {
+                SearchMode = searchMode,
+                TrackId = track.Identifier,
+                DiscordId = socketUser.Id,
+                AvatarUrl = socketUser.GetAvatarUrl(),
+                UserName = socketUser.Username
+            });
+        }
 
         if (position is 0)
         {
