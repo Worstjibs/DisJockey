@@ -70,6 +70,25 @@ public class MusicService : IMusicService
         }
     }
 
+    public async Task<bool> PlayTrackAsync(string youtubeId, SocketUser discordUser, SocketGuild guild, bool queue)
+    {
+        var voiceChannel = guild.VoiceChannels.First(x => x.ConnectedUsers.Any(u => u.Id == discordUser.Id));
+
+        var retrieveOptions = new PlayerRetrieveOptions(PlayerChannelBehavior.Join);
+
+        var playerResult = await _audioService.Players.RetrieveAsync(guild.Id, voiceChannel.Id, playerFactory: PlayerFactory.Queued, _queuePlayerOptions, retrieveOptions);
+        if (!playerResult.IsSuccess)
+            return false;
+
+        var track = await _audioService.Tracks.LoadTrackAsync(youtubeId, TrackSearchMode.YouTube);
+        if (track is null)
+            return false;
+
+        await playerResult.Player.PlayAsync(track, enqueue: queue);
+
+        return true;
+    }
+
     public async Task StopAsync(IInteractionContext context)
     {
         var player = await GetQueuedPlayerAsync(context, connectToVoiceChannel: false).ConfigureAwait(false);
@@ -109,7 +128,8 @@ public class MusicService : IMusicService
         if (newTrack is not null)
         {
             await context.Interaction.FollowupAsync($"Track skipped, 🔈 Now Playing: {newTrack?.Uri}").ConfigureAwait(false);
-        } else
+        }
+        else
         {
             await context.Interaction.FollowupAsync($"Nothing left in the queue, disconnecting").ConfigureAwait(false);
         }
@@ -193,4 +213,6 @@ public class MusicService : IMusicService
             _ => TrackSearchMode.YouTube,
         };
     }
+
+    public Task OnReadyAsync() => Task.CompletedTask;
 }
