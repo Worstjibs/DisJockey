@@ -9,6 +9,7 @@ using MassTransit;
 using Discord.WebSocket;
 using DisJockey.MassTransit.Enums;
 using DisJockey.MassTransit.Events;
+using Lavalink4NET.Events.Players;
 
 namespace DisJockey.BotService.Services.Music;
 
@@ -214,5 +215,18 @@ public class MusicService : IMusicService
         };
     }
 
-    public Task OnReadyAsync() => Task.CompletedTask;
+    public Task OnReadyAsync()
+    {
+        _audioService.TrackEnded += OnTrackEnded;
+
+        async Task OnTrackEnded(object sender, TrackEndedEventArgs eventArgs)
+        {
+            var queuedPlayer = eventArgs.Player as IQueuedLavalinkPlayer;
+
+            if (queuedPlayer is not null && queuedPlayer.State == PlayerState.NotPlaying)
+                await queuedPlayer.DisconnectAsync();
+        }
+
+        return Task.CompletedTask;
+    }
 }
