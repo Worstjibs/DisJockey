@@ -11,30 +11,37 @@ using Google.Apis.YouTube.v3;
 using GoogleData = Google.Apis.YouTube.v3.Data;
 using System.Web;
 
-namespace DisJockey.Services.YouTube {
-    public class VideoDetailService : IVideoDetailService {
+namespace DisJockey.Services.YouTube
+{
+    public class VideoDetailService : IVideoDetailService
+    {
         private const int MAX_ITEMS = 10000;
 
         private readonly YouTubeService _youTubeService;
-        public VideoDetailService(IOptions<YoutubeSettings> config) {
-            _youTubeService = new YouTubeService(new BaseClientService.Initializer() {
+        public VideoDetailService(IOptions<YoutubeSettings> config)
+        {
+            _youTubeService = new YouTubeService(new BaseClientService.Initializer()
+            {
                 ApiKey = config.Value.ApiKey
             });
         }
 
-        public async Task<Playlist> GetPlaylistDetailsAsync(string playlistId) {
+        public async Task<Playlist> GetPlaylistDetailsAsync(string playlistId)
+        {
             var playlistRequest = _youTubeService.Playlists.List("snippet,contentDetails");
             playlistRequest.Id = playlistId;
 
             var playlistResponse = await playlistRequest.ExecuteAsync();
 
-            if (playlistResponse?.Items.Count == 0) {
+            if (playlistResponse?.Items.Count == 0)
+            {
                 return null;
             }
 
             var playlistResult = playlistResponse.Items.First();
 
-            var playlist = new Playlist {
+            var playlist = new Playlist
+            {
                 Name = playlistResult.Snippet.Title,
                 YoutubeId = playlistId,
                 Tracks = new List<PlaylistTrack>()
@@ -43,7 +50,8 @@ namespace DisJockey.Services.YouTube {
             var pageToken = "";
             var playlistItemCount = playlistResult.ContentDetails.ItemCount;
 
-            do {
+            do
+            {
                 var playlistItemsRequest = _youTubeService.PlaylistItems.List("snippet,contentDetails");
                 playlistItemsRequest.PlaylistId = playlistId;
                 playlistItemsRequest.MaxResults = playlistItemCount < MAX_ITEMS ? playlistItemCount : MAX_ITEMS;
@@ -60,7 +68,8 @@ namespace DisJockey.Services.YouTube {
             return playlist;
         }
 
-        public async Task<Track> GetVideoDetailsAsync(Track track) {
+        public async Task<Track> GetVideoDetailsAsync(Track track)
+        {
             var searchRequest = _youTubeService.Videos.List("snippet");
             searchRequest.Id = track.YoutubeId;
 
@@ -68,7 +77,8 @@ namespace DisJockey.Services.YouTube {
 
             var youtubeVideo = searchResponse.Items.FirstOrDefault();
 
-            if (youtubeVideo != null) {
+            if (youtubeVideo != null)
+            {
                 track.Title = youtubeVideo.Snippet.Title;
                 track.Description = youtubeVideo.Snippet.Description;
                 track.ChannelTitle = youtubeVideo.Snippet.ChannelTitle;
@@ -82,7 +92,8 @@ namespace DisJockey.Services.YouTube {
             throw new Exception("Invalid Youtube Id");
         }
 
-        public async Task<YouTubePagedList<Track>> QueryTracksAsync(PaginationParams paginationParams) {
+        public async Task<YouTubePagedList<Track>> QueryTracksAsync(PaginationParams paginationParams)
+        {
             var searchRequest = _youTubeService.Search.List("snippet");
             searchRequest.Q = paginationParams.Query;
             searchRequest.Type = "video";
@@ -91,8 +102,9 @@ namespace DisJockey.Services.YouTube {
 
             var searchResponse = await searchRequest.ExecuteAsync();
 
-            if (!searchResponse.Items.Any()) {
-                return null;
+            if (!searchResponse.Items.Any())
+            {
+                return YouTubePagedList<Track>.Empty();
             }
 
             var tracks = searchResponse.Items.Select(MapSearchResultToTrack);
@@ -103,11 +115,14 @@ namespace DisJockey.Services.YouTube {
         }
 
 
-        private static void ProcessTracks(Playlist playlist, IList<GoogleData.PlaylistItem> playlistItems) {
-            var playlistTracks = playlistItems.Select(x => new PlaylistTrack {
+        private static void ProcessTracks(Playlist playlist, IList<GoogleData.PlaylistItem> playlistItems)
+        {
+            var playlistTracks = playlistItems.Select(x => new PlaylistTrack
+            {
                 CreatedOn = DateTime.UtcNow,
                 Playlist = playlist,
-                Track = new Track {
+                Track = new Track
+                {
                     YoutubeId = x.ContentDetails.VideoId,
                     Title = x.Snippet.Title,
                     Description = x.Snippet.Description,
@@ -121,10 +136,12 @@ namespace DisJockey.Services.YouTube {
             ((List<PlaylistTrack>)playlist.Tracks).AddRange(playlistTracks);
         }
 
-        private Track MapSearchResultToTrack(GoogleData.SearchResult result) {
+        private Track MapSearchResultToTrack(GoogleData.SearchResult result)
+        {
             var snippet = result.Snippet;
 
-            return new Track {
+            return new Track
+            {
                 YoutubeId = result.Id.VideoId,
                 Title = HttpUtility.HtmlDecode(snippet.Title),
                 Description = snippet.Description,
