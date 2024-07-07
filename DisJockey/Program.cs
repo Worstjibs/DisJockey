@@ -1,13 +1,8 @@
 using System;
 using System.Reflection;
 using System.Threading.Tasks;
-using Discord.Rest;
-using DisJockey.Data;
 using DisJockey.Extensions;
 using DisJockey.Middleware;
-using DisJockey.Services.Interfaces;
-using DisJockey.Services;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -16,6 +11,7 @@ using Microsoft.Extensions.Logging;
 using DisJockey.MassTransit;
 using Microsoft.Extensions.Configuration;
 using Microsoft.AspNetCore.Builder;
+using DisJockey.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
 

@@ -1,38 +1,40 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using DisJockey.Shared.DTOs.Member;
-using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
-using DisJockey.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
+using DisJockey.Shared.DTOs.Member;
+using DisJockey.Application.Members.Queries.AllMembers;
+using MediatR;
+using DisJockey.Application.Members.Queries.GetMember;
 
-namespace DisJockey.Controllers {
-    [Authorize]
-    public class MembersController : BaseApiController {
-        private readonly IUnitOfWork _unitOfWork;
-        private readonly IMapper _mapper;
+namespace DisJockey.Controllers;
 
-        public MembersController(IUnitOfWork unitOfWork, IMapper mapper) {
-            _unitOfWork = unitOfWork;
-            _mapper = mapper;
-        }
+[Authorize]
+public class MembersController : BaseApiController
+{
+    private readonly IMediator _mediator;
 
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<MemberListDto>>> GetMembers() {
-            var members = await _unitOfWork.UserRepository.GetMembersAsync();
+    public MembersController(IMediator mediator)
+    {
+        _mediator = mediator;
+    }
 
-            return Ok(members);
-        }
+    [HttpGet]
+    public async Task<ActionResult<IEnumerable<MemberListDto>>> GetMembers()
+    {
+        var members = await _mediator.Send(new AllMembersQuery());
 
-        [HttpGet("{discordId}")]
-        public async Task<ActionResult<MemberDetailDto>> GetMember(ulong discordId) {
-            var user = await _unitOfWork.UserRepository.GetMemberByDiscordIdAsync(discordId);
+        return Ok(members);
+    }
 
-            if (user == null) {
-                return NotFound();
-            }
+    [HttpGet("{discordId}")]
+    public async Task<ActionResult<MemberDetailDto>> GetMember(ulong discordId)
+    {
+        var member = await _mediator.Send(new GetMemberQuery(discordId));
 
-            return user;
-        }
+        if (member is null)
+            return NotFound();
+
+        return Ok(member);
     }
 }

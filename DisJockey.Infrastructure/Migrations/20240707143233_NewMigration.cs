@@ -2,10 +2,10 @@
 
 #nullable disable
 
-namespace DisJockey.Data.Migrations
+namespace DisJockey.Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class dotnet8upgrade : Migration
+    public partial class NewMigration : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)

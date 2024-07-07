@@ -1,10 +1,10 @@
 ﻿using Discord.Rest;
-using DisJockey.Data;
+using DisJockey.Application.YouTube;
+using DisJockey.Infrastructure;
 using DisJockey.Middleware;
 using DisJockey.Profiles;
 using DisJockey.Services;
 using DisJockey.Services.Interfaces;
-using DisJockey.Services.YouTube;
 using DisJockey.Shared.Helpers;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using System.Reflection;
 using System.Security.Claims;
 using System.Threading.Tasks;
 
@@ -29,6 +30,11 @@ public static class ServiceExtensions
         services.Configure<YoutubeSettings>(config.GetSection("YoutubeSettings"));
 
         services.AddScoped<IUnitOfWork, UnitOfWork>();
+
+        services.AddScoped<IUserRepository, UserRepository>();
+        services.AddScoped<IPlaylistRepository, PlaylistRepository>();
+        services.AddScoped<ITrackRepository, TrackRepository>();
+
         services.AddScoped<IVideoDetailService, VideoDetailService>();
 
         var dbConnectionString = config.GetConnectionString("DefaultConnection");
@@ -36,6 +42,8 @@ public static class ServiceExtensions
         {
             options.UseSqlServer(dbConnectionString);
         });
+
+        services.AddMediatR(config => config.RegisterServicesFromAssembly(Assembly.Load("DisJockey.Application")));
 
         return services;
     }
