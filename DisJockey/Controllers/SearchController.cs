@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using DisJockey.Application.Interfaces;
 using DisJockey.Extensions;
 using DisJockey.Services.Interfaces;
 using DisJockey.Shared.DTOs.Track;

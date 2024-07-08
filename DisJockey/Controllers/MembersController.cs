@@ -2,10 +2,10 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
-using DisJockey.Shared.DTOs.Member;
-using DisJockey.Application.Members.Queries.AllMembers;
 using MediatR;
-using DisJockey.Application.Members.Queries.GetMember;
+using DisJockey.Shared.DTOs.Member;
+using DisJockey.Application.Features.Members.Queries.AllMembers;
+using DisJockey.Application.Features.Members.Queries.GetMember;
 
 namespace DisJockey.Controllers;
 

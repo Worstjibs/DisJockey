@@ -11,7 +11,7 @@ using Microsoft.Extensions.Logging;
 using DisJockey.MassTransit;
 using Microsoft.Extensions.Configuration;
 using Microsoft.AspNetCore.Builder;
-using DisJockey.Infrastructure;
+using DisJockey.Infrastructure.Persistence;
 
 var builder = WebApplication.CreateBuilder(args);
 

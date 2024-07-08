@@ -30,15 +30,12 @@
 
         <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.19.5" />
 
-        <PackageReference Include="MassTransit" Version="8.1.3" />
         <PackageReference Include="MassTransit.Azure.ServiceBus.Core" Version="8.1.3" />
     </ItemGroup>
 
     <ItemGroup>
         <ProjectReference Include="..\DisJockey.Application\DisJockey.Application.csproj" />
-        <ProjectReference Include="..\DisJockey.Core\DisJockey.Core.csproj" />
         <ProjectReference Include="..\DisJockey.Infrastructure\DisJockey.Infrastructure.csproj" />
-        <ProjectReference Include="..\DisJockey.MassTransit\DisJockey.MassTransit.csproj" />
     </ItemGroup>
 
 </Project>

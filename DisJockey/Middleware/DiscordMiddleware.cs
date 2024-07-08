@@ -56,7 +56,7 @@ public class DiscordMiddleware : IMiddleware
         }
         else
         {
-            context.User.Identities.FirstOrDefault().AddClaim(new Claim("discord_authed", "true"));
+            context.User.Identities.First().AddClaim(new Claim("discord_authed", "true"));
         }
         //}
 

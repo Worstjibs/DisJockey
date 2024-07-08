@@ -1,6 +1,9 @@
 ﻿using Discord.Rest;
-using DisJockey.Application.YouTube;
-using DisJockey.Infrastructure;
+using DisJockey.Application.Interfaces;
+using DisJockey.Application.Services;
+using DisJockey.Infrastructure.Persistence;
+using DisJockey.Infrastructure.Persistence.Repositories;
+using DisJockey.Infrastructure.YouTube;
 using DisJockey.Middleware;
 using DisJockey.Profiles;
 using DisJockey.Services;
@@ -50,7 +53,7 @@ public static class ServiceExtensions
 
     public static IServiceCollection AddIdentityServices(this IServiceCollection services, IConfiguration config)
     {
-        var authenticationSettings = config.GetSection("AuthenticationSettings").Get<AuthenticationSettings>();
+        var authenticationSettings = config.GetRequiredSection("AuthenticationSettings").Get<AuthenticationSettings>()!;
         services.AddSingleton(authenticationSettings);
 
         services.AddAuthentication(options =>
@@ -66,7 +69,7 @@ public static class ServiceExtensions
 
             options.Events.OnCreatingTicket = context =>
             {
-                context.Identity.AddClaim(new Claim("discord_token", context.AccessToken));
+                context.Identity!.AddClaim(new Claim("discord_token", context.AccessToken!));
 
                 return Task.CompletedTask;
             };
