@@ -27,10 +27,7 @@ await app.RunAsync();
 
 void ConfigureServices(IServiceCollection services, IConfiguration config, IHostEnvironment environment)
 {
-    services.AddControllers()
-        .AddNewtonsoftJson(options =>
-            options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore
-        );
+    services.AddControllers();
 
     services.AddCors();
 

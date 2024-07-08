@@ -1,73 +1,53 @@
 using System.Threading.Tasks;
-using DisJockey.Shared.DTOs.Playlist;
-using DisJockey.Extensions;
-using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
-using DisJockey.Services.Interfaces;
-using DisJockey.Shared.Helpers;
 using Microsoft.AspNetCore.Authorization;
+using MediatR;
+using DisJockey.Application.Features.Playlists.Commands;
+using DisJockey.Application.Features.Playlists.Queries;
+using DisJockey.Extensions;
 using DisJockey.Shared.Extensions;
 using DisJockey.Shared.DTOs.Track;
-using DisJockey.Application.Interfaces;
+using DisJockey.Shared.Helpers;
 
 namespace DisJockey.Controllers;
 
 [Authorize]
 public class PlaylistsController : BaseApiController
 {
-    private readonly IUnitOfWork _unitOfWork;
-    private readonly IVideoDetailService _videoDetailService;
-    private readonly IMapper _mapper;
+    private readonly IMediator _mediator;
 
-    public PlaylistsController(IUnitOfWork unitOfWork, IVideoDetailService videoDetailService, IMapper mapper)
+    public PlaylistsController(IMediator mediator)
     {
-        _videoDetailService = videoDetailService;
-        _mapper = mapper;
-        _unitOfWork = unitOfWork;
+        _mediator = mediator;
     }
 
     [HttpPost]
-    public async Task<ActionResult<PlaylistDetailDto>> AddPlayList(PlaylistAddDto playlistDto)
+    public async Task<IActionResult> AddPlayList(AddPlaylistCommand command)
     {
-        if (await _unitOfWork.PlaylistRepository.CheckPlaylistExists(playlistDto.PlaylistId))
-        {
-            return Conflict($"Playlist with Id {playlistDto.PlaylistId} already exists");
-        }
-
-        var playlist = await _videoDetailService.GetPlaylistDetailsAsync(playlistDto.PlaylistId);
-
-        if (playlist == null)
-        {
-            return BadRequest("Playlist Id Invalid");
-        }
-        if (playlist.Tracks.Count == 0) return BadRequest("No Tracks in Playlist");
-
         var discordId = User.GetDiscordId();
         if (!discordId.HasValue)
         {
-            return BadRequest("Invalid DiscordId");
+            return Unauthorized();
         }
 
-        var user = await _unitOfWork.UserRepository.GetUserByDiscordIdAsync(discordId.Value);
-        if (user == null)
-        {
-            return NotFound($"User with Discord Id {discordId} not found");
-        }
+        command = command with { DiscordId = discordId.Value };
 
-        await _unitOfWork.PlaylistRepository.AddMissingTracks(playlist.Tracks);
+        var result = await _mediator.Send(command);
 
-        var savedPlaylist = await _unitOfWork.PlaylistRepository.AddPlaylist(playlist, user);
-
-        return Ok(_mapper.Map<PlaylistDetailDto>(savedPlaylist));
+        return result.Match(
+            Ok,
+            Problem);
     }
 
     [HttpGet("{youtubeId}")]
-    public async Task<ActionResult<PagedList<TrackListDto>>> GetPlaylistTracks([FromQuery] PaginationParams paginationParams, string youtubeId)
+    public async Task<ActionResult<PagedList<TrackListDto>>> GetPlaylistTracks([FromQuery] PaginationParams paginationParams, string youTubeId)
     {
-        var playlistTracks = await _unitOfWork.PlaylistRepository.GetPlaylistTracks(paginationParams, youtubeId);
+        var query = new GetPlaylistTracksQuery(paginationParams, youTubeId);
 
-        Response.AddPaginationHeader(playlistTracks.CurrentPage, playlistTracks.ItemsPerPage, playlistTracks.TotalPages, playlistTracks.TotalCount);
+        var result = await _mediator.Send(query);
 
-        return playlistTracks;
+        Response.AddPaginationHeader(result.CurrentPage, result.ItemsPerPage, result.TotalPages, result.TotalCount);
+
+        return Ok(result);
     }
 }

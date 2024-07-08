@@ -3,10 +3,8 @@ using DisJockey.Extensions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using DisJockey.Shared.DTOs.Track;
-using DisJockey.Services.Interfaces;
 using DisJockey.Shared.Helpers;
 using DisJockey.Shared.Extensions;
-using MassTransit;
 using MediatR;
 using DisJockey.Application.Features.Tracks.Commands.BlacklistTrack;
 using DisJockey.Application.Features.Tracks.Commands.LikeTrack;
@@ -19,14 +17,10 @@ namespace DisJockey.Controllers;
 [Authorize]
 public class TracksController : BaseApiController
 {
-    private readonly IUnitOfWork _unitOfWork;
-    private readonly IBus _bus;
     private readonly IMediator _mediator;
 
-    public TracksController(IUnitOfWork unitOfWork, IBus bus, IMediator mediator)
+    public TracksController(IMediator mediator)
     {
-        _unitOfWork = unitOfWork;
-        _bus = bus;
         _mediator = mediator;
     }
 
