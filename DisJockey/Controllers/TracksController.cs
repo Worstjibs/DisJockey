@@ -29,8 +29,6 @@ public class TracksController : BaseApiController
     {
         var tracks = await _mediator.Send(new AllTracksQuery(paginationParams));
 
-        Response.AddPaginationHeader(tracks.CurrentPage, tracks.ItemsPerPage, tracks.TotalPages, tracks.TotalCount);
-
         return Ok(tracks);
     }
 
@@ -38,8 +36,6 @@ public class TracksController : BaseApiController
     public async Task<ActionResult<PagedList<TrackListDto>>> GetTrackPlaysForMember([FromQuery] PaginationParams paginationParams, ulong discordId)
     {
         var tracks = await _mediator.Send(new TracksForMemberQuery(paginationParams, discordId));
-
-        Response.AddPaginationHeader(tracks.CurrentPage, tracks.ItemsPerPage, tracks.TotalPages, tracks.TotalCount);
 
         return Ok(tracks);
     }

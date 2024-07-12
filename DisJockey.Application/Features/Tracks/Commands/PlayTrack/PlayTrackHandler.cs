@@ -20,7 +20,7 @@ public class PlayTrackHandler : IRequestHandler<PlayTrackCommand, ErrorOr<Succes
     public async Task<ErrorOr<Success>> Handle(PlayTrackCommand request, CancellationToken cancellationToken)
     {
         if (await _trackRepository.IsTrackBlacklisted(request.YouTubeId))
-            return Error.Failure(description: "Track is blacklisted");
+            return Error.Validation(description: "Track is blacklisted");
 
         var playTrackEvent = new PlayTrackEvent
         {

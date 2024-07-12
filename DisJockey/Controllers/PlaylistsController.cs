@@ -46,8 +46,6 @@ public class PlaylistsController : BaseApiController
 
         var result = await _mediator.Send(query);
 
-        Response.AddPaginationHeader(result.CurrentPage, result.ItemsPerPage, result.TotalPages, result.TotalCount);
-
         return Ok(result);
     }
 }

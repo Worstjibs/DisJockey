@@ -10,7 +10,8 @@ namespace DisJockey.Controllers;
 [ApiController]
 [Route("api/[controller]")]
 public class BaseApiController : ControllerBase
-{    protected IActionResult Problem(List<Error> errors)
+{
+    protected IActionResult Problem(List<Error> errors)
     {
         if (errors.Count is 0)
         {

@@ -11,13 +11,11 @@ export class DisJockeyPagination implements Pagination {
     totalItems: number;
     totalPages: number;
 
-    constructor(json: string) {
-        const params = JSON.parse(json) as DisJockeyPagination;
-
-        this.currentPage = params.currentPage;
-        this.itemsPerPage = params.itemsPerPage;
-        this.totalItems = params.totalItems;
-        this.totalPages = params.totalPages;
+    constructor(currentPage, itemsPerPage, totalItems, totalPages) {
+        this.currentPage = currentPage;
+        this.itemsPerPage = itemsPerPage;
+        this.totalItems = totalItems;
+        this.totalPages = totalPages;
     }
 
     noMoreResults() {
