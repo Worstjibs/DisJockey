@@ -10,6 +10,7 @@ services:
     volumes:
       - ./DisJockey/wwwroot:/app/wwwroot
       - ./DisJockey/appsettings.json:/app/appsettings.json
+      # - ~/.azure:/root/.azure
     networks:
       - disjockey-network
 

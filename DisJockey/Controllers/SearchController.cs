@@ -1,53 +1,36 @@
-﻿using AutoMapper;
-using DisJockey.Application.Interfaces;
-using DisJockey.Extensions;
-using DisJockey.Services.Interfaces;
-using DisJockey.Shared.DTOs.Track;
-using DisJockey.Shared.Helpers;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using MediatR;
+using DisJockey.Application.Features.Search.Queries;
+using DisJockey.Extensions;
+using DisJockey.Shared.DTOs.Track;
+using DisJockey.Shared.Helpers;
 
 namespace DisJockey.Controllers;
 
 [Authorize]
 public class SearchController : BaseApiController
 {
-    private readonly IVideoDetailService _videoDetailService;
-    private readonly IUnitOfWork _unitOfWork;
-    private readonly IMapper _mapper;
+    private readonly IMediator _mediator;
 
-    public SearchController(IVideoDetailService videoDetailService, IUnitOfWork unitOfWork, IMapper mapper)
+    public SearchController(IMediator mediator)
     {
-        _videoDetailService = videoDetailService;
-        _unitOfWork = unitOfWork;
-        _mapper = mapper;
+        _mediator = mediator;
     }
 
     [HttpGet]
     public async Task<ActionResult<IEnumerable<TrackListDto>>> SearchTracks([FromQuery] PaginationParams paginationParams)
     {
-        var results = await _videoDetailService.QueryTracksAsync(paginationParams);
+        var query = new SearchQuery(paginationParams);
 
-        if (results.Count == 0)
-        {
-            return Ok(Enumerable.Empty<TrackListDto>());
-        }
+        var results = await _mediator.Send(query);
 
-        var existingTracks = await _unitOfWork.TrackRepository.GetTracksByYouTubeIdAsync(results.Select(x => x.YoutubeId));
+        var pagination = results.Pagination;
 
-        var resultsDto = results.Select(x => _mapper.Map<TrackListDto>(x)).ToList();
+        Response.AddYouTubePaginationHeader(pagination.CurrentPageToken, pagination.NextPageToken, pagination.PreviousPageToken);
 
-        foreach (var existingTrack in existingTracks)
-        {
-            var index = resultsDto.IndexOf(resultsDto.First(x => x.YoutubeId == existingTrack.YoutubeId));
-            resultsDto[index] = existingTrack;
-        };
-
-        Response.AddYouTubePaginationHeader(results.CurrentPageToken, results.NextPageToken, results.PreviousPageToken);
-
-        return Ok(resultsDto);
+        return Ok(results.Results);
     }
 }

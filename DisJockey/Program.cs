@@ -1,19 +1,22 @@
 using System;
 using System.Reflection;
 using System.Threading.Tasks;
-using DisJockey.Extensions;
-using DisJockey.Middleware;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using DisJockey.MassTransit;
 using Microsoft.Extensions.Configuration;
 using Microsoft.AspNetCore.Builder;
+using DisJockey.Extensions;
 using DisJockey.Infrastructure.Persistence;
+using DisJockey.MassTransit;
+using DisJockey.Middleware;
+using DisJockey.Shared.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Configuration.AddAzureKeyVault();
 
 ConfigureServices(builder.Services, builder.Configuration, builder.Environment);
 
