@@ -1,0 +1,21 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="MediatR" Version="12.3.0" />
+        
+        <PackageReference Include="AutoMapper" Version="13.0.1" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\DisJockey.Core\DisJockey.Core.csproj" />
+        <ProjectReference Include="..\DisJockey.MassTransit\DisJockey.MassTransit.csproj" />
+        <ProjectReference Include="..\DisJockey.Shared\DisJockey.Shared.csproj" />
+    </ItemGroup>
+
+</Project>

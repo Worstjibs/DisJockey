@@ -1,23 +1,22 @@
 using System;
 using System.Reflection;
 using System.Threading.Tasks;
-using Discord.Rest;
-using DisJockey.Data;
-using DisJockey.Extensions;
-using DisJockey.Middleware;
-using DisJockey.Services.Interfaces;
-using DisJockey.Services;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using DisJockey.MassTransit;
 using Microsoft.Extensions.Configuration;
 using Microsoft.AspNetCore.Builder;
+using DisJockey.Extensions;
+using DisJockey.Infrastructure.Persistence;
+using DisJockey.MassTransit;
+using DisJockey.Middleware;
+using DisJockey.Shared.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Configuration.AddAzureKeyVault();
 
 ConfigureServices(builder.Services, builder.Configuration, builder.Environment);
 
@@ -31,10 +30,7 @@ await app.RunAsync();
 
 void ConfigureServices(IServiceCollection services, IConfiguration config, IHostEnvironment environment)
 {
-    services.AddControllers()
-        .AddNewtonsoftJson(options =>
-            options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore
-        );
+    services.AddControllers();
 
     services.AddCors();
 

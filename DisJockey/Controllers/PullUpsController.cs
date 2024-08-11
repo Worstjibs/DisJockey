@@ -5,21 +5,22 @@ using DisJockey.Shared.Helpers;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 
-namespace DisJockey.Controllers {
-    public class PullUpsController : BaseApiController {
-        private readonly IUnitOfWork _unitOfWork;
+namespace DisJockey.Controllers;
 
-        public PullUpsController(IUnitOfWork unitOfWork) {
-            _unitOfWork = unitOfWork;
-        }
+public class PullUpsController : BaseApiController
+{
+    private readonly IUnitOfWork _unitOfWork;
 
-        [HttpGet("{discordId}")]
-        public async Task<ActionResult<PagedList<PullUpDto>>> GetPullUpsForMember([FromQuery] PaginationParams paginationParams, ulong discordId) {
-            var tracks = await _unitOfWork.TrackRepository.GetPullUpsForMember(paginationParams, discordId);
+    public PullUpsController(IUnitOfWork unitOfWork)
+    {
+        _unitOfWork = unitOfWork;
+    }
 
-            Response.AddPaginationHeader(tracks.CurrentPage, tracks.ItemsPerPage, tracks.TotalPages, tracks.TotalCount);
+    [HttpGet("{discordId}")]
+    public async Task<ActionResult<PagedList<PullUpDto>>> GetPullUpsForMember([FromQuery] PaginationParams paginationParams, ulong discordId)
+    {
+        var tracks = await _unitOfWork.TrackRepository.GetPullUpsForMember(paginationParams, discordId);
 
-            return Ok(tracks);
-        }
+        return Ok(tracks);
     }
 }

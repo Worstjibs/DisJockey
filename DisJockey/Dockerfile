@@ -17,7 +17,8 @@ WORKDIR /src
 COPY ["DisJockey/DisJockey.csproj", "DisJockey/"]
 COPY ["DisJockey.Core/DisJockey.Core.csproj", "DisJockey.Core/"]
 COPY ["DisJockey.MassTransit/DisJockey.MassTransit.csproj", "DisJockey.MassTransit/"]
-COPY ["DisJockey.Services/DisJockey.Services.csproj", "DisJockey.Services/"]
+COPY ["DisJockey.Application/DisJockey.Application.csproj", "DisJockey.Application/"]
+COPY ["DisJockey.Infrastructure/DisJockey.Infrastructure.csproj", "DisJockey.Infrastructure/"]
 COPY ["DisJockey.Shared/DisJockey.Shared.csproj", "DisJockey.Shared/"]
 RUN dotnet restore "./DisJockey/DisJockey.csproj"
 COPY . .

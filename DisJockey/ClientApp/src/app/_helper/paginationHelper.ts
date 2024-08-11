@@ -9,23 +9,25 @@ export function getPaginatedResult<T>(url, params: HttpParams, http: HttpClient,
 
     return http.get<T[]>(url, { observe: 'response', params }).pipe(
         map(response => {
-            paginatedResult.result = response.body;
+            const result = response.body as any;
 
-            const paginationParams = response.headers.get('Pagination');
-            if (paginationParams) {
-                switch (paginationType) {
-                    case PaginationType.DisJockey:
-                        paginatedResult.pagination = new DisJockeyPagination(paginationParams);
-                        break;
-                    case PaginationType.YouTubeApi:
-                        paginatedResult.pagination = new YouTubePagination(paginationParams);
-                        break;
-                    default:
-                        throw "Invalid Pagination Type";
-                }
-                
+            if (paginationType == PaginationType.DisJockey) {
+                paginatedResult.result = result.items;
+                paginatedResult.pagination = new DisJockeyPagination(result.currentPage, result.itemsPerPage, result.totalItems, result.totalPages);
+
+                return paginatedResult;
             }
-            return paginatedResult;
+
+            if (paginationType == PaginationType.YouTubeApi) {
+                const paginationParams = response.headers.get('Pagination');
+
+                paginatedResult.result = response.body;
+                paginatedResult.pagination = new YouTubePagination(paginationParams);
+
+                return paginatedResult;
+            }
+
+            throw "Invalid Pagination Type";
         })
     );
 }
