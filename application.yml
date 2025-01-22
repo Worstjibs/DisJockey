@@ -37,7 +37,7 @@ plugins:
       searching: false # Disables the ability to search for videos for this client.
 lavalink:  
   plugins:
-    - dependency: "dev.lavalink.youtube:youtube-plugin:1.5.2"
+    - dependency: "dev.lavalink.youtube:youtube-plugin:1.11.3"
       snapshot: false # Set to true if you want to use a snapshot version.
   server:
     password: "youshallnotpass"
