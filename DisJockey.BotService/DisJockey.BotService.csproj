@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Worker">
 
     <PropertyGroup>
-        <TargetFramework>net8.0</TargetFramework>
+        <TargetFramework>net10.0</TargetFramework>
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
         <UserSecretsId>dotnet-DisJockey.BotService-a3689998-f780-45c8-b18a-a4564dd36936</UserSecretsId>
@@ -9,11 +9,11 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Discord.Net" Version="3.17.1" />
-        <PackageReference Include="Lavalink4NET.Discord.NET" Version="4.0.26-preview.4" />
-        <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="9.0.1" />
-        <PackageReference Include="Microsoft.Extensions.Hosting" Version="9.0.1" />
-        <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.21.0" />
+        <PackageReference Include="Discord.Net" Version="3.18.0" />
+        <PackageReference Include="Lavalink4NET.Discord.NET" Version="4.1.0" />
+        <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="10.0.1" />
+        <PackageReference Include="Microsoft.Extensions.Hosting" Version="10.0.1" />
+        <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.22.1" />
     </ItemGroup>
 
     <ItemGroup>

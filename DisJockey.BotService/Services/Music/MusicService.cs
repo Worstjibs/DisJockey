@@ -190,7 +190,7 @@ public class MusicService : IMusicService
         var user = context.User as IVoiceState;
 
         var result = await _audioService.Players
-            .RetrieveAsync(context.Guild.Id, user?.VoiceChannel.Id, playerFactory: PlayerFactory.Queued, _queuePlayerOptions, retrieveOptions)
+            .RetrieveAsync(context.Guild.Id, user?.VoiceChannel?.Id, playerFactory: PlayerFactory.Queued, _queuePlayerOptions, retrieveOptions)
             .ConfigureAwait(false);
 
         if (!result.IsSuccess)

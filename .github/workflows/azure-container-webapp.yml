@@ -29,7 +29,7 @@ name: Build and deploy a container to an Azure Web App
 env:
   AZURE_WEBAPP_NAME: disjockey  # set this to the name of your Azure Web App
 
-on:
+on:  
   push:
     branches: [ "master" ]
   workflow_dispatch:

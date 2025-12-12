@@ -1,17 +1,17 @@
 #See https://aka.ms/customizecontainer to learn how to customize your debug container and how Visual Studio uses this Dockerfile to build your images for faster debugging.
 
-FROM node:16-alpine AS angular
-WORKDIR /client
-COPY ["DisJockey/ClientApp", ""]
-RUN npm install
-RUN npm run build-prod
+#FROM node:16-alpine AS angular
+#WORKDIR /client
+#COPY ["DisJockey/ClientApp", ""]
+#RUN npm install
+#RUN npm run build-prod
 
-FROM mcr.microsoft.com/dotnet/aspnet:8.0-jammy AS base
+FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS base
 WORKDIR /app
 EXPOSE 80
 EXPOSE 443
 
-FROM mcr.microsoft.com/dotnet/sdk:8.0-jammy AS build
+FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
 COPY ["DisJockey/DisJockey.csproj", "DisJockey/"]

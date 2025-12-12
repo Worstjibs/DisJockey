@@ -1,12 +1,12 @@
-﻿using Discord.Rest;
-using Discord;
+﻿using Discord;
+using Discord.Rest;
 using DisJockey.Services;
+using DisJockey.Shared.Extensions;
 using Microsoft.AspNetCore.Http;
 using System.Linq;
 using System.Net;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using DisJockey.Shared.Extensions;
 
 namespace DisJockey.Middleware;
 
@@ -23,8 +23,6 @@ public class DiscordMiddleware : IMiddleware
 
     public async Task InvokeAsync(HttpContext context, RequestDelegate next)
     {
-        //if (!_env.IsDevelopment())
-        //{
         var discordId = context.User.GetDiscordId();
 
         if (!discordId.HasValue)
