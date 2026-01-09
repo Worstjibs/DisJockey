@@ -56,24 +56,21 @@ public static class ServiceExtensions
         var authenticationSettings = config.GetRequiredSection("AuthenticationSettings").Get<AuthenticationSettings>()!;
         services.AddSingleton(authenticationSettings);
 
-        services.AddAuthentication(options =>
-        {
-            options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-        })
-        .AddCookie()
-        .AddDiscord(options =>
-        {
-            options.ClientId = authenticationSettings.DiscordClientId;
-            options.ClientSecret = authenticationSettings.DiscordClientSecret;
-            options.Scope.Add("guilds");
+        services.AddAuthentication("Bearer").AddJwtBearer();
+        //.AddCookie()
+        //.AddDiscord(options =>
+        //{
+        //    options.ClientId = authenticationSettings.DiscordClientId;
+        //    options.ClientSecret = authenticationSettings.DiscordClientSecret;
+        //    options.Scope.Add("guilds");
 
-            options.Events.OnCreatingTicket = context =>
-            {
-                context.Identity!.AddClaim(new Claim("discord_token", context.AccessToken!));
+        //    options.Events.OnCreatingTicket = context =>
+        //    {
+        //        context.Identity!.AddClaim(new Claim("discord_token", context.AccessToken!));
 
-                return Task.CompletedTask;
-            };
-        });
+        //        return Task.CompletedTask;
+        //    };
+        //});
 
         services.AddTransient<IHttpContextAccessor, HttpContextAccessor>();
 

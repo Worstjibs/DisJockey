@@ -68,26 +68,24 @@ void Configure(IApplicationBuilder app, IWebHostEnvironment env)
 
 async Task MigrateDatabase(IServiceProvider serviceProvider)
 {
-    using (var scope = app.Services.CreateScope())
+    using var scope = app.Services.CreateScope();
+    var services = scope.ServiceProvider;
+
+    try
     {
-        var services = scope.ServiceProvider;
+        var context = services.GetRequiredService<DataContext>();
 
-        try
+        await context.Database.MigrateAsync();
+
+        var env = services.GetRequiredService<IHostEnvironment>();
+        if (env.IsDevelopment())
         {
-            var context = services.GetRequiredService<DataContext>();
-
-            await context.Database.MigrateAsync();
-
-            var env = services.GetRequiredService<IHostEnvironment>();
-            if (env.IsDevelopment())
-            {
-                await Seed.SeedData(context);
-            }
+            await Seed.SeedData(context);
         }
-        catch (Exception e)
-        {
-            var logger = services.GetRequiredService<ILogger<Program>>();
-            logger.LogError(e, "An error occured during migraiton");
-        }
+    }
+    catch (Exception e)
+    {
+        var logger = services.GetRequiredService<ILogger<Program>>();
+        logger.LogError(e, "An error occured during migraiton");
     }
 }

@@ -15,6 +15,8 @@
 
         <PackageReference Include="Discord.Net.Rest" Version="3.18.0" />
 
+        <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="10.0.1" />
+
         <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.1">
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
             <PrivateAssets>all</PrivateAssets>
