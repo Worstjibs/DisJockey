@@ -18,6 +18,6 @@
 
     <ItemGroup>
         <ProjectReference Include="..\DisJockey.MassTransit\DisJockey.MassTransit.csproj" />
-        <ProjectReference Include="..\DisJockey.Shared\DisJockey.Shared.csproj" />
+        <ProjectReference Include="..\DisJockey.ServiceDefaults\DisJockey.ServiceDefaults.csproj" />
     </ItemGroup>
 </Project>

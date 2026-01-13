@@ -1,10 +1,9 @@
 ﻿using DisJockey.MassTransit.Events;
 using DisJockey.Services.Interfaces;
 using MassTransit;
-using System.Threading.Tasks;
 using static DisJockey.Services.Interfaces.IDiscordTrackService;
 
-namespace DisJockey.Consumers;
+namespace DisJockey.Application.Consumers;
 
 public class TrackPlayedEventConsumer : IConsumer<TrackPlayedEvent>
 {

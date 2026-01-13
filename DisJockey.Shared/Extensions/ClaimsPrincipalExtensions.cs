@@ -1,3 +1,4 @@
+using Microsoft.IdentityModel.JsonWebTokens;
 using System.Security.Claims;
 
 namespace DisJockey.Shared.Extensions;
@@ -11,7 +12,7 @@ public static class ClaimsPrincipalExtensions
 
     public static ulong? GetDiscordId(this ClaimsPrincipal user)
     {
-        if (ulong.TryParse(user.FindFirst(ClaimTypes.NameIdentifier)?.Value, out ulong discordId))
+        if (ulong.TryParse(user.FindFirst("discord_id")?.Value, out ulong discordId))
         {
             return discordId;
         }

@@ -16,8 +16,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System.Reflection;
-using System.Security.Claims;
-using System.Threading.Tasks;
 
 namespace DisJockey.Extensions;
 
@@ -40,12 +38,6 @@ public static class ServiceExtensions
 
         services.AddScoped<IVideoDetailService, VideoDetailService>();
 
-        var dbConnectionString = config.GetConnectionString("DefaultConnection");
-        services.AddDbContext<DataContext>(options =>
-        {
-            options.UseSqlServer(dbConnectionString);
-        });
-
         services.AddMediatR(config => config.RegisterServicesFromAssembly(Assembly.Load("DisJockey.Application")));
 
         return services;
@@ -53,8 +45,8 @@ public static class ServiceExtensions
 
     public static IServiceCollection AddIdentityServices(this IServiceCollection services, IConfiguration config)
     {
-        var authenticationSettings = config.GetRequiredSection("AuthenticationSettings").Get<AuthenticationSettings>()!;
-        services.AddSingleton(authenticationSettings);
+        //var authenticationSettings = config.GetRequiredSection("AuthenticationSettings").Get<AuthenticationSettings>()!;
+        //services.AddSingleton(authenticationSettings);
 
         services.AddAuthentication("Bearer").AddJwtBearer();
         //.AddCookie()

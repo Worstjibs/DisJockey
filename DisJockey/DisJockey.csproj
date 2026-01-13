@@ -10,8 +10,8 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <PackageReference Include="Aspire.Microsoft.EntityFrameworkCore.SqlServer" Version="13.1.0" />
         <PackageReference Include="AspNet.Security.OAuth.Discord" Version="10.0.0" />
-        <PackageReference Include="Azure.Extensions.AspNetCore.Configuration.Secrets" Version="1.4.0" />
 
         <PackageReference Include="Discord.Net.Rest" Version="3.18.0" />
 
@@ -38,6 +38,7 @@
     <ItemGroup>
         <ProjectReference Include="..\DisJockey.Application\DisJockey.Application.csproj" />
         <ProjectReference Include="..\DisJockey.Infrastructure\DisJockey.Infrastructure.csproj" />
+        <ProjectReference Include="..\DisJockey.ServiceDefaults\DisJockey.ServiceDefaults.csproj" />
     </ItemGroup>
 
 </Project>

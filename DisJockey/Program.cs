@@ -12,15 +12,18 @@ using DisJockey.Extensions;
 using DisJockey.Infrastructure.Persistence;
 using DisJockey.MassTransit;
 using DisJockey.Middleware;
-using DisJockey.Shared.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Configuration.AddAzureKeyVault();
+builder.AddServiceDefaults();
+
+builder.AddSqlServerDbContext<DataContext>("disjockey-db");
 
 ConfigureServices(builder.Services, builder.Configuration, builder.Environment);
 
 var app = builder.Build();
+
+app.MapDefaultEndpoints();
 
 Configure(app, app.Environment);
 
@@ -39,7 +42,6 @@ void ConfigureServices(IServiceCollection services, IConfiguration config, IHost
             .AddDiscordServices(config)
             .AddMassTransit(
                     config,
-                    environment,
                     [Assembly.GetExecutingAssembly()]);
 }
 

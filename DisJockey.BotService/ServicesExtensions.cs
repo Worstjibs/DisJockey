@@ -10,7 +10,9 @@ namespace DisJockey.BotService;
 
 public static class ServicesExtensions
 {
-    public static IServiceCollection AddDiscordServices(this IServiceCollection services, IConfiguration configuration)
+    public static IServiceCollection AddDiscordServices(
+        this IServiceCollection services,
+        IConfiguration configuration)
     {
         services.Configure<BotSettings>(configuration.GetSection("BotSettings"));
 
@@ -25,19 +27,21 @@ public static class ServicesExtensions
         services.AddSingleton(x => new InteractionService(x.GetRequiredService<DiscordSocketClient>()));
         services.AddSingleton<InteractionHandler>();
 
-        services.AddLavalink4NetServices();
+        services.AddLavalink4NetServices(configuration);
 
         services.AddHostedService<HostedBotService>();
 
         return services;
     }
 
-    private static IServiceCollection AddLavalink4NetServices(this IServiceCollection services)
+    private static IServiceCollection AddLavalink4NetServices(
+        this IServiceCollection services,
+        IConfiguration configuration)
     {
         services.AddLavalink();
         services.ConfigureLavalink(config =>
         {
-            config.BaseAddress = new Uri("http://lavalink:2333");
+            config.BaseAddress = new Uri(configuration.GetConnectionString("lavalink")!);
         });
 
         services.Configure<QueuedLavalinkPlayerOptions>(x => new QueuedLavalinkPlayerOptions());

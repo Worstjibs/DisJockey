@@ -1,0 +1,24 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <Sdk Name="Aspire.AppHost.Sdk" Version="13.1.0" />
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <UserSecretsId>ab43cb54-7952-4ba4-b77a-65e4cc03a72a</UserSecretsId>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Aspire.Hosting.AppHost" Version="13.1.0" />
+    <PackageReference Include="Aspire.Hosting.RabbitMQ" Version="13.1.0" />
+    <PackageReference Include="Aspire.Hosting.SqlServer" Version="13.1.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\DisJockey.BotService\DisJockey.BotService.csproj" />
+    <ProjectReference Include="..\DisJockey\DisJockey.csproj" />
+  </ItemGroup>
+
+</Project>
