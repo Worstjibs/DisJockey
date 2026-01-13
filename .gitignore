@@ -448,3 +448,5 @@ botsettings.json
 /DisJockey/Data/SeedData.json
 
 /sql/*
+
+**/DisJockey.AppHost/providers/**

@@ -14,29 +14,31 @@
             </li>
         </ul>
 
+        @if (currentUser(); as user) {
 
-
-        @if (true) {
-
-        <div class="dropdown" dropdown>
-            <a class="dropdown-toggle" dropdownToggle>Welcome</a>
-            <div class="dropdown-menu dropdown-menu-right mt-3">
-                <a class="dropdown-item" href="account/login">Login</a>
-            </div>
+        <div class="dropdown">
+            <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown"
+                aria-expanded="false">
+                <img id="avatar" [src]="user.avatarUrl" [alt]="user.username">
+                {{user.username}}
+            </button>
+            <ul class="dropdown-menu">
+                <li><a class="dropdown-item" href="account/logout">Logout</a></li>
+                <li><a class="dropdown-item" routerLink="/users/{{user.discordId}}">View Profile</a></li>
+            </ul>
         </div>
 
         } @else {
 
-        <!-- <div class="dropdown" dropdown *ngIf="(accountService.currentUser$ | async) as user">
-            <a class="dropdown-toggle" dropdownToggle>
-                <img id="avatar" src="{{user.avatarUrl}}" alt="{{user.username}}"> 
-                {{user.username}}
-            </a>
-            <div class="dropdown-menu dropdown-menu-right mt-3" *dropdownMenu>
-                <div class="dropdown-item" (click)="logout()">Logout</div>
-                <a class="dropdown-item" routerLink="/users/{{user.discordId}}">View Profile</a>
-            </div>
-        </div> -->
+        <div class="dropdown">
+            <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown"
+                aria-expanded="false">
+                Welcome
+            </button>
+            <ul class="dropdown-menu">
+                <li><a class="dropdown-item" href="account/login">Login</a></li>
+            </ul>
+        </div>
 
         }
     </div>

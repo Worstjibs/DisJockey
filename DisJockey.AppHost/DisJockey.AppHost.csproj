@@ -12,13 +12,19 @@
 
   <ItemGroup>
     <PackageReference Include="Aspire.Hosting.AppHost" Version="13.1.0" />
+    <PackageReference Include="Aspire.Hosting.Keycloak" Version="13.1.0-preview.1.25616.3" />
     <PackageReference Include="Aspire.Hosting.RabbitMQ" Version="13.1.0" />
     <PackageReference Include="Aspire.Hosting.SqlServer" Version="13.1.0" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\DisJockey.Bff\DisJockey.Bff.csproj" />
     <ProjectReference Include="..\DisJockey.BotService\DisJockey.BotService.csproj" />
     <ProjectReference Include="..\DisJockey\DisJockey.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="providers\" />
   </ItemGroup>
 
 </Project>

@@ -12,6 +12,7 @@ using DisJockey.Extensions;
 using DisJockey.Infrastructure.Persistence;
 using DisJockey.MassTransit;
 using DisJockey.Middleware;
+using DisJockey.Application.Consumers;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -42,7 +43,8 @@ void ConfigureServices(IServiceCollection services, IConfiguration config, IHost
             .AddDiscordServices(config)
             .AddMassTransit(
                     config,
-                    [Assembly.GetExecutingAssembly()]);
+                    [Assembly.GetExecutingAssembly(), 
+                        Assembly.GetAssembly(typeof(TrackPlayedEventConsumer))!]);
 }
 
 void Configure(IApplicationBuilder app, IWebHostEnvironment env)

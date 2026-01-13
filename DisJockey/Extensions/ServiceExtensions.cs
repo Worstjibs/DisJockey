@@ -10,6 +10,7 @@ using DisJockey.Services;
 using DisJockey.Services.Interfaces;
 using DisJockey.Shared.Helpers;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
@@ -48,7 +49,9 @@ public static class ServiceExtensions
         //var authenticationSettings = config.GetRequiredSection("AuthenticationSettings").Get<AuthenticationSettings>()!;
         //services.AddSingleton(authenticationSettings);
 
-        services.AddAuthentication("Bearer").AddJwtBearer();
+        services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
+        {
+        });
         //.AddCookie()
         //.AddDiscord(options =>
         //{

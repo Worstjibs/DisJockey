@@ -1,1 +1,7 @@
-<p>track-list works!</p>
+<div (scroll)="onScroll($event)" id="scrollable-list">
+    @for (track of tracks()?.result; track track) {
+    <app-track-item #trackItem [track]="track" (trackLiked)="likeTrack($event)" (trackPlayed)="playTrack($event)"
+        (trackExpanded)="trackExpanded($event)">
+    </app-track-item>
+    }
+</div>

@@ -12,6 +12,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{69965E91-C2F3-4D6C-9251-2019D3BDAFBC}"
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
+		.gitignore = .gitignore
 		application.yml = application.yml
 	EndProjectSection
 EndProject
@@ -30,6 +31,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DisJockey.AppHost", "DisJockey.AppHost\DisJockey.AppHost.csproj", "{08C68282-293F-A494-E548-13C4EBAB479B}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DisJockey.ServiceDefaults", "DisJockey.ServiceDefaults\DisJockey.ServiceDefaults.csproj", "{F220C265-E078-26E3-BEB2-BF83A3267391}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DisJockey.Bff", "DisJockey.Bff\DisJockey.Bff.csproj", "{2D5F1C72-CC53-7773-3D8E-EB360863E949}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -149,6 +152,18 @@ Global
 		{F220C265-E078-26E3-BEB2-BF83A3267391}.Release|x64.Build.0 = Release|Any CPU
 		{F220C265-E078-26E3-BEB2-BF83A3267391}.Release|x86.ActiveCfg = Release|Any CPU
 		{F220C265-E078-26E3-BEB2-BF83A3267391}.Release|x86.Build.0 = Release|Any CPU
+		{2D5F1C72-CC53-7773-3D8E-EB360863E949}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2D5F1C72-CC53-7773-3D8E-EB360863E949}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2D5F1C72-CC53-7773-3D8E-EB360863E949}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{2D5F1C72-CC53-7773-3D8E-EB360863E949}.Debug|x64.Build.0 = Debug|Any CPU
+		{2D5F1C72-CC53-7773-3D8E-EB360863E949}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{2D5F1C72-CC53-7773-3D8E-EB360863E949}.Debug|x86.Build.0 = Debug|Any CPU
+		{2D5F1C72-CC53-7773-3D8E-EB360863E949}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2D5F1C72-CC53-7773-3D8E-EB360863E949}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2D5F1C72-CC53-7773-3D8E-EB360863E949}.Release|x64.ActiveCfg = Release|Any CPU
+		{2D5F1C72-CC53-7773-3D8E-EB360863E949}.Release|x64.Build.0 = Release|Any CPU
+		{2D5F1C72-CC53-7773-3D8E-EB360863E949}.Release|x86.ActiveCfg = Release|Any CPU
+		{2D5F1C72-CC53-7773-3D8E-EB360863E949}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -163,6 +178,7 @@ Global
 		{16D380A1-AD31-45D8-933A-3D93433EACCC} = {8D90E720-F214-4E3B-A948-C05BC1026A2B}
 		{08C68282-293F-A494-E548-13C4EBAB479B} = {8D90E720-F214-4E3B-A948-C05BC1026A2B}
 		{F220C265-E078-26E3-BEB2-BF83A3267391} = {8D90E720-F214-4E3B-A948-C05BC1026A2B}
+		{2D5F1C72-CC53-7773-3D8E-EB360863E949} = {8D90E720-F214-4E3B-A948-C05BC1026A2B}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {1A465C47-4EF1-45C7-9E1A-C21BCCB31E5D}
