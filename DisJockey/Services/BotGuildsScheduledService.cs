@@ -18,7 +18,7 @@ public class BotGuildsScheduledService : BackgroundService
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
         // Wait for the bot to login
-        await Task.Delay(10000);
+        await Task.Delay(10000, stoppingToken);
 
         await _bus.Publish(new GetBotGuildsEvent(), stoppingToken);
     }

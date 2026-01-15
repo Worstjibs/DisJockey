@@ -1,9 +1,6 @@
 ﻿using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
-namespace DisJockey.Services;
+namespace DisJockey.Application.Services;
 
 public class BotGuildsService
 {
@@ -35,7 +32,7 @@ public class BotGuildsService
         {
             var joined = _botGuildIds.Join(userGuildIds, x => x, y => y, (x, y) => x).ToList();
 
-            return joined.Any();
+            return joined.Count != 0;
         });
     }
 

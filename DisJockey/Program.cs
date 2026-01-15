@@ -6,21 +6,36 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Configuration;
 using Microsoft.AspNetCore.Builder;
+using DisJockey.Application;
+using DisJockey.Application.Consumers;
 using DisJockey.Extensions;
+using DisJockey.Infrastructure;
 using DisJockey.Infrastructure.Persistence;
 using DisJockey.MassTransit;
 using DisJockey.Middleware;
-using DisJockey.Application.Consumers;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.AddServiceDefaults();
 
-builder.AddSqlServerDbContext<DataContext>("disjockey-db");
+builder.Services.AddControllers();
 
-ConfigureServices(builder.Services, builder.Configuration, builder.Environment);
+builder.Services.AddCors();
+
+builder.AddInfrastructureServices();
+
+builder.Services.AddApplicationServicesV2()
+        .AddIdentityServices(builder.Configuration)
+        .AddDiscordServices(builder.Configuration);
+
+if (!builder.Environment.IsEnvironment("Testing"))
+{
+    builder.Services
+                .AddMassTransit(
+                builder.Configuration,
+                [Assembly.GetAssembly(typeof(TrackPlayedEventConsumer))!]);
+}
 
 var app = builder.Build();
 
@@ -31,21 +46,6 @@ Configure(app, app.Environment);
 await MigrateDatabase(app.Services);
 
 await app.RunAsync();
-
-void ConfigureServices(IServiceCollection services, IConfiguration config, IHostEnvironment environment)
-{
-    services.AddControllers();
-
-    services.AddCors();
-
-    services.AddApplicationServices(config)
-            .AddIdentityServices(config)
-            .AddDiscordServices(config)
-            .AddMassTransit(
-                    config,
-                    [Assembly.GetExecutingAssembly(), 
-                        Assembly.GetAssembly(typeof(TrackPlayedEventConsumer))!]);
-}
 
 void Configure(IApplicationBuilder app, IWebHostEnvironment env)
 {

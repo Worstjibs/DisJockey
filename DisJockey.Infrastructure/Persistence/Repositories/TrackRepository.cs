@@ -43,7 +43,6 @@ public class TrackRepository : BaseRepository, ITrackRepository
 
     public async Task<PagedList<TrackListDto>> GetTracks(PaginationParams paginationParams)
     {
-
         var query = _context.Tracks.AsNoTracking()
             .Include(x => x.TrackPlays)
             .Where(x => x.TrackPlays.Count > 0)

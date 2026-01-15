@@ -1,5 +1,3 @@
-using System;
-using System.Linq;
 using DisJockey.Shared.DTOs;
 using DisJockey.Shared.DTOs.Member;
 using DisJockey.Shared.DTOs.Playlist;
@@ -9,7 +7,7 @@ using DisJockey.Core;
 using AutoMapper;
 using DisJockey.Shared.DTOs.PullUps;
 
-namespace DisJockey.Profiles;
+namespace DisJockey.Application.Profiles;
 
 public class AutoMapperProfiles : Profile
 {

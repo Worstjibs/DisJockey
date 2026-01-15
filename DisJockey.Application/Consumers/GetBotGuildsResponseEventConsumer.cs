@@ -1,9 +1,9 @@
-﻿using DisJockey.MassTransit.Events.BotGuilds;
-using DisJockey.Services;
+﻿using DisJockey.Application.Services;
+using DisJockey.MassTransit.Events.BotGuilds;
 using MassTransit;
 using System.Threading.Tasks;
 
-namespace DisJockey.Consumers;
+namespace DisJockey.Application.Consumers;
 
 public class GetBotGuildsResponseEventConsumer : IConsumer<GetBotGuildsEvent.Response>
 {

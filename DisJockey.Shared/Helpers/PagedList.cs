@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace DisJockey.Shared.Helpers;
@@ -30,4 +31,9 @@ public class PagedList<T>
 
         return new PagedList<T>(items, count, pageNumber, pageSize);
     }
+
+#pragma warning disable CS8618
+    [JsonConstructor]
+    private PagedList() { }
+#pragma warning restore CS8618
 }

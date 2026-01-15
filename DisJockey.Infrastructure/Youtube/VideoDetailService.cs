@@ -11,15 +11,12 @@ namespace DisJockey.Infrastructure.YouTube;
 
 public class VideoDetailService : IVideoDetailService
 {
-    private const int MAX_ITEMS = 10000;
+    private const int _maxItems = 10000;
 
     private readonly YouTubeService _youTubeService;
-    public VideoDetailService(IOptions<YoutubeSettings> config)
+    public VideoDetailService(YouTubeService youTubeService)
     {
-        _youTubeService = new YouTubeService(new BaseClientService.Initializer()
-        {
-            ApiKey = config.Value.ApiKey
-        });
+        _youTubeService = youTubeService;
     }
 
     public async Task<Playlist?> GetPlaylistDetailsAsync(string playlistId)
@@ -50,7 +47,7 @@ public class VideoDetailService : IVideoDetailService
         {
             var playlistItemsRequest = _youTubeService.PlaylistItems.List("snippet,contentDetails");
             playlistItemsRequest.PlaylistId = playlistId;
-            playlistItemsRequest.MaxResults = playlistItemCount < MAX_ITEMS ? playlistItemCount : MAX_ITEMS;
+            playlistItemsRequest.MaxResults = playlistItemCount < _maxItems ? playlistItemCount : _maxItems;
             playlistItemsRequest.PageToken = pageToken;
 
             var playlistItemsResponse = await playlistItemsRequest.ExecuteAsync();
@@ -58,7 +55,7 @@ public class VideoDetailService : IVideoDetailService
             var playlistTracks = playlistItemsResponse?.Items;
 
             ProcessTracks(playlist, playlistTracks);
-            pageToken = playlist.Tracks.Count >= MAX_ITEMS || playlist.Tracks.Count == playlistItemCount ? null : playlistItemsResponse.NextPageToken;
+            pageToken = playlist.Tracks.Count >= _maxItems || playlist.Tracks.Count == playlistItemCount ? null : playlistItemsResponse.NextPageToken;
         } while (pageToken != null);
 
         return playlist;
