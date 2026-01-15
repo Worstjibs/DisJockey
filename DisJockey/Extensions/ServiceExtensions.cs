@@ -1,11 +1,6 @@
 ﻿using Discord.Rest;
-using DisJockey.Application.Interfaces;
 using DisJockey.Application.Services;
-using DisJockey.Infrastructure.Persistence;
-using DisJockey.Infrastructure.Persistence.Repositories;
-using DisJockey.Infrastructure.YouTube;
 using DisJockey.Middleware;
-using DisJockey.Services;
 using DisJockey.Services.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -35,7 +30,8 @@ public static class ServiceExtensions
         services.AddScoped<DiscordRestClient>();
         services.AddScoped<IAuthorizationMiddlewareResultHandler, DisJockeyAuthorizationMiddlewareResultHandler>();
         services.AddSingleton<BotGuildsService>();
-        services.AddHostedService<BotGuildsScheduledService>();
+
+        //services.AddHostedService<BotGuildsScheduledService>();
 
         return services;
     }

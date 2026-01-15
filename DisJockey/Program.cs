@@ -1,5 +1,4 @@
 using System;
-using System.Reflection;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -8,11 +7,9 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Builder;
 using DisJockey.Application;
-using DisJockey.Application.Consumers;
 using DisJockey.Extensions;
 using DisJockey.Infrastructure;
 using DisJockey.Infrastructure.Persistence;
-using DisJockey.MassTransit;
 using DisJockey.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -28,14 +25,6 @@ builder.AddInfrastructureServices();
 builder.Services.AddApplicationServicesV2()
         .AddIdentityServices(builder.Configuration)
         .AddDiscordServices(builder.Configuration);
-
-if (!builder.Environment.IsEnvironment("Testing"))
-{
-    builder.Services
-                .AddMassTransit(
-                builder.Configuration,
-                [Assembly.GetAssembly(typeof(TrackPlayedEventConsumer))!]);
-}
 
 var app = builder.Build();
 

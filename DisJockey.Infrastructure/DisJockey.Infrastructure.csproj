@@ -14,11 +14,14 @@
         <PackageReference Include="AutoMapper" Version="16.0.0" />
 
         <PackageReference Include="Google.Apis.YouTube.v3" Version="1.73.0.4022" />
+
+        <PackageReference Include="WolverineFx.RabbitMQ" Version="5.10.0" />
     </ItemGroup>
 
     <ItemGroup>
       <ProjectReference Include="..\DisJockey.Application\DisJockey.Application.csproj" />
       <ProjectReference Include="..\DisJockey.Core\DisJockey.Core.csproj" />
+      <ProjectReference Include="..\DisJockey.Messaging\DisJockey.Messaging.csproj" />
     </ItemGroup>
 
     <ItemGroup>

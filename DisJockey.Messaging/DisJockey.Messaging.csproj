@@ -1,0 +1,17 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net10.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+    
+    <ItemGroup>
+        <PackageReference Include="WolverineFx.RabbitMQ" Version="5.10.0" />
+    </ItemGroup>
+    
+    <ItemGroup>
+      <ProjectReference Include="..\DisJockey.Shared\DisJockey.Shared.csproj" />
+    </ItemGroup>
+    
+</Project>

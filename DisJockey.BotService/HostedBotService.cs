@@ -10,7 +10,7 @@ internal class HostedBotService : BackgroundService
     private readonly ILogger<HostedBotService> _logger;
     private readonly DiscordSocketClient _client;
     private readonly InteractionHandler _interactionHandler;
-    private readonly IMusicService _musicService;
+    private readonly IServiceScopeFactory _serviceScopeFactory;
     private readonly BotSettings _settings;
 
     public HostedBotService(
@@ -18,13 +18,13 @@ internal class HostedBotService : BackgroundService
         DiscordSocketClient client,
         InteractionHandler interactionHandler,
         IOptions<BotSettings> options,
-        IMusicService musicService
+        IServiceScopeFactory serviceScopeFactory
     )
     {
         _logger = logger;
         _client = client;
         _interactionHandler = interactionHandler;
-        _musicService = musicService;
+        _serviceScopeFactory = serviceScopeFactory;
         _settings = options.Value;
     }
 
@@ -37,7 +37,10 @@ internal class HostedBotService : BackgroundService
         await _client.LoginAsync(TokenType.Bot, _settings.BotToken);
         await _client.StartAsync();
 
-        _client.Ready += _musicService.OnReadyAsync;
+        using var scope = _serviceScopeFactory.CreateScope();
+
+        var musicService = scope.ServiceProvider.GetRequiredService<IMusicService>();
+        _client.Ready += musicService.OnReadyAsync;
     }
 
     private Task LogAsync(LogMessage message)

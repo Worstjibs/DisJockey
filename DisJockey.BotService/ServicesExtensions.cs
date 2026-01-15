@@ -46,7 +46,7 @@ public static class ServicesExtensions
 
         services.Configure<QueuedLavalinkPlayerOptions>(x => new QueuedLavalinkPlayerOptions());
 
-        services.AddSingleton<IMusicService, MusicService>();
+        services.AddScoped<IMusicService, MusicService>();
         services.AddSingleton<WheelUpService>();
 
         return services;

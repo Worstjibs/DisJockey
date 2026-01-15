@@ -1,8 +1,5 @@
 ﻿using DisJockey.Api.Integration.Tests;
-using DisJockey.Application.Consumers;
-using DisJockey.MassTransit;
 using DisJockey.Middleware;
-using MassTransit;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
@@ -28,19 +25,6 @@ public class DisJockeyApiFixture : WebApplicationFactory<IApiMarker>, IAsyncLife
 
         builder.ConfigureTestServices(services =>
         {
-            services.AddMassTransit(config =>
-            {
-                config.AddMassTransitTestHarness(x =>
-                {
-                    x.AddConsumers(typeof(TrackPlayedEventConsumer).Assembly);
-
-                    x.UsingInMemory((context, cfg) =>
-                    {
-                        cfg.ConfigureEndpoints(context);
-                    });
-                });
-            });
-
             services.ConfigureTestJwt();
 
             var discordAuthHandler = services.FirstOrDefault(x => x.ImplementationType == typeof(DisJockeyAuthorizationMiddlewareResultHandler));

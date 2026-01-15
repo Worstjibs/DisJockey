@@ -1,11 +1,10 @@
-﻿using DisJockey.MassTransit.Events;
-using DisJockey.Services.Interfaces;
-using MassTransit;
+﻿using DisJockey.Services.Interfaces;
+using DisJockey.Shared.Messaging.Events;
 using static DisJockey.Services.Interfaces.IDiscordTrackService;
 
 namespace DisJockey.Application.Consumers;
 
-public class TrackPlayedEventConsumer : IConsumer<TrackPlayedEvent>
+public class TrackPlayedEventConsumer
 {
     private readonly IDiscordTrackService _discordTrackService;
 
@@ -14,17 +13,15 @@ public class TrackPlayedEventConsumer : IConsumer<TrackPlayedEvent>
         _discordTrackService = discordTrackService;
     }
 
-    public async Task Consume(ConsumeContext<TrackPlayedEvent> context)
+    public async Task Consume(TrackPlayedEvent trackPlayedEvent)
     {
-        var message = context.Message;
-
         var addTrackArgs = new AddTrackArgs
         {
-            Username = message.UserName,
-            AvatarUrl = message.AvatarUrl,
-            DiscordId = message.DiscordId
+            Username = trackPlayedEvent.UserName,
+            AvatarUrl = trackPlayedEvent.AvatarUrl,
+            DiscordId = trackPlayedEvent.DiscordId
         };
 
-        await _discordTrackService.AddTrackAsync(addTrackArgs, message.TrackId);
+        await _discordTrackService.AddTrackAsync(addTrackArgs, trackPlayedEvent.TrackId);
     }
 }

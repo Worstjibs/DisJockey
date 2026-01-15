@@ -1,30 +1,27 @@
 ﻿using Discord;
 using Discord.WebSocket;
-using DisJockey.MassTransit.Events.BotGuilds;
-using MassTransit;
+using DisJockey.Shared.Messaging.Events.BotGuilds;
 
 namespace DisJockey.BotService.Consumers;
 
-public class GetBotGuildsEventConsumer : IConsumer<GetBotGuildsEvent>
+public class GetBotGuildsEventConsumer
 {
     private readonly DiscordSocketClient _discordSocketClient;
-    private readonly IBus _bus;
 
-    public GetBotGuildsEventConsumer(DiscordSocketClient discordSocketClient, IBus bus)
+    public GetBotGuildsEventConsumer(DiscordSocketClient discordSocketClient)
     {
         _discordSocketClient = discordSocketClient;
-        _bus = bus;
     }
 
-    public async Task Consume(ConsumeContext<GetBotGuildsEvent> context)
+    public async Task Consume(GetBotGuildsEvent @event)
     {
         if (_discordSocketClient.LoginState != LoginState.LoggedIn)
             return;
 
         var botGuilds = _discordSocketClient.Guilds.Select(x => x.Id).ToArray();
 
-        var response = new GetBotGuildsEvent.Response { GuidIds = botGuilds };
+        var response = new GetBotGuildsEvent.Response { GuildIds = botGuilds };
 
-        await _bus.Publish(response, context.CancellationToken);
+        // TODO: Send message here
     }
 }

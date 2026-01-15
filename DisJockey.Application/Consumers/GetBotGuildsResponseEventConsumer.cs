@@ -1,11 +1,9 @@
 ﻿using DisJockey.Application.Services;
-using DisJockey.MassTransit.Events.BotGuilds;
-using MassTransit;
-using System.Threading.Tasks;
+using DisJockey.Shared.Messaging.Events.BotGuilds;
 
 namespace DisJockey.Application.Consumers;
 
-public class GetBotGuildsResponseEventConsumer : IConsumer<GetBotGuildsEvent.Response>
+public class GetBotGuildsResponseEventConsumer
 {
     private readonly BotGuildsService _botGuildsService;
 
@@ -14,10 +12,8 @@ public class GetBotGuildsResponseEventConsumer : IConsumer<GetBotGuildsEvent.Res
         _botGuildsService = botGuildsService;
     }
 
-    public async Task Consume(ConsumeContext<GetBotGuildsEvent.Response> context)
+    public async Task Consume(GetBotGuildsEvent.Response responseMessage)
     {
-        var message = context.Message;
-
-        await _botGuildsService.AddBotGuildsAsync(message.GuidIds);
+        await _botGuildsService.AddBotGuildsAsync(responseMessage.GuildIds);
     }
 }

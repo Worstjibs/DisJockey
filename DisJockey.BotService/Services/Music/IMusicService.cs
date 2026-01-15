@@ -1,6 +1,6 @@
 ﻿using Discord;
 using Discord.WebSocket;
-using DisJockey.MassTransit.Enums;
+using DisJockey.Shared.Messaging.Enums;
 
 namespace DisJockey.BotService.Services.Music;
 

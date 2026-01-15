@@ -5,12 +5,12 @@ using Lavalink4NET.Players;
 using Lavalink4NET.Rest.Entities.Tracks;
 using Microsoft.Extensions.Options;
 using DisJockey.BotService.Services.WheelUp;
-using MassTransit;
 using Discord.WebSocket;
-using DisJockey.MassTransit.Enums;
-using DisJockey.MassTransit.Events;
 using Lavalink4NET.Events.Players;
 using Lavalink4NET.Tracks;
+using DisJockey.Shared.Messaging.Events;
+using DisJockey.Shared.Messaging.Enums;
+using DisJockey.Shared.Messaging.Contracts;
 
 namespace DisJockey.BotService.Services.Music;
 
@@ -19,19 +19,19 @@ public class MusicService : IMusicService
     private readonly IAudioService _audioService;
     private readonly IOptions<QueuedLavalinkPlayerOptions> _queuePlayerOptions;
     private readonly WheelUpService _wheelUpService;
-    private readonly IBus _bus;
+    private readonly IMessageSender _messageSender;
 
     public MusicService(
         IAudioService audioService,
         IOptions<QueuedLavalinkPlayerOptions> queuePlayerOptions,
         WheelUpService wheelUpService,
-        IBus bus
+        IMessageSender messageSender
     )
     {
         _audioService = audioService;
         _queuePlayerOptions = queuePlayerOptions;
         _wheelUpService = wheelUpService;
-        _bus = bus;
+        _messageSender = messageSender;
     }
 
     public async Task PlayTrackAsync(string query, IInteractionContext context, SearchMode searchMode = SearchMode.YouTube)
@@ -55,14 +55,14 @@ public class MusicService : IMusicService
 
         if (track.Provider is StreamProvider.YouTube)
         {
-            await _bus.Publish(new TrackPlayedEvent
-            {
-                SearchMode = searchMode,
-                TrackId = track.Identifier,
-                DiscordId = socketUser.Id,
-                AvatarUrl = socketUser.GetAvatarUrl(),
-                UserName = socketUser.Username
-            });
+            var trackPlayedEvent = new TrackPlayedEvent(
+                                            track.Identifier,
+                                            socketUser.Id,
+                                            socketUser.GetAvatarUrl(),
+                                            socketUser.Username,
+                                            SearchMode.YouTube);
+
+            await _messageSender.SendAsync(trackPlayedEvent);
         }
 
         if (position is 0)

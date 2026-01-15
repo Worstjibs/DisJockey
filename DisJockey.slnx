@@ -27,7 +27,7 @@
     <Project Path="DisJockey.Bff/DisJockey.Bff.csproj" />
   </Folder>
   <Folder Name="/src/shared/">
-    <Project Path="DisJockey.MassTransit/DisJockey.MassTransit.csproj" />
+    <Project Path="DisJockey.Messaging/DisJockey.Messaging.csproj" />
     <Project Path="DisJockey.Shared/DisJockey.Shared.csproj" />
   </Folder>
   <Folder Name="/tests/">

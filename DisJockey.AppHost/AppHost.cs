@@ -9,7 +9,9 @@ var sql = builder.AddSqlServer("sql")
 var database = sql.AddDatabase("disjockey-db");
 
 var rabbitMq = builder.AddRabbitMQ("rabbit-mq")
-            .WithLifetime(ContainerLifetime.Persistent);
+                .WithManagementPlugin(61532)
+                .WithDataVolume("rabbit-mq-data")
+                .WithLifetime(ContainerLifetime.Persistent);
 
 var lavalink = builder.AddLavalinkServer("lavalink")
             .WithLifetime(ContainerLifetime.Persistent);
@@ -45,7 +47,7 @@ builder.AddProject<DisJockey_Bff>("bff")
 
 await builder.Build().RunAsync();
 
-async Task GetDiscordProvider()
+static async Task GetDiscordProvider()
 {
     const string localFilePath = "./providers/keycloak-discord-0.6.1.jar";
 

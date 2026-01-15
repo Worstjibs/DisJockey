@@ -30,7 +30,8 @@ export class TrackItem {
     this.trackLiked.emit({ track, liked: false });
   }
 
-  playTrack(track: Track) {
+  playTrack(track: Track, event: MouseEvent) {
+    event.stopPropagation();
     this.trackPlayed.emit({ track, playNow: true });
   }
 
