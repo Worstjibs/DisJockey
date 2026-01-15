@@ -20,5 +20,9 @@ export const routes: Routes = [
 	{
 		path: 'search',
 		component: Search
+	},
+	{
+		path: 'signin-oidc',
+		redirectTo: 'tracks'
 	}
 ];

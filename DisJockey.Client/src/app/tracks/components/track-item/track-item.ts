@@ -37,11 +37,11 @@ export class TrackItem {
     this.trackPlayed.emit({ track, playNow: false });
   }
 
-  expandTrackItem() {
+  toggleDetail() {
     const track = this.track();
+    this.showDetail = !this.showDetail;
 
-    if (!this.showDetail && track) {
-      this.showDetail = true;
+    if (track) {
       this.trackExpanded.emit(track);
     }
   }
