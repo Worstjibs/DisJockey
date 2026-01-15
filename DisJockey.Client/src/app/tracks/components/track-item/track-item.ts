@@ -1,10 +1,11 @@
 import { Component, input, output } from '@angular/core';
 import { Track } from '../../models/track';
 import { CommonModule } from '@angular/common';
+import { TimeagoPipe } from 'ngx-timeago';
 
 @Component({
   selector: 'app-track-item',
-  imports: [CommonModule],
+  imports: [CommonModule, TimeagoPipe],
   templateUrl: './track-item.html',
   styleUrl: './track-item.scss',
 })

@@ -41,17 +41,17 @@
     transition: opacity 0.3s ease-in-out;
 }
 
-#track-item-container {
-    transition: background-color ease-in 0.3s;
+.track-item-container {
+    transition: background-color ease-in 0.2s;
     width: 99%;
 
-    :hover {
+    &:hover {
         background-color: #363636;
 
         .play-button {
             opacity: 1;
         }
-        
+
         #track-thumbnail-img {
             transform: scale(1.1);
         }
@@ -67,14 +67,14 @@
     transition: all .5s ease;
 }
 
-#user-list {
-    opacity: 0;
+.user-list {
     max-height: 0;
-    margin: 0;
+    opacity: 0;
+    overflow: hidden;
     transition: opacity .2s linear, max-height .5s ease-in-out;
 
     &.user-list-open {
-        max-height: 500px !important;
         opacity: 1 !important;
+        max-height: 500px !important;
     }
 }

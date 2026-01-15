@@ -1,5 +1,5 @@
 @if (track(); as track) {
-<div id="track-item-container" class="border border-rounded border-dark" (click)="toggleDetail()">
+<div class="track-item-container border border-rounded border-dark" (click)="toggleDetail()">
     <div class="row p-3">
         <div class="track-cols" [ngClass]="{'col-4': showDetail, 'col-2': !showDetail}">
             <div class="img-wrapper">
@@ -8,7 +8,7 @@
             </div>
         </div>
 
-        <div id="track-info" class="track-cols pl-0" [ngClass]="{'col-8': showDetail, 'col-10': !showDetail}">
+        <div class="track-cols" [ngClass]="{'col-8': showDetail, 'col-10': !showDetail}">
             <div>
                 <h4>{{track.title}}</h4>
                 <h5>{{track.channelTitle}}</h5>
@@ -35,11 +35,11 @@
         </div>
     </div>
 
-    <div id="user-list" [ngClass]="{'user-list-open m-2': showDetail}">
+    <div class="user-list" [ngClass]="{'user-list-open m-2': showDetail}">
         <ul class="list-group">
             @for (user of track.users; track user) {
             <li class="track-user list-group-item" [ngClass]="{'user-expanded': showDetail}">
-                {{user.username}}, played {{user.timesPlayed}} times, last played {{user.lastPlayed}}
+                {{user.username}}, played {{user.timesPlayed}} times, last played {{user.lastPlayed | timeago}}
                 <!-- TODO: Add timeago pipe back in -->
             </li>
             }
