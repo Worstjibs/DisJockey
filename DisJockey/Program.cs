@@ -11,6 +11,7 @@ using DisJockey.Extensions;
 using DisJockey.Infrastructure;
 using DisJockey.Infrastructure.Persistence;
 using DisJockey.Middleware;
+using DisJockey.Endpoints;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -55,6 +56,7 @@ void Configure(IApplicationBuilder app, IWebHostEnvironment env)
     app.UseEndpoints(endpoints =>
     {
         endpoints.MapControllers();
+        endpoints.MapDisJockeyEndpoints();
         endpoints.MapFallbackToController("Index", "Fallback");
     });
 }

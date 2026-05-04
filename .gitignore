@@ -450,3 +450,4 @@ botsettings.json
 /sql/*
 
 **/DisJockey.AppHost/providers/**
+**/DisJockey.AppHost/realms/**

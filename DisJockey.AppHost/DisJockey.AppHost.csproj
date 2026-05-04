@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
-  <Sdk Name="Aspire.AppHost.Sdk" Version="13.1.0" />
+  <Sdk Name="Aspire.AppHost.Sdk" Version="13.2.4" />
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
@@ -11,10 +11,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Aspire.Hosting.AppHost" Version="13.1.0" />
+    <PackageReference Include="Aspire.Hosting.AppHost" Version="13.2.4" />
     <PackageReference Include="Aspire.Hosting.Keycloak" Version="13.1.0-preview.1.25616.3" />
-    <PackageReference Include="Aspire.Hosting.RabbitMQ" Version="13.1.0" />
-    <PackageReference Include="Aspire.Hosting.SqlServer" Version="13.1.0" />
+    <PackageReference Include="Aspire.Hosting.RabbitMQ" Version="13.2.4" />
+    <PackageReference Include="Aspire.Hosting.Seq" Version="13.2.4" />
+    <PackageReference Include="Aspire.Hosting.SqlServer" Version="13.2.4" />
+    <PackageReference Include="CommunityToolkit.Aspire.Hosting.OpenTelemetryCollector" Version="13.1.1" />
   </ItemGroup>
 
   <ItemGroup>

@@ -1,9 +1,21 @@
-using DisJockey.AppHost.Lavalink;
 using Projects;
 
 var builder = DistributedApplication.CreateBuilder(args);
 
+var jaeger = builder.AddContainer("jaeger", "jaegertracing/all-in-one")
+            .WithHttpEndpoint(16686, targetPort: 16686, name: "portal")
+            .WithHttpEndpoint(4319, targetPort: 4317, "otel");
+
+var seq = builder.AddSeq("seq");
+
+builder.AddOpenTelemetryCollector("otel-collector")
+        .WithAppForwarding()
+        .WithConfig("./collector-config.yml")
+        .WithEnvironment("JAEGER_ENDPOINT", jaeger.GetEndpoint("otel"))
+        .WithEnvironment("SEQ_ENDPOINT", $"{seq.GetEndpoint("http")}/ingest/otlp");
+
 var sql = builder.AddSqlServer("sql")
+            .WithDataVolume("sql-data")
             .WithLifetime(ContainerLifetime.Persistent);
 
 var database = sql.AddDatabase("disjockey-db");
@@ -11,7 +23,8 @@ var database = sql.AddDatabase("disjockey-db");
 var rabbitMq = builder.AddRabbitMQ("rabbit-mq")
                 .WithManagementPlugin(61532)
                 .WithDataVolume("rabbit-mq-data")
-                .WithLifetime(ContainerLifetime.Persistent);
+                .WithLifetime(ContainerLifetime.Persistent)
+                .WithOtlpExporter();
 
 var lavalink = builder.AddLavalinkServer("lavalink")
             .WithLifetime(ContainerLifetime.Persistent);
@@ -20,6 +33,7 @@ await GetDiscordProvider();
 
 var keycloak = builder.AddKeycloak("keycloak", 8080)
             .WithBindMount("./providers", "/opt/keycloak/providers")
+            .WithRealmImport("./realms/realm-export.json")
             .WithDataVolume("keycloak-data")
             .WithLifetime(ContainerLifetime.Persistent)
             .WithOtlpExporter();
@@ -28,7 +42,7 @@ var keycloak = builder.AddKeycloak("keycloak", 8080)
 keycloak.WithoutHttpsCertificate();
 #pragma warning restore ASPIRECERTIFICATES001
 
-var api = builder.AddProject<Projects.DisJockey>("api")
+var api = builder.AddProject<DisJockey>("api")
             .WithReference(database)
             .WaitFor(database)
             .WithReference(rabbitMq)

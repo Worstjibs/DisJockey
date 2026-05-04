@@ -1,4 +1,6 @@
-﻿namespace DisJockey.AppHost.Lavalink;
+﻿#pragma warning disable IDE0130 // Namespace does not match folder structure
+namespace Aspire.Hosting;
+#pragma warning restore IDE0130 // Namespace does not match folder structure
 
 public static class LavalinkExtensions
 {
@@ -11,7 +13,7 @@ public static class LavalinkExtensions
             var lavalink = new LavalinkResource(name);
 
             var lavalinkBuilder = builder.AddResource(lavalink)
-                    .WithImage("lavalink-devs/lavalink", "4.1.2")
+                    .WithImage("lavalink-devs/lavalink", "4.2.2")
                     .WithImageRegistry("ghcr.io")
                     .WithEndpoint(port, 2333, scheme: "http")
                     .WithBindMount("../application.yml", "/opt/Lavalink/application.yml");

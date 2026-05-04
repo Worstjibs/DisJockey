@@ -3,58 +3,52 @@ using DisJockey.Infrastructure.Persistence;
 using DisJockey.Shared.DTOs.Track;
 using DisJockey.Shared.Helpers;
 using Microsoft.Extensions.DependencyInjection;
-using Shouldly;
 using System.Net.Http.Json;
 
-namespace DisJockey.Api.Integration.Tests;
+namespace DisJockey.Api.Integration.Tests.Endpoints.Tracks;
 
-public class TrackTests : IClassFixture<DisJockeyApiFixture>
+public class GetTracksForMemberTests : IntegrationTestBase
 {
     private readonly HttpClient _httpClient;
-    private readonly DisJockeyApiFixture _fixture;
 
-    public TrackTests(DisJockeyApiFixture fixture)
+    public GetTracksForMemberTests(DisJockeyApiFixture fixture) : base(fixture)
     {
         _httpClient = fixture.HttpClient;
-        _fixture = fixture;
     }
 
     [Fact]
-    public async Task GetTracks_ReturnsPaginatedListOfTracks()
+    public async Task GetTrackPlaysForMember_ReturnsPaginatedListOfTracks()
     {
         // Arrange
-        ulong discordId = 123456789012345678;
+        ulong discordId = 987654321098765432;
 
-        _httpClient.AsUser();
+        _httpClient.AsUser(discordId.ToString());
 
         var createdDate = new DateTime(2025, 1, 15);
 
         var user = new AppUser
         {
             CreatedOn = createdDate,
-            UserName = "TestUser",
+            UserName = "MemberUser",
             DiscordId = discordId,
             AvatarUrl = "http://example.com/avatar.png"
         };
 
-        var tracks = Enumerable.Range(1, 10).Select(i => new Track
+        var tracks = Enumerable.Range(1, 5).Select(i => new Track
         {
             Title = $"Track {i}",
             YoutubeId = $"YoutubeId_{i}",
             CreatedOn = createdDate,
             TrackPlays =
             [
-                new() 
-                {
-                     User = user,
-                     CreatedOn = createdDate,
-                     LastPlayed = createdDate,
-                     TrackPlayHistory =
-                     [
-                         new() { CreatedOn =  createdDate },
-                     ],
+                new() {
+                    User = user,
+                    CreatedOn = createdDate,
+                    LastPlayed = createdDate,
+                    TrackPlayHistory = [new() { CreatedOn = createdDate }]
                 }
-            ]
+            ],
+            Likes = []
         }).ToArray();
 
         await AddUserAndTracks(user, tracks);
@@ -68,12 +62,9 @@ public class TrackTests : IClassFixture<DisJockeyApiFixture>
                 DiscordId = tp.User.DiscordId,
                 Username = tp.User.UserName,
                 FirstPlayed = tp.CreatedOn,
-                History = [.. tp.TrackPlayHistory.Select(h => new TrackPlayHistoryDto
-                {
-                    CreatedOn = h.CreatedOn
-                })],
+                History = tp.TrackPlayHistory.Select(h => new TrackPlayHistoryDto { CreatedOn = h.CreatedOn }).ToList(),
                 LastPlayed = tp.LastPlayed,
-                TimesPlayed = tp.TrackPlayHistory.Count,
+                TimesPlayed = tp.TrackPlayHistory.Count
             })],
             UserLikes = [],
             LastPlayed = createdDate,
@@ -81,13 +72,11 @@ public class TrackTests : IClassFixture<DisJockeyApiFixture>
         }).ToList();
 
         // Act
-        var result = await _httpClient.GetFromJsonAsync<PagedList<TrackListDto>>("/api/tracks", TestContext.Current.CancellationToken);
+        var result = await _httpClient.GetFromJsonAsync<PagedList<TrackListDto>>($"/api/tracks/{discordId}", cancellationToken: TestContext.Current.CancellationToken);
 
         // Assert
         result.ShouldNotBeNull();
-
-        result.Items.ShouldNotBeEmpty();
-
+        result!.Items.ShouldNotBeEmpty();
         result.Items.ShouldBeEquivalentTo(expectedItems);
     }
 
@@ -100,6 +89,6 @@ public class TrackTests : IClassFixture<DisJockeyApiFixture>
 
         context.Tracks.AddRange(tracks);
 
-        await context.SaveChangesAsync(TestContext.Current.CancellationToken);
+        await context.SaveChangesAsync();
     }
 }

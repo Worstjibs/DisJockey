@@ -7,13 +7,13 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Aspire.Microsoft.EntityFrameworkCore.SqlServer" Version="13.1.0" />
+        <PackageReference Include="Aspire.Microsoft.EntityFrameworkCore.SqlServer" Version="13.2.4" />
         <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.3.9" />
-        <PackageReference Include="Microsoft.EntityFrameworkCore" Version="10.0.1" />
-        <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="10.0.1" />
-        <PackageReference Include="AutoMapper" Version="16.0.0" />
+        <!--<PackageReference Include="Microsoft.EntityFrameworkCore" Version="10.0.1" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="10.0.1" />-->
+        <PackageReference Include="AutoMapper" Version="16.1.1" />
 
-        <PackageReference Include="Google.Apis.YouTube.v3" Version="1.73.0.4022" />
+        <PackageReference Include="Google.Apis.YouTube.v3" Version="1.73.0.4134" />
 
         <PackageReference Include="WolverineFx.RabbitMQ" Version="5.10.0" />
     </ItemGroup>

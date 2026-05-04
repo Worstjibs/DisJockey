@@ -1,6 +1,6 @@
-﻿using DisJockey.Services.Interfaces;
+﻿using DisJockey.Application.Contracts;
+using DisJockey.Services.Interfaces;
 using DisJockey.Shared.DTOs.Member;
-using MediatR;
 
 namespace DisJockey.Application.Features.Members.Queries.GetMember;
 
@@ -13,10 +13,12 @@ public class GetMemberHandler : IRequestHandler<GetMemberQuery, MemberDetailDto?
         _userRepository = userRepository;
     }
 
-    public async Task<MemberDetailDto?> Handle(GetMemberQuery request, CancellationToken cancellationToken)
+    public async Task<MemberDetailDto?> HandleAsync(GetMemberQuery request, CancellationToken cancellationToken)
     {
         var user = await _userRepository.GetMemberByDiscordIdAsync(request.DiscordId);
 
         return user;
     }
 }
+
+public record GetMemberQuery(ulong DiscordId) : IRequest<MemberDetailDto?>;

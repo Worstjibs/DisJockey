@@ -1,30 +1,33 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
-    <OutputType>Exe</OutputType>
-    <RootNamespace>DisJockey.Api.Integration.Tests</RootNamespace>
-    <TargetFramework>net10.0</TargetFramework>
-  </PropertyGroup>
+    <PropertyGroup>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <OutputType>Exe</OutputType>
+        <RootNamespace>DisJockey.Api.Integration.Tests</RootNamespace>
+        <TargetFramework>net10.0</TargetFramework>
+    </PropertyGroup>
 
-  <ItemGroup>
-    <Content Include="xunit.runner.json" CopyToOutputDirectory="PreserveNewest" />
-  </ItemGroup>
+    <ItemGroup>
+        <Content Include="xunit.runner.json" CopyToOutputDirectory="PreserveNewest" />
+    </ItemGroup>
+    <ItemGroup>
+        <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="10.0.2" />
+        <PackageReference Include="Respawn" Version="7.0.0" />
+        <PackageReference Include="Shouldly" Version="4.3.0" />
+        <PackageReference Include="Testcontainers.MsSql" Version="4.10.0" />
+        <PackageReference Include="Testcontainers.RabbitMq" Version="4.11.0" />
+        <PackageReference Include="xunit.v3.mtp-v2" Version="3.2.2" />
+    </ItemGroup>
 
-  <ItemGroup>
-    <Using Include="Xunit" />
-  </ItemGroup>
+    <ItemGroup>
+        <ProjectReference Include="..\DisJockey\DisJockey.csproj" />
+    </ItemGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="10.0.2" />
-    <PackageReference Include="Shouldly" Version="4.3.0" />
-    <PackageReference Include="Testcontainers.MsSql" Version="4.10.0" />
-    <PackageReference Include="xunit.v3.mtp-v2" Version="3.2.2" />
-  </ItemGroup>
+    <ItemGroup>
+        <Using Include="Xunit" />
+        <Using Include="Shouldly" />
+    </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\DisJockey\DisJockey.csproj" />
-  </ItemGroup>
 
 </Project>
