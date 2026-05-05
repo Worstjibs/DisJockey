@@ -2,11 +2,13 @@
 using DisJockey.Services.Interfaces;
 using DisJockey.Shared.DTOs.PullUps;
 using DisJockey.Shared.Helpers;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 
 namespace DisJockey.Controllers;
 
+[Authorize]
 public class PullUpsController : BaseApiController
 {
     private readonly IUnitOfWork _unitOfWork;
