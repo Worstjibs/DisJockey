@@ -1,6 +1,4 @@
 using DisJockey.Core;
-using AutoMapper;
-using AutoMapper.QueryableExtensions;
 using Microsoft.EntityFrameworkCore;
 using DisJockey.Shared.DTOs.Track;
 using DisJockey.Shared.Helpers;
@@ -15,14 +13,12 @@ namespace DisJockey.Infrastructure.Persistence.Repositories;
 
 public class TrackRepository : BaseRepository, ITrackRepository
 {
-    private readonly IMapper _mapper;
     private readonly IHttpContextAccessor _httpContext;
 
     private ulong? DiscordId;
 
-    public TrackRepository(DataContext context, IMapper mapper, IHttpContextAccessor httpContext) : base(context)
+    public TrackRepository(DataContext context, IHttpContextAccessor httpContext) : base(context)
     {
-        _mapper = mapper;
         _httpContext = httpContext;
 
         DiscordId = _httpContext.HttpContext?.User.GetDiscordId();
@@ -77,7 +73,7 @@ public class TrackRepository : BaseRepository, ITrackRepository
     {
         var query = _context.Tracks.AsNoTracking()
             .Where(x => x.PullUps.Any(tp => tp.User.DiscordId == discordId))
-            .ProjectTo<PullUpDto>(_mapper.ConfigurationProvider, new { DiscordId });
+            .Select(PullUpMapper.ToListDtoExpression(DiscordId));
 
         query = paginationParams.SortBy switch
         {

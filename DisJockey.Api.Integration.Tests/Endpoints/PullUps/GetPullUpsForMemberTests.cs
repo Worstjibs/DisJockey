@@ -1,6 +1,7 @@
 using DisJockey.Core;
 using DisJockey.Infrastructure.Persistence;
 using DisJockey.Shared.DTOs.PullUps;
+using DisJockey.Shared.DTOs.Shared;
 using DisJockey.Shared.Helpers;
 using Microsoft.Extensions.DependencyInjection;
 using System.Net;
@@ -131,13 +132,21 @@ public class GetPullUpsForMemberTests : IntegrationTestBase
 
         var orderedPullUps = item.PullUps.OrderBy(p => p.DatePulled).ToList();
 
+        var expectedMember = new BaseMemberDto
+        {
+            DiscordId = discordId.ToString(),
+            Username = user.UserName,
+            AvatarUrl = user.AvatarUrl,
+            DateJoined = createdDate
+        };
+
         orderedPullUps[0].DatePulled.ShouldBe(pullUpDate1);
         orderedPullUps[0].TimePulled.ShouldBe(42.5);
-        orderedPullUps[0].Member.ShouldBeNull(); // PullUp.User is not mapped to PullUpTrackDto.Member
+        orderedPullUps[0].Member.ShouldBeEquivalentTo(expectedMember);
 
         orderedPullUps[1].DatePulled.ShouldBe(pullUpDate2);
         orderedPullUps[1].TimePulled.ShouldBe(88.0);
-        orderedPullUps[1].Member.ShouldBeNull();
+        orderedPullUps[1].Member.ShouldBeEquivalentTo(expectedMember);
     }
 
     [Fact]
