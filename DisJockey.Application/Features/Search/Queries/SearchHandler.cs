@@ -1,5 +1,5 @@
-﻿using AutoMapper;
-using DisJockey.Application.Interfaces;
+﻿using DisJockey.Application.Interfaces;
+using DisJockey.Application.Mappers;
 using DisJockey.Shared.DTOs.Track;
 using MediatR;
 using static DisJockey.Application.Features.Search.Queries.SearchHandler;
@@ -10,16 +10,13 @@ public class SearchHandler : IRequestHandler<SearchQuery, (IEnumerable<TrackList
 {
     private readonly IVideoDetailService _videoDetailService;
     private readonly ITrackRepository _trackRepository;
-    private readonly IMapper _mapper;
 
     public SearchHandler(
         IVideoDetailService videoDetailService,
-        ITrackRepository trackRepository,
-        IMapper mapper)
+        ITrackRepository trackRepository)
     {
         _videoDetailService = videoDetailService;
         _trackRepository = trackRepository;
-        _mapper = mapper;
     }
 
     public async Task<(IEnumerable<TrackListDto> Results, YouTubePagination? Pagination)> Handle(SearchQuery request, CancellationToken cancellationToken)
@@ -32,7 +29,7 @@ public class SearchHandler : IRequestHandler<SearchQuery, (IEnumerable<TrackList
 
         var existingTracks = await _trackRepository.GetTracksByYouTubeIdAsync(results.Select(x => x.YoutubeId));
 
-        var resultsDto = results.Select(_mapper.Map<TrackListDto>).ToList();
+        var resultsDto = results.Select(t => TrackMapper.ToListDto(t)).ToList();
 
         foreach (var existingTrack in existingTracks)
         {

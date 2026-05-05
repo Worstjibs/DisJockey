@@ -31,7 +31,11 @@ public class VideoDetailService : IVideoDetailService
             return null;
         }
 
-        var playlistResult = playlistResponse.Items.First();
+        var playlistResult = playlistResponse?.Items.FirstOrDefault();
+        if (playlistResult is null)
+        {
+            return null;
+        }
 
         var playlist = new Playlist
         {
@@ -54,8 +58,12 @@ public class VideoDetailService : IVideoDetailService
 
             var playlistTracks = playlistItemsResponse?.Items;
 
-            ProcessTracks(playlist, playlistTracks);
-            pageToken = playlist.Tracks.Count >= _maxItems || playlist.Tracks.Count == playlistItemCount ? null : playlistItemsResponse.NextPageToken;
+            ProcessTracks(playlist, playlistTracks ?? []);
+
+            pageToken = playlist.Tracks.Count >= _maxItems || playlist.Tracks.Count == playlistItemCount
+                            ? null
+                            : playlistItemsResponse?.NextPageToken;
+
         } while (pageToken != null);
 
         return playlist;
@@ -108,7 +116,7 @@ public class VideoDetailService : IVideoDetailService
     }
 
 
-    private static void ProcessTracks(Playlist playlist, IList<GoogleData.PlaylistItem> playlistItems)
+    private static void ProcessTracks(Playlist playlist, IEnumerable<GoogleData.PlaylistItem> playlistItems)
     {
         var playlistTracks = playlistItems.Select(x => new PlaylistTrack
         {
