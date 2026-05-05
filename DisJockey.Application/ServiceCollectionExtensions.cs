@@ -1,6 +1,7 @@
 ﻿using DisJockey.Application.Contracts;
 using DisJockey.Application.Features.Members.Queries.AllMembers;
 using DisJockey.Application.Features.Members.Queries.GetMember;
+using DisJockey.Application.Features.PullUps.Queries.PullUpsForMember;
 using DisJockey.Application.Features.Tracks.Commands.BlacklistTrack;
 using DisJockey.Application.Features.Tracks.Commands.LikeTrack;
 using DisJockey.Application.Features.Tracks.Commands.PlayTrack;
@@ -8,6 +9,7 @@ using DisJockey.Application.Features.Tracks.Queries.AllTracks;
 using DisJockey.Application.Features.Tracks.Queries.TracksForMember;
 using DisJockey.Application.Profiles;
 using DisJockey.Shared.DTOs.Member;
+using DisJockey.Shared.DTOs.PullUps;
 using DisJockey.Shared.DTOs.Track;
 using DisJockey.Shared.Helpers;
 using ErrorOr;
@@ -42,6 +44,7 @@ public static class ServiceCollectionExtensions
             services.AddScoped<IRequestHandler<PlayTrackCommand, ErrorOr<Success>>, PlayTrackHandler>();
             services.AddScoped<IRequestHandler<AllTracksQuery, PagedList<TrackListDto>>, AllTracksHandler>();
             services.AddScoped<IRequestHandler<TracksForMemberQuery, PagedList<TrackListDto>>, TracksForMemberHandler>();
+            services.AddScoped<IRequestHandler<PullUpsForMemberQuery, PagedList<PullUpDto>>, PullUpsForMemberHandler>();
 
             return services;
         }

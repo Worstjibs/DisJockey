@@ -12,7 +12,35 @@ public class PaginationParams
         set => field = (value > _maxPageSize) ? _maxPageSize : value;
     } = 10;
 
-    public string SortBy { get; set; }
-    public string Query { get; set; }
-    public string PageToken { get; set; }
+    public string? SortBy { get; set; }
+    public string? Query { get; set; }
+    public string? PageToken { get; set; }
+
+
+    public static PaginationParams CreateParameters(
+        int? pageNumber,
+        int? pageSize,
+        string? sortBy = null,
+        string? query = null,
+        string? pageToken = null)
+    {
+        var pagination = new PaginationParams
+        {
+            SortBy = sortBy,
+            Query = query,
+            PageToken = pageToken
+        };
+
+        if (pageNumber.HasValue)
+        {
+            pagination.PageNumber = pageNumber.Value;
+        }
+
+        if (pageSize.HasValue)
+        {
+            pagination.PageSize = pageSize.Value;
+        }   
+
+        return pagination;
+    }
 }
