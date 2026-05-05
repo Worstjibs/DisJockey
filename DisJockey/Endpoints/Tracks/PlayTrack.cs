@@ -1,6 +1,7 @@
-﻿using DisJockey.Application.Features.Tracks.Commands.PlayTrack;
+﻿using DisJockey.Application.Contracts;
+using DisJockey.Application.Features.Tracks.Commands.PlayTrack;
 using DisJockey.Shared.Extensions;
-using MediatR;
+using ErrorOr;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
@@ -31,7 +32,7 @@ public static class PlayTrack
 
                     command = command with { DiscordId = discordId.Value };
 
-                    var result = await mediator.Send(command, cancellationToken);
+                    var result = await mediator.SendAsync<PlayTrackCommand, ErrorOr<Success>>(command, cancellationToken);
 
                     return result.Match(
                         success => Results.Ok(),

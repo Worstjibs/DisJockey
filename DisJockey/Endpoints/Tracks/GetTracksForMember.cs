@@ -1,6 +1,7 @@
-﻿using DisJockey.Application.Features.Tracks.Queries.TracksForMember;
+﻿using DisJockey.Application.Contracts;
+using DisJockey.Application.Features.Tracks.Queries.TracksForMember;
+using DisJockey.Shared.DTOs.Track;
 using DisJockey.Shared.Helpers;
-using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
@@ -24,7 +25,7 @@ public static class GetTracksForMember
                 {
                     var pagination = new PaginationParams();
 
-                    var tracks = await mediator.Send(new TracksForMemberQuery(pagination, discordId), cancellationToken);
+                    var tracks = await mediator.SendAsync<TracksForMemberQuery, PagedList<TrackListDto>>(new TracksForMemberQuery(pagination, discordId), cancellationToken);
 
                     return Results.Ok(tracks);
                 })

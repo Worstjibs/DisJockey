@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Data.SqlClient;
+using Microsoft.Extensions.Hosting;
 using Respawn;
 using System.Data;
 using System.Data.Common;
@@ -48,6 +49,15 @@ public class DisJockeyApiFixture : WebApplicationFactory<IApiMarker>, IAsyncLife
             }
         });
     }
+
+    protected override IHost CreateHost(IHostBuilder builder)
+    {
+        Host = base.CreateHost(builder);
+
+        return Host;
+    }
+
+    public IHost Host { get; set; } = default!;
 
     public async Task ResetDb()
         => await _respawner.ResetAsync(_sqlConnection);

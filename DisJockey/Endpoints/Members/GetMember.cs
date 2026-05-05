@@ -17,7 +17,7 @@ public static class GetMember
             builder.MapGet(
                 "/{discordId}",
                 async (
-                    IMediator mediator, 
+                    IMediator mediator,
                     ulong discordId,
                     CancellationToken cancellationToken) =>
                 {
@@ -29,7 +29,7 @@ public static class GetMember
 
                     return Results.Ok(member);
                 })
-            .RequireAuthorization();
+                .RequireAuthorization();
 
             return builder;
         }

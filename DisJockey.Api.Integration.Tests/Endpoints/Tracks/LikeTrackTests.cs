@@ -14,6 +14,21 @@ public class LikeTrackTests : IntegrationTestBase
     }
 
     [Fact]
+    public async Task LikeTrack_GivenUnauthenticatedRequest_ReturnsUnauthorized()
+    {
+        // Arrange
+        _httpClient.WithoutAuthentication();
+
+        var command = new { YouTubeId = "AnyTrack", Liked = true };
+
+        // Act
+        var response = await _httpClient.PostAsJsonAsync("/api/tracks/like", command, cancellationToken: TestContext.Current.CancellationToken);
+
+        // Assert
+        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
+    }
+
+    [Fact]
     public async Task LikeTrack_GivenTrackDoesNotExist_ReturnsNotFound()
     {
         // Arrange

@@ -32,4 +32,7 @@ public static class HttpClientExtensions
 
         client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
     }
+
+    public static void WithoutAuthentication(this HttpClient client)
+        => client.DefaultRequestHeaders.Authorization = null;
 }

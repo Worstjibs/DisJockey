@@ -13,6 +13,22 @@ public class BlacklistTrackTests : IntegrationTestBase
     }
 
     [Fact]
+    public async Task BlacklistTrack_GivenUnauthenticatedRequest_ReturnsUnauthorized()
+    {
+        // Arrange
+        _httpClient.WithoutAuthentication();
+
+        // Act
+        var response = await _httpClient.PutAsync(
+                                $"/api/tracks/{int.MaxValue}/blacklist",
+                                null,
+                                TestContext.Current.CancellationToken);
+
+        // Assert
+        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
+    }
+
+    [Fact]
     public async Task BlacklistTrack_GivenTrackDoesNotExist_ReturnsNotFound()
     {
         // Arrange

@@ -15,6 +15,19 @@ public class GetMemberTests : IntegrationTestBase
     }
 
     [Fact]
+    public async Task GetMember_GivenUnauthenticatedRequest_ReturnsUnauthorized()
+    {
+        // Arrange
+        _httpClient.WithoutAuthentication();
+
+        // Act
+        var response = await _httpClient.GetAsync("/api/members/123456789012345678", TestContext.Current.CancellationToken);
+
+        // Assert
+        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
+    }
+
+    [Fact]
     public async Task GetMember_GivenMemberDoesNotExist_ReturnsNotFound()
     {
         // Arrange

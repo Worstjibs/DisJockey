@@ -1,6 +1,7 @@
-﻿using DisJockey.Application.Features.Tracks.Queries.AllTracks;
+﻿using DisJockey.Application.Contracts;
+using DisJockey.Application.Features.Tracks.Queries.AllTracks;
+using DisJockey.Shared.DTOs.Track;
 using DisJockey.Shared.Helpers;
-using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
@@ -17,13 +18,11 @@ public static class GetAllTracks
             builder.MapGet(
                 "/",
                 async (
-                    IMediator mediator, 
-                    //PaginationParams pagination,
+                    IMediator mediator,
+                    [AsParameters] PaginationParams pagination,
                     CancellationToken cancellationToken) =>
                 {
-                    var pagination = new PaginationParams();
-
-                    var tracks = await mediator.Send(new AllTracksQuery(pagination), cancellationToken);
+                    var tracks = await mediator.SendAsync<AllTracksQuery, PagedList<TrackListDto>>(new AllTracksQuery(pagination), cancellationToken);
 
                     return Results.Ok(tracks);
                 })

@@ -451,3 +451,5 @@ botsettings.json
 
 **/DisJockey.AppHost/providers/**
 **/DisJockey.AppHost/realms/**
+
+**/.claude/**

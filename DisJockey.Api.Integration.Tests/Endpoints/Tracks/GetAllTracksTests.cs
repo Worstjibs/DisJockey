@@ -3,6 +3,7 @@ using DisJockey.Infrastructure.Persistence;
 using DisJockey.Shared.DTOs.Track;
 using DisJockey.Shared.Helpers;
 using Microsoft.Extensions.DependencyInjection;
+using System.Net;
 using System.Net.Http.Json;
 
 namespace DisJockey.Api.Integration.Tests.Endpoints.Tracks;
@@ -56,7 +57,7 @@ public class GetAllTracksTests : IntegrationTestBase
 
         await AddUserAndTracks(user, tracks);
 
-        var expectedItems = tracks.Select(t => new TrackListDto
+        var expectedItems = tracks.Skip(5).Take(5).Select(t => new TrackListDto
         {
             Title = t.Title,
             YoutubeId = t.YoutubeId,
@@ -78,7 +79,11 @@ public class GetAllTracksTests : IntegrationTestBase
         }).ToList();
 
         // Act
-        var result = await _httpClient.GetFromJsonAsync<PagedList<TrackListDto>>("/api/tracks", TestContext.Current.CancellationToken);
+        var result = await _httpClient.GetFromJsonAsync<PagedList<TrackListDto>>(
+                                $"/api/tracks" +
+                                    $"?{nameof(PaginationParams.PageNumber)}=2" +
+                                    $"&{nameof(PaginationParams.PageSize)}=5", 
+                                TestContext.Current.CancellationToken);
 
         // Assert
         result.ShouldNotBeNull();
@@ -86,6 +91,19 @@ public class GetAllTracksTests : IntegrationTestBase
         result.Items.ShouldNotBeEmpty();
 
         result.Items.ShouldBeEquivalentTo(expectedItems);
+    }
+
+    [Fact]
+    public async Task GetTracks_GivenUnauthenticatedRequest_ReturnsUnauthorized()
+    {
+        // Arrange
+        _httpClient.WithoutAuthentication();
+
+        // Act
+        var response = await _httpClient.GetAsync("/api/tracks", TestContext.Current.CancellationToken);
+
+        // Assert
+        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
 
     private async Task AddUserAndTracks(AppUser user, IEnumerable<Track> tracks)
