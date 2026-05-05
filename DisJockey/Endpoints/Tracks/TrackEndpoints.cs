@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Routing;
+﻿using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Routing;
 
 namespace DisJockey.Endpoints.Tracks;
 
@@ -8,11 +9,13 @@ public static class TrackEndpoints
     {
         public void MapTrackEndpoints()
         {
-            BlacklistTrack.MapEndpoint(builder);
-            LikeTrack.MapEndpoint(builder);
-            PlayTrack.MapEndpoint(builder);
-            GetAllTracks.MapEndpoint(builder);
-            GetTracksForMember.MapEndpoint(builder);
+            var group = builder.MapGroup("/tracks");
+
+            BlacklistTrack.MapEndpoint(group);
+            LikeTrack.MapEndpoint(group);
+            PlayTrack.MapEndpoint(group);
+            GetAllTracks.MapEndpoint(group);
+            GetTracksForMember.MapEndpoint(group);
         }
     }
 }

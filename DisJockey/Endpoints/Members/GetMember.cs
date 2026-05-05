@@ -15,7 +15,7 @@ public static class GetMember
         public IEndpointRouteBuilder MapEndpoint()
         {
             builder.MapGet(
-                "/api/members/{discordId}",
+                "/{discordId}",
                 async (
                     IMediator mediator, 
                     ulong discordId,

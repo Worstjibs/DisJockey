@@ -1,9 +1,9 @@
-﻿using DisJockey.Core;
+﻿using DisJockey.Application.Contracts;
+using DisJockey.Application.Interfaces;
+using DisJockey.Core;
 using DisJockey.Services.Interfaces;
 using DisJockey.Shared.Exceptions;
 using ErrorOr;
-using MediatR;
-using System.Data;
 
 namespace DisJockey.Application.Features.Tracks.Commands.LikeTrack;
 
@@ -18,16 +18,16 @@ public class LikeTrackHandler : IRequestHandler<LikeTrackCommand, ErrorOr<Succes
         _userRepository = userRepository;
     }
 
-    public async Task<ErrorOr<Success>> Handle(LikeTrackCommand request, CancellationToken cancellationToken)
+    public async Task<ErrorOr<Success>> HandleAsync(LikeTrackCommand request, CancellationToken cancellationToken)
     {
         var track = await _trackRepository.GetTrackByYoutubeIdAsync(request.YouTubeId);
-
-        if (track == null)
+        if (track is null)
+        {
             return Error.NotFound(description: "Track not found");
+        }
 
-        var user = await _userRepository.GetUserByDiscordIdAsync(request.DiscordId);
-        if (user is null)
-            throw new UserNotFoundException($"User with discord Id {request.DiscordId} not found");
+        var user = await _userRepository.GetUserByDiscordIdAsync(request.DiscordId)
+            ?? throw new UserNotFoundException($"User with discord Id {request.DiscordId} not found");
 
         var trackLike = track.Likes.FirstOrDefault(t => t.User.DiscordId == request.DiscordId);
 
@@ -48,9 +48,14 @@ public class LikeTrackHandler : IRequestHandler<LikeTrackCommand, ErrorOr<Succes
 
         track.Likes.Add(trackLike);
 
-        if (await _trackRepository.SaveChangesAsync())
-            return Result.Success;
+        var saveResult = await _trackRepository.SaveChangesAsync();
+        if (!saveResult)
+        {
+            return Error.Failure(description: "Something went wrong saving the TrackLike");
+        }
 
-        return Error.Failure(description: "Something went wrong saving the TrackLike");
+        return Result.Success;
     }
 }
+
+public record LikeTrackCommand(string YouTubeId, ulong DiscordId, bool Liked) : Contracts.IRequest<ErrorOr<Success>>;

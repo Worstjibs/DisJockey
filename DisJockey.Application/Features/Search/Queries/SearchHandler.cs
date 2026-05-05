@@ -1,6 +1,5 @@
 ﻿using AutoMapper;
 using DisJockey.Application.Interfaces;
-using DisJockey.Services.Interfaces;
 using DisJockey.Shared.DTOs.Track;
 using MediatR;
 using static DisJockey.Application.Features.Search.Queries.SearchHandler;

@@ -16,7 +16,7 @@ public static class PlayTrack
         public IEndpointRouteBuilder MapEndpoint()
         {
             builder.MapPost(
-                "/api/tracks/play",
+                "/play",
                 async (
                     IMediator mediator,
                     PlayTrackCommand command,

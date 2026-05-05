@@ -1,5 +1,6 @@
 ﻿using DisJockey.Endpoints.Members;
 using DisJockey.Endpoints.Tracks;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 
 namespace DisJockey.Endpoints;
@@ -10,8 +11,10 @@ public static class EndpointExtensions
     {
         public void MapDisJockeyEndpoints()
         {
-            builder.MapMemberEndpoints();
-            builder.MapTrackEndpoints();
+            var apiGroup = builder.MapGroup("/api");
+
+            apiGroup.MapMemberEndpoints();
+            apiGroup.MapTrackEndpoints();
         }
     }
 }

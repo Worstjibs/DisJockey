@@ -1,7 +1,6 @@
 ﻿using DisJockey.Core;
-using DisJockey.Infrastructure.Persistence;
 using DisJockey.Shared.DTOs.Member;
-using Microsoft.Extensions.DependencyInjection;
+using System.Net;
 using System.Net.Http.Json;
 
 namespace DisJockey.Api.Integration.Tests.Endpoints.Members;
@@ -13,6 +12,21 @@ public class GetMemberTests : IntegrationTestBase
     public GetMemberTests(DisJockeyApiFixture fixture) : base(fixture)
     {
         _httpClient = fixture.HttpClient;
+    }
+
+    [Fact]
+    public async Task GetMember_GivenMemberDoesNotExist_ReturnsNotFound()
+    {
+        // Arrange
+        _httpClient.AsUser();
+
+        var missingDiscordId = 999999999999999999;
+
+        // Act
+        var response = await _httpClient.GetAsync($"/api/members/{missingDiscordId}", TestContext.Current.CancellationToken);
+
+        // Assert
+        response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
     }
 
     [Fact]

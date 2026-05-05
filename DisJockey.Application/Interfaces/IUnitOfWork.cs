@@ -1,3 +1,4 @@
+using DisJockey.Application.Interfaces;
 using System.Threading.Tasks;
 
 namespace DisJockey.Services.Interfaces {

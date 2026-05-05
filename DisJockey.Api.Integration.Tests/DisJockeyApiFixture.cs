@@ -28,7 +28,6 @@ public class DisJockeyApiFixture : WebApplicationFactory<IApiMarker>, IAsyncLife
     private DbConnection _sqlConnection = default!;
     private Respawner _respawner = default!;
 
-
     public HttpClient HttpClient { get; set; } = default!;
 
     protected override void ConfigureWebHost(IWebHostBuilder builder)

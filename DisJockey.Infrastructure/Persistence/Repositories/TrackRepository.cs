@@ -4,10 +4,10 @@ using AutoMapper.QueryableExtensions;
 using Microsoft.EntityFrameworkCore;
 using DisJockey.Shared.DTOs.Track;
 using DisJockey.Shared.Helpers;
-using DisJockey.Services.Interfaces;
 using DisJockey.Shared.DTOs.PullUps;
 using DisJockey.Shared.Extensions;
 using Microsoft.AspNetCore.Http;
+using DisJockey.Application.Interfaces;
 
 namespace DisJockey.Infrastructure.Persistence.Repositories;
 
@@ -26,9 +26,15 @@ public class TrackRepository : BaseRepository, ITrackRepository
         DiscordId = _httpContext.HttpContext?.User.GetDiscordId();
     }
 
-    public async Task<Track?> GetTrackByIdAsync(int id)
+    public async Task<Track?> GetTrackByIdAsync(int id, bool ignoreFilters = false)
     {
-        return await _context.Tracks.FindAsync(id);
+        var query = _context.Tracks.AsQueryable();
+        if (ignoreFilters)
+        {
+            query = query.IgnoreQueryFilters();
+        }
+
+        return await query.FirstOrDefaultAsync(x => x.Id == id);
     }
 
     public async Task<Track?> GetTrackByYoutubeIdAsync(string youtubeId)

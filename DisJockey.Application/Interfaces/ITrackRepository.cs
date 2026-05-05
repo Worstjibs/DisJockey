@@ -1,14 +1,13 @@
-using DisJockey.Application.Interfaces;
 using DisJockey.Core;
 using DisJockey.Shared.DTOs.PullUps;
 using DisJockey.Shared.DTOs.Track;
 using DisJockey.Shared.Helpers;
 
-namespace DisJockey.Services.Interfaces;
+namespace DisJockey.Application.Interfaces;
 
 public interface ITrackRepository : IBaseRepository
 {
-    Task<Track?> GetTrackByIdAsync(int id);
+    Task<Track?> GetTrackByIdAsync(int id, bool ignoreFilters = false);
     Task<Track?> GetTrackByYoutubeIdAsync(string youtubeId);
     Task<PagedList<TrackListDto>> GetTracks(PaginationParams paginationParams);
     Task<PagedList<TrackListDto>> GetTrackPlaysForMember(PaginationParams paginationParams, ulong discordId);

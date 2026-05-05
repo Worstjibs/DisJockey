@@ -1,7 +1,6 @@
-﻿using DisJockey.Core;
-using DisJockey.Services.Interfaces;
+﻿using DisJockey.Application.Contracts;
+using DisJockey.Application.Interfaces;
 using ErrorOr;
-using MediatR;
 
 namespace DisJockey.Application.Features.Tracks.Commands.BlacklistTrack;
 
@@ -14,15 +13,18 @@ public class BlacklistTrackHandler : IRequestHandler<BlacklistTrackCommand, Erro
         _trackRepository = trackRepository;
     }
 
-    public async Task<ErrorOr<Success>> Handle(BlacklistTrackCommand request, CancellationToken cancellationToken)
+    public async Task<ErrorOr<Success>> HandleAsync(BlacklistTrackCommand request, CancellationToken cancellationToken)
     {
-        var track = await _trackRepository.GetTrackByIdAsync(request.Id);
-
-        if (track == null)
+        var track = await _trackRepository.GetTrackByIdAsync(request.Id, ignoreFilters: true);
+        if (track is null)
+        {
             return Error.NotFound(description: $"Track with Id {request.Id} not found.");
+        }
 
         if (track.Blacklisted)
+        {
             return Error.Conflict($"Track with Id {request.Id} already blacklisted.");
+        }
 
         track.Blacklisted = true;
 
@@ -31,3 +33,5 @@ public class BlacklistTrackHandler : IRequestHandler<BlacklistTrackCommand, Erro
         return Result.Success;
     }
 }
+
+public record BlacklistTrackCommand(int Id) : IRequest<ErrorOr<Success>>;

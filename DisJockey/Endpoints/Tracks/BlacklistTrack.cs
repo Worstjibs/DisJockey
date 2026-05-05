@@ -1,5 +1,6 @@
-﻿using DisJockey.Application.Features.Tracks.Commands.BlacklistTrack;
-using MediatR;
+﻿using DisJockey.Application.Contracts;
+using DisJockey.Application.Features.Tracks.Commands.BlacklistTrack;
+using ErrorOr;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
@@ -14,15 +15,15 @@ public static class BlacklistTrack
         public IEndpointRouteBuilder MapEndpoint()
         {
             builder.MapPut(
-                "/api/tracks/{id}/blacklist",
+                "/{id}/blacklist",
                 async (
-                    IMediator mediator, 
+                    IMediator mediator,
                     int id,
                     CancellationToken cancellationToken) =>
                 {
                     var command = new BlacklistTrackCommand(id);
 
-                    var result = await mediator.Send(command, cancellationToken);
+                    var result = await mediator.SendAsync<BlacklistTrackCommand, ErrorOr<Success>>(command, cancellationToken);
 
                     return result.Match(
                         success => Results.NoContent(),

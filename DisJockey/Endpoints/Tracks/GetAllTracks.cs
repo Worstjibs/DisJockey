@@ -15,7 +15,7 @@ public static class GetAllTracks
         public IEndpointRouteBuilder MapEndpoint()
         {
             builder.MapGet(
-                "/api/tracks",
+                "/",
                 async (
                     IMediator mediator, 
                     //PaginationParams pagination,

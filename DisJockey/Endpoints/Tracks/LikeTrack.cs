@@ -1,6 +1,7 @@
-﻿using DisJockey.Application.Features.Tracks.Commands.LikeTrack;
+﻿using DisJockey.Application.Contracts;
+using DisJockey.Application.Features.Tracks.Commands.LikeTrack;
 using DisJockey.Shared.Extensions;
-using MediatR;
+using ErrorOr;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
@@ -15,7 +16,7 @@ public static class LikeTrack
         public IEndpointRouteBuilder MapEndpoint()
         {
             builder.MapPost(
-                "api/tracks/like",
+                "/like",
                 async (IMediator mediator,
                 ClaimsPrincipal claimsPrincipal,
                 LikeTrackCommand command) =>
@@ -28,7 +29,7 @@ public static class LikeTrack
 
                     command = command with { DiscordId = discordId.Value };
 
-                    var result = await mediator.Send(command);
+                    var result = await mediator.SendAsync<LikeTrackCommand, ErrorOr<Success>>(command);
 
                     return result.Match(
                         success => Results.Ok(),

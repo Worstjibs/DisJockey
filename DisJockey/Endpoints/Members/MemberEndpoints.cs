@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Routing;
+﻿using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Routing;
 
 namespace DisJockey.Endpoints.Members;
 
@@ -8,8 +9,10 @@ public static class MemberEndpoints
     {
         public void MapMemberEndpoints()
         {
-            GetAllMembers.MapEndpoint(builder);
-            GetMember.MapEndpoint(builder);
+            var group = builder.MapGroup("/members");
+
+            GetAllMembers.MapEndpoint(group);
+            GetMember.MapEndpoint(group);
         }
     }
 }

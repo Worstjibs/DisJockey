@@ -15,7 +15,7 @@ public static class GetTracksForMember
         public IEndpointRouteBuilder MapEndpoint()
         {
             builder.MapGet(
-                "/api/tracks/{discordId}",
+                "/{discordId}",
                 async (
                     IMediator mediator,
                     ulong discordId,

@@ -16,7 +16,7 @@ public static class GetAllMembers
         public IEndpointRouteBuilder MapEndpoint()
         {
             builder.MapGet(
-                "/api/members", 
+                "/",
                 async (IMediator mediator, CancellationToken cancellationToken) =>
             {
                 var members = await mediator.SendAsync<AllMembersQuery, IEnumerable<MemberListDto>>(new AllMembersQuery(), cancellationToken);

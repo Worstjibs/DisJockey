@@ -1,8 +1,8 @@
 ﻿using DisJockey.Shared.Messaging.Events;
-using DisJockey.Services.Interfaces;
 using DisJockey.Shared.Messaging.Contracts;
 using ErrorOr;
 using MediatR;
+using DisJockey.Application.Interfaces;
 
 namespace DisJockey.Application.Features.Tracks.Commands.PlayTrack;
 
@@ -21,8 +21,11 @@ public class PlayTrackHandler : IRequestHandler<PlayTrackCommand, ErrorOr<Succes
 
     public async Task<ErrorOr<Success>> Handle(PlayTrackCommand request, CancellationToken cancellationToken)
     {
-        if (await _trackRepository.IsTrackBlacklisted(request.YouTubeId))
+        var trackIsBlacklisted = await _trackRepository.IsTrackBlacklisted(request.YouTubeId);
+        if (trackIsBlacklisted)
+        {
             return Error.Validation(description: "Track is blacklisted");
+        }
 
         var playTrackEvent = new PlayTrackEvent
         {
@@ -36,3 +39,5 @@ public class PlayTrackHandler : IRequestHandler<PlayTrackCommand, ErrorOr<Succes
         return Result.Success;
     }
 }
+
+public record PlayTrackCommand(string YouTubeId, ulong DiscordId, bool PlayNow) : IRequest<ErrorOr<Success>>;

@@ -1,4 +1,4 @@
-﻿using DisJockey.Services.Interfaces;
+﻿using DisJockey.Application.Interfaces;
 using DisJockey.Shared.DTOs.Track;
 using DisJockey.Shared.Helpers;
 using MediatR;

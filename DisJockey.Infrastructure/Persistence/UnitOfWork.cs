@@ -1,4 +1,5 @@
 using AutoMapper;
+using DisJockey.Application.Interfaces;
 using DisJockey.Services.Interfaces;
 using Microsoft.AspNetCore.Http;
 

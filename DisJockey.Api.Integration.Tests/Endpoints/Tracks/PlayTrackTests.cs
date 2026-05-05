@@ -55,4 +55,30 @@ public class PlayTrackTests : IntegrationTestBase
         // Assert
         response.StatusCode.ShouldBe(HttpStatusCode.OK);
     }
+
+    [Fact]
+    public async Task PlayTrack_GivenTrackIsBlacklisted_ReturnsBadRequest()
+    {
+        // Arrange
+        var youtubeId = "BlacklistedTrack";
+
+        var track = new Track
+        {
+            YoutubeId = youtubeId,
+            Title = "BlacklistedTrack",
+            Blacklisted = true
+        };
+
+        await InsertEntityAsync(track);
+
+        _httpClient.AsUser();
+
+        var command = new PlayTrackCommand(youtubeId, 0, true);
+
+        // Act
+        var response = await _httpClient.PostAsJsonAsync("/api/tracks/play", command, cancellationToken: TestContext.Current.CancellationToken);
+
+        // Assert
+        response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
+    }
 }
