@@ -2,6 +2,7 @@
 using DisJockey.Application.Features.Members.Queries.AllMembers;
 using DisJockey.Application.Features.Members.Queries.GetMember;
 using DisJockey.Application.Features.PullUps.Queries.PullUpsForMember;
+using DisJockey.Application.Features.Search.Queries;
 using DisJockey.Application.Features.Tracks.Commands.BlacklistTrack;
 using DisJockey.Application.Features.Tracks.Commands.LikeTrack;
 using DisJockey.Application.Features.Tracks.Commands.PlayTrack;
@@ -14,6 +15,8 @@ using DisJockey.Shared.DTOs.Track;
 using DisJockey.Shared.Helpers;
 using ErrorOr;
 using Microsoft.Extensions.DependencyInjection;
+using System.Collections.Generic;
+using static DisJockey.Application.Features.Search.Queries.SearchHandler;
 
 namespace DisJockey.Application;
 
@@ -45,6 +48,7 @@ public static class ServiceCollectionExtensions
             services.AddScoped<IRequestHandler<AllTracksQuery, PagedList<TrackListDto>>, AllTracksHandler>();
             services.AddScoped<IRequestHandler<TracksForMemberQuery, PagedList<TrackListDto>>, TracksForMemberHandler>();
             services.AddScoped<IRequestHandler<PullUpsForMemberQuery, PagedList<PullUpDto>>, PullUpsForMemberHandler>();
+            services.AddScoped<IRequestHandler<SearchQuery, (IEnumerable<TrackListDto>, YouTubePagination?)>, SearchHandler>();
 
             return services;
         }

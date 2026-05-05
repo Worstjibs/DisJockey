@@ -1,8 +1,8 @@
-﻿using DisJockey.Application.Interfaces;
+using DisJockey.Application.Contracts;
+using DisJockey.Application.Interfaces;
 using DisJockey.Application.Mappers;
 using DisJockey.Shared.DTOs.Track;
-using MediatR;
-using static DisJockey.Application.Features.Search.Queries.SearchHandler;
+using DisJockey.Shared.Helpers;
 
 namespace DisJockey.Application.Features.Search.Queries;
 
@@ -19,43 +19,27 @@ public class SearchHandler : IRequestHandler<SearchQuery, (IEnumerable<TrackList
         _trackRepository = trackRepository;
     }
 
-    public async Task<(IEnumerable<TrackListDto> Results, YouTubePagination? Pagination)> Handle(SearchQuery request, CancellationToken cancellationToken)
+    public async Task<(IEnumerable<TrackListDto> Results, YouTubePagination? Pagination)> HandleAsync(
+        SearchQuery request, CancellationToken cancellationToken = default)
     {
         var results = await _videoDetailService.QueryTracksAsync(request.Pagination);
         if (results.Count == 0)
-        {
             return ([], null);
-        }
 
         var existingTracks = await _trackRepository.GetTracksByYouTubeIdAsync(results.Select(x => x.YoutubeId));
 
-        var resultsDto = results.Select(t => TrackMapper.ToListDto(t)).ToList();
+        var resultsDto = results.Select(t => t.ToListDto()).ToList();
 
         foreach (var existingTrack in existingTracks)
         {
             var index = resultsDto.IndexOf(resultsDto.First(x => x.YoutubeId == existingTrack.YoutubeId));
             resultsDto[index] = existingTrack;
-        };
-
-        var youTubePagination = new YouTubePagination(
-            results.CurrentPageToken,
-            results.NextPageToken,
-            results.PreviousPageToken);
-
-        return (resultsDto, youTubePagination);
-    }
-
-    public class YouTubePagination
-    {
-        public string CurrentPageToken { get; set; }
-        public string NextPageToken { get; set; }
-        public string PreviousPageToken { get; set; }
-
-        public YouTubePagination(string currentPageToken, string nextPageToken, string previousPageToken)
-        {
-            CurrentPageToken = currentPageToken;
-            NextPageToken = nextPageToken;
-            PreviousPageToken = previousPageToken;
         }
+
+        var pagination = new YouTubePagination(results.CurrentPageToken, results.NextPageToken, results.PreviousPageToken);
+        return (resultsDto, pagination);
     }
 }
+
+public record SearchQuery(PaginationParams Pagination)
+    : IRequest<(IEnumerable<TrackListDto> Results, YouTubePagination? Pagination)>;

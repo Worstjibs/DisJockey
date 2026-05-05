@@ -1,9 +1,12 @@
 ﻿using DisJockey.Api.Integration.Tests;
+using DisJockey.Application.Interfaces;
 using DisJockey.Middleware;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Data.SqlClient;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 using Respawn;
 using System.Data;
@@ -47,8 +50,13 @@ public class DisJockeyApiFixture : WebApplicationFactory<IApiMarker>, IAsyncLife
             {
                 services.Remove(discordAuthHandler);
             }
+
+            services.RemoveAll<IVideoDetailService>();
+            services.AddSingleton<IVideoDetailService>(FakeVideoDetailService);
         });
     }
+
+    public FakeVideoDetailService FakeVideoDetailService { get; } = new();
 
     protected override IHost CreateHost(IHostBuilder builder)
     {

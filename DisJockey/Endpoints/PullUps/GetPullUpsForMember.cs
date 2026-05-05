@@ -16,7 +16,7 @@ public static class GetPullUpsForMember
     {
         public IEndpointRouteBuilder MapEndpoint()
         {
-            // Dodgy parameter binding for 
+            // Dodgy parameter binding for pagination
             builder.MapGet(
                 "/{discordId}",
                 async (

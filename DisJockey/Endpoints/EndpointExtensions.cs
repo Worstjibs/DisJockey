@@ -1,5 +1,6 @@
 ﻿using DisJockey.Endpoints.Members;
 using DisJockey.Endpoints.PullUps;
+using DisJockey.Endpoints.Search;
 using DisJockey.Endpoints.Tracks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
@@ -17,6 +18,7 @@ public static class EndpointExtensions
             apiGroup.MapMemberEndpoints();
             apiGroup.MapTrackEndpoints();
             apiGroup.MapPullUpEndpoints();
+            apiGroup.MapSearchEndpoints();
         }
     }
 }

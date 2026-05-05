@@ -18,8 +18,8 @@ public class PaginationParams
 
 
     public static PaginationParams CreateParameters(
-        int? pageNumber,
-        int? pageSize,
+        int? pageNumber = null,
+        int? pageSize = null,
         string? sortBy = null,
         string? query = null,
         string? pageToken = null)
