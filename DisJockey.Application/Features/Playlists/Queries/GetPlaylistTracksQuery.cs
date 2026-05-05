@@ -1,7 +1,6 @@
-﻿using DisJockey.Shared.DTOs.Playlist;
+﻿using DisJockey.Application.Contracts;
 using DisJockey.Shared.DTOs.Track;
 using DisJockey.Shared.Helpers;
-using MediatR;
 
 namespace DisJockey.Application.Features.Playlists.Queries;
 

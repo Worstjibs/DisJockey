@@ -53,7 +53,7 @@ public static class TrackMapper
 
     private static readonly Lazy<Func<Track, ulong?, TrackListDto>> _compiled = new(_expression.Compile);
 
-    public static Expression<Func<Track, TrackListDto>> ToListDtoExpression(ulong? discordId)
+    public static Expression<Func<Track, TrackListDto>> ToListDtoExpression(ulong? discordId = null)
     {
         var trackParam = _expression.Parameters[0];
         var discordIdConst = Expression.Constant(discordId, typeof(ulong?));

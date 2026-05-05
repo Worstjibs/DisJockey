@@ -1,4 +1,5 @@
 ﻿using DisJockey.Endpoints.Members;
+using DisJockey.Endpoints.Playlists;
 using DisJockey.Endpoints.PullUps;
 using DisJockey.Endpoints.Search;
 using DisJockey.Endpoints.Tracks;
@@ -19,6 +20,7 @@ public static class EndpointExtensions
             apiGroup.MapTrackEndpoints();
             apiGroup.MapPullUpEndpoints();
             apiGroup.MapSearchEndpoints();
+            apiGroup.MapPlaylistEndpoints();
         }
     }
 }

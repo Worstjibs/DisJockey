@@ -3,32 +3,15 @@ using DisJockey.Shared.DTOs.Playlist;
 using DisJockey.Shared.DTOs.Shared;
 using DisJockey.Core;
 using AutoMapper;
-using DisJockey.Shared.DTOs.PullUps;
 
 namespace DisJockey.Application.Profiles;
 
 public class AutoMapperProfiles : Profile
 {
-
     public AutoMapperProfiles()
     {
-        ulong? DiscordId = null;
-
-        CreateBaseTrackMapping(DiscordId);
-
         CreateMemberListMappings();
-
         CreatePlaylistMappings();
-
-        CreatePullUpMappings();
-    }
-
-    private void CreateBaseTrackMapping(ulong? DiscordId)
-    {
-        CreateMap<Track, BaseTrackDto>()
-            .ForMember(dest => dest.Likes, opt => opt.MapFrom(src => src.Likes.Where(x => x.Liked == true).Count()))
-            .ForMember(dest => dest.Dislikes, opt => opt.MapFrom(src => src.Likes.Where(x => x.Liked == false).Count()))
-            .ForMember(dest => dest.LikedByUser, opt => opt.MapFrom(src => src.Likes.FirstOrDefault(x => x.User.DiscordId == DiscordId)!.Liked));
     }
 
     private void CreateMemberListMappings()
@@ -64,17 +47,5 @@ public class AutoMapperProfiles : Profile
             .ForMember(dest => dest.SmallThumbnail, opt => opt.MapFrom(src => src.Track.SmallThumbnail))
             .ForMember(dest => dest.Title, opt => opt.MapFrom(src => src.Track.Title))
             .ForMember(dest => dest.YoutubeId, opt => opt.MapFrom(src => src.Track.YoutubeId));
-    }
-
-    private void CreatePullUpMappings()
-    {
-        CreateMap<Track, PullUpDto>()
-            .IncludeBase<Track, BaseTrackDto>()
-            .ForMember(dest => dest.LastPulled, opt => opt.MapFrom(src => src.PullUps.Max(x => x.CreatedOn)))
-            .ForMember(dest => dest.PullUps, opt => opt.MapFrom(src => src.PullUps));
-
-        CreateMap<PullUp, PullUpTrackDto>()
-            .ForMember(dest => dest.DatePulled, opt => opt.MapFrom(src => src.CreatedOn))
-            .ForMember(dest => dest.TimePulled, opt => opt.MapFrom(src => src.TimePulled));
     }
 }
