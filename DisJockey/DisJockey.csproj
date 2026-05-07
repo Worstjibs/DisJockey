@@ -12,6 +12,7 @@
     <ItemGroup>
         <PackageReference Include="Aspire.Microsoft.EntityFrameworkCore.SqlServer" Version="13.2.4" />
         <PackageReference Include="AspNet.Security.OAuth.Discord" Version="10.0.0" />
+        <PackageReference Include="Grpc.Net.ClientFactory" Version="2.67.0" />
 
         <PackageReference Include="Discord.Net.Rest" Version="3.19.1" />
 

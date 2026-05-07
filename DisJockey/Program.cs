@@ -12,6 +12,7 @@ using DisJockey.Infrastructure;
 using DisJockey.Infrastructure.Persistence;
 using DisJockey.Middleware;
 using DisJockey.Endpoints;
+using DisJockey.Shared.Protos;
 using Microsoft.Extensions.Configuration;
 using DisJockey.Hubs;
 
@@ -35,6 +36,12 @@ builder.Services.AddApplicationServicesV2()
         .AddDiscordServices(builder.Configuration);
 
 builder.Services.AddSignalR();
+
+builder.Services.AddGrpcClient<DisJockeyGrpc.DisJockeyGrpcClient>(o =>
+{
+    o.Address = new Uri(builder.Configuration["BotService:GrpcUrl"] ?? "https://localhost:5001");
+})
+.AddStandardResilienceHandler();
 
 var app = builder.Build();
 
