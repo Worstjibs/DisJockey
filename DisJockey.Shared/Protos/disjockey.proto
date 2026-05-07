@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+option csharp_namespace = "DisJockey.Shared.Protos";
+
+package disjockey;
+
+service DisJockeyGrpc {
+  rpc Ping (PingRequest) returns (PingResponse);
+}
+
+message PingRequest {}
+
+message PingResponse {
+  string message = 1;
+}

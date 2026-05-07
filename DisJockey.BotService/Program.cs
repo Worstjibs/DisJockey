@@ -1,4 +1,5 @@
 using DisJockey.BotService;
+using DisJockey.BotService.Grpc;
 using DisJockey.Messaging;
 using DisJockey.Shared.Messaging.Contracts;
 using DisJockey.Shared.Messaging.Events;
@@ -6,9 +7,11 @@ using Microsoft.AspNetCore.Builder;
 using Wolverine;
 using Wolverine.RabbitMQ;
 
-var builder = Host.CreateApplicationBuilder(args);
+var builder = WebApplication.CreateBuilder(args);
 
 builder.AddServiceDefaults();
+
+builder.Services.AddGrpc();
 
 builder.Services.AddDiscordServices(builder.Configuration);
 
@@ -29,6 +32,9 @@ builder.Services.AddScoped<IMessageSender, MessageSender>();
 
 builder.Services.AddSingleton<HubConnectionProvider>();
 
-var host = builder.Build();
+var app = builder.Build();
 
-host.Run();
+app.MapDefaultEndpoints();
+app.MapGrpcService<DisJockeyGrpcService>();
+
+app.Run();
