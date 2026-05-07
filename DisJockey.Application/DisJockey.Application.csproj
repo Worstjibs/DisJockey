@@ -7,12 +7,6 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="MediatR" Version="14.0.0" />
-        
-        <PackageReference Include="AutoMapper" Version="16.1.1" />
-    </ItemGroup>
-
-    <ItemGroup>
         <ProjectReference Include="..\DisJockey.Core\DisJockey.Core.csproj" />
         <ProjectReference Include="..\DisJockey.Messaging\DisJockey.Messaging.csproj" />
         <ProjectReference Include="..\DisJockey.Shared\DisJockey.Shared.csproj" />

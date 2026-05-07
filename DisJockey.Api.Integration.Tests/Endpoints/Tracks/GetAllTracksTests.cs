@@ -10,11 +10,9 @@ namespace DisJockey.Api.Integration.Tests.Endpoints.Tracks;
 
 public class GetAllTracksTests : IntegrationTestBase
 {
-    private readonly HttpClient _httpClient;
-
-    public GetAllTracksTests(DisJockeyApiFixture fixture) : base(fixture)
+    public GetAllTracksTests(DisJockeyApiFixture fixture) 
+        : base(fixture)
     {
-        _httpClient = fixture.HttpClient;
     }
 
     [Fact]

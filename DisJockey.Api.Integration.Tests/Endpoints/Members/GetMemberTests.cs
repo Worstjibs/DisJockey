@@ -7,11 +7,9 @@ namespace DisJockey.Api.Integration.Tests.Endpoints.Members;
 
 public class GetMemberTests : IntegrationTestBase
 {
-    private readonly HttpClient _httpClient;
-
-    public GetMemberTests(DisJockeyApiFixture fixture) : base(fixture)
+    public GetMemberTests(DisJockeyApiFixture fixture) 
+        : base(fixture)
     {
-        _httpClient = fixture.HttpClient;
     }
 
     [Fact]

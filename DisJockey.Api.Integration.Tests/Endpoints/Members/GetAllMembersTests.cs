@@ -1,8 +1,5 @@
 ﻿using DisJockey.Core;
-using DisJockey.Infrastructure.Persistence;
 using DisJockey.Shared.DTOs.Member;
-using DisJockey.Shared.Helpers;
-using Microsoft.Extensions.DependencyInjection;
 using System.Net;
 using System.Net.Http.Json;
 
@@ -10,12 +7,9 @@ namespace DisJockey.Api.Integration.Tests.Endpoints.Members;
 
 public class GetAllMembersTests : IntegrationTestBase
 {
-    private readonly HttpClient _httpClient;
-
     public GetAllMembersTests(DisJockeyApiFixture fixture)
         : base(fixture)
     {
-        _httpClient = fixture.HttpClient;
     }
 
     [Fact]

@@ -1,6 +1,4 @@
-﻿using AutoMapper;
-using AutoMapper.QueryableExtensions;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using DisJockey.Core;
 using DisJockey.Services.Interfaces;
 using DisJockey.Shared.DTOs.Track;
@@ -11,11 +9,8 @@ namespace DisJockey.Infrastructure.Persistence.Repositories;
 
 public class PlaylistRepository : BaseRepository, IPlaylistRepository
 {
-    private readonly IMapper _mapper;
-
-    public PlaylistRepository(DataContext context, IMapper mapper) : base(context)
+    public PlaylistRepository(DataContext context) : base(context)
     {
-        _mapper = mapper;
     }
 
     public async Task AddMissingTracks(IList<PlaylistTrack> playlistTracks)

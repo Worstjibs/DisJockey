@@ -56,7 +56,7 @@ public class DisJockeyApiFixture : WebApplicationFactory<IApiMarker>, IAsyncLife
         });
     }
 
-    public FakeVideoDetailService FakeVideoDetailService { get; } = new();
+    public FakeVideoDetailService FakeVideoDetailService { get; set; } = new();
 
     protected override IHost CreateHost(IHostBuilder builder)
     {

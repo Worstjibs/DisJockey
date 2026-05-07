@@ -1,8 +1,6 @@
 using DisJockey.Application.Features.Tracks.Commands.PlayTrack;
 using DisJockey.Core;
-using DisJockey.Shared.Helpers;
 using DisJockey.Shared.Messaging.Events;
-using Shouldly;
 using System.Net;
 using System.Net.Http.Json;
 using Wolverine.Tracking;
@@ -11,11 +9,9 @@ namespace DisJockey.Api.Integration.Tests.Endpoints.Tracks;
 
 public class PlayTrackTests : IntegrationTestBase
 {
-    private readonly HttpClient _httpClient;
-
-    public PlayTrackTests(DisJockeyApiFixture fixture) : base(fixture)
+    public PlayTrackTests(DisJockeyApiFixture fixture) 
+        : base(fixture)
     {
-        _httpClient = fixture.HttpClient;
     }
 
     [Fact]

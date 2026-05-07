@@ -1,7 +1,6 @@
 using DisJockey.Core;
 using DisJockey.Shared.DTOs.Track;
 using DisJockey.Shared.Helpers;
-using Shouldly;
 using System.Net;
 using System.Net.Http.Json;
 
@@ -9,11 +8,9 @@ namespace DisJockey.Api.Integration.Tests.Endpoints.Search;
 
 public class SearchTracksTests : IntegrationTestBase
 {
-    private readonly HttpClient _httpClient;
-
-    public SearchTracksTests(DisJockeyApiFixture fixture) : base(fixture)
+    public SearchTracksTests(DisJockeyApiFixture fixture) 
+        : base(fixture)
     {
-        _httpClient = fixture.HttpClient;
     }
 
     [Fact]

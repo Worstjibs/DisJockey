@@ -10,11 +10,9 @@ namespace DisJockey.Api.Integration.Tests.Endpoints.Playlists;
 
 public class GetPlaylistTracksTests : IntegrationTestBase
 {
-    private readonly HttpClient _httpClient;
-
-    public GetPlaylistTracksTests(DisJockeyApiFixture fixture) : base(fixture)
+    public GetPlaylistTracksTests(DisJockeyApiFixture fixture) 
+        : base(fixture)
     {
-        _httpClient = fixture.HttpClient;
     }
 
     [Fact]

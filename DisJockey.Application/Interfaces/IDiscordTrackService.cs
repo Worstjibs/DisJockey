@@ -1,6 +1,4 @@
-using System.Threading.Tasks;
-
-namespace DisJockey.Services.Interfaces;
+namespace DisJockey.Application.Interfaces;
 
 public interface IDiscordTrackService
 {

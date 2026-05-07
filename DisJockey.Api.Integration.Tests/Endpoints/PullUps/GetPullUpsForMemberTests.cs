@@ -11,11 +11,9 @@ namespace DisJockey.Api.Integration.Tests.Endpoints.PullUps;
 
 public class GetPullUpsForMemberTests : IntegrationTestBase
 {
-    private readonly HttpClient _httpClient;
-
-    public GetPullUpsForMemberTests(DisJockeyApiFixture fixture) : base(fixture)
+    public GetPullUpsForMemberTests(DisJockeyApiFixture fixture)
+        : base(fixture)
     {
-        _httpClient = fixture.HttpClient;
     }
 
     [Fact]

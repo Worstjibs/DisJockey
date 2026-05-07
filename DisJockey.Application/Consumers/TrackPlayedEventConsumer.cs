@@ -1,6 +1,6 @@
-﻿using DisJockey.Services.Interfaces;
+﻿using DisJockey.Application.Interfaces;
 using DisJockey.Shared.Messaging.Events;
-using static DisJockey.Services.Interfaces.IDiscordTrackService;
+using static DisJockey.Application.Interfaces.IDiscordTrackService;
 
 namespace DisJockey.Application.Consumers;
 

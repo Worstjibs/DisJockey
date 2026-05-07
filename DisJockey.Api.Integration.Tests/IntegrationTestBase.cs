@@ -6,11 +6,13 @@ namespace DisJockey.Api.Integration.Tests;
 [Collection(SharedCollection.CollectionName)]
 public class IntegrationTestBase : IAsyncLifetime
 {
+    protected readonly HttpClient _httpClient;
     protected readonly DisJockeyApiFixture _fixture;
 
     public IntegrationTestBase(DisJockeyApiFixture fixture)
     {
         _fixture = fixture;
+        _httpClient = _fixture.HttpClient;
     }
 
     public async Task InsertEntityAsync<T>(T entity) where T : class
@@ -33,7 +35,13 @@ public class IntegrationTestBase : IAsyncLifetime
         await context.SaveChangesAsync();
     }
 
-    public async ValueTask DisposeAsync() => await _fixture.ResetDb();
+    public async ValueTask DisposeAsync()
+    {
+        GC.SuppressFinalize(this);
+
+        await _fixture.ResetDb();
+        _fixture.FakeVideoDetailService.Reset();
+    }
 
     public ValueTask InitializeAsync() => ValueTask.CompletedTask;
 }

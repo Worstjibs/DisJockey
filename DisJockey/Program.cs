@@ -51,7 +51,10 @@ void Configure(IApplicationBuilder app, IWebHostEnvironment env)
     app.UseDefaultFiles();
     app.UseStaticFiles();
 
-    app.UseMiddleware<ExceptionMiddleware>();
+    if (!env.IsEnvironment("Testing"))
+    {
+        app.UseMiddleware<ExceptionMiddleware>();
+    }
 
     app.UseEndpoints(endpoints =>
     {

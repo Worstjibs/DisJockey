@@ -1,4 +1,5 @@
 using DisJockey.Core;
+using DisJockey.Shared.Exceptions;
 using System.Net;
 using System.Net.Http.Json;
 
@@ -6,11 +7,9 @@ namespace DisJockey.Api.Integration.Tests.Endpoints.Tracks;
 
 public class LikeTrackTests : IntegrationTestBase
 {
-    private readonly HttpClient _httpClient;
-
-    public LikeTrackTests(DisJockeyApiFixture fixture) : base(fixture)
+    public LikeTrackTests(DisJockeyApiFixture fixture) 
+        : base(fixture)
     {
-        _httpClient = fixture.HttpClient;
     }
 
     [Fact]
@@ -48,7 +47,7 @@ public class LikeTrackTests : IntegrationTestBase
     }
 
     [Fact]
-    public async Task LikeTrack_GivenUserDoesNotExist_ReturnsInternalServerError()
+    public async Task LikeTrack_GivenUserDoesNotExist_ThrowsException()
     {
         // Arrange
         ulong discordId = 999999999999999998;
@@ -71,10 +70,10 @@ public class LikeTrackTests : IntegrationTestBase
         };
 
         // Act
-        var response = await _httpClient.PostAsJsonAsync("/api/tracks/like", command, cancellationToken: TestContext.Current.CancellationToken);
+        var action = () => _httpClient.PostAsJsonAsync("/api/tracks/like", command, cancellationToken: TestContext.Current.CancellationToken);
 
         // Assert
-        response.StatusCode.ShouldBe(HttpStatusCode.InternalServerError);
+        await action.ShouldThrowAsync<UserNotFoundException>();
     }
 
     [Fact]

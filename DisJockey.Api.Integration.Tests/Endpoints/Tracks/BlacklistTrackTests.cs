@@ -5,11 +5,9 @@ namespace DisJockey.Api.Integration.Tests.Endpoints.Tracks;
 
 public class BlacklistTrackTests : IntegrationTestBase
 {
-    private readonly HttpClient _httpClient;
-
-    public BlacklistTrackTests(DisJockeyApiFixture fixture) : base(fixture)
+    public BlacklistTrackTests(DisJockeyApiFixture fixture) 
+        : base(fixture)
     {
-        _httpClient = fixture.HttpClient;
     }
 
     [Fact]

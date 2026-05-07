@@ -11,6 +11,7 @@ public static class PlaylistEndpoints
         {
             var group = builder.MapGroup("/playlists");
 
+            AddPlaylist.MapEndpoint(group);
             GetPlaylistTracks.MapEndpoint(group);
         }
     }
