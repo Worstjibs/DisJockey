@@ -1,6 +1,10 @@
 ﻿using Discord;
 using Discord.Interactions;
 using Discord.WebSocket;
+using DisJockey.Shared.Enums;
+using DisJockey.Shared.Messaging.Contracts;
+using DisJockey.Shared.Messaging.Events;
+using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.Extensions.Options;
 using System.Reflection;
 
@@ -12,6 +16,7 @@ internal class InteractionHandler
     private readonly DiscordSocketClient _client;
     private readonly IServiceProvider _serviceProvider;
     private readonly IHostEnvironment _environment;
+    private readonly HubConnectionProvider _hubConnectionProvider;
     private readonly BotSettings _settings;
 
     public InteractionHandler(
@@ -19,6 +24,7 @@ internal class InteractionHandler
         DiscordSocketClient client,
         IServiceProvider serviceProvider,
         IHostEnvironment environment,
+        HubConnectionProvider hubConnectionProvider,
         IOptions<BotSettings> settings
     )
     {
@@ -26,6 +32,7 @@ internal class InteractionHandler
         _client = client;
         _serviceProvider = serviceProvider;
         _environment = environment;
+        _hubConnectionProvider = hubConnectionProvider;
         _settings = settings.Value;
     }
 
@@ -36,6 +43,10 @@ internal class InteractionHandler
         await _interactionService.AddModulesAsync(Assembly.GetExecutingAssembly(), _serviceProvider);
 
         _client.InteractionCreated += HandleInteraction;
+
+        _client.UserVoiceStateUpdated += HandleUserVoiceStatusUpdate;
+
+        await _hubConnectionProvider.InitializeAsync();
     }
 
     private async Task HandleInteraction(SocketInteraction interaction)
@@ -63,6 +74,37 @@ internal class InteractionHandler
             // response, or at least let the user know that something went wrong during the command execution.
             if (interaction.Type is InteractionType.ApplicationCommand)
                 await interaction.GetOriginalResponseAsync().ContinueWith(async (msg) => await msg.Result.DeleteAsync());
+        }
+    }
+
+    private async Task HandleUserVoiceStatusUpdate(
+        SocketUser user,
+        SocketVoiceState before,
+        SocketVoiceState after)
+    {
+        VoiceState? state = null;
+        ulong? voiceChannelId = null;
+
+        if (before.VoiceChannel is not null
+            && after.VoiceChannel is null)
+        {
+            state = VoiceState.Disconnected;
+            voiceChannelId = before.VoiceChannel.Id;
+        }
+        else if (before.VoiceChannel is null
+            && after.VoiceChannel is not null)
+        {
+            state = VoiceState.Connected;
+            voiceChannelId = after.VoiceChannel.Id;
+        }
+
+        if (state.HasValue)
+        {
+            await _hubConnectionProvider.InvokeAsync(
+                "UserVoiceStateChanged", 
+                user.Id, 
+                voiceChannelId, 
+                state.Value);
         }
     }
 

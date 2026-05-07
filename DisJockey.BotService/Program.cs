@@ -2,6 +2,7 @@ using DisJockey.BotService;
 using DisJockey.Messaging;
 using DisJockey.Shared.Messaging.Contracts;
 using DisJockey.Shared.Messaging.Events;
+using Microsoft.AspNetCore.Builder;
 using Wolverine;
 using Wolverine.RabbitMQ;
 
@@ -25,6 +26,8 @@ builder.UseWolverine(options =>
 });
 
 builder.Services.AddScoped<IMessageSender, MessageSender>();
+
+builder.Services.AddSingleton<HubConnectionProvider>();
 
 var host = builder.Build();
 

@@ -69,6 +69,18 @@ app.MapForwarder("/api/{**path}", "https+http://api", context =>
     });
 });
 
+app.MapForwarder("/hubs/{**path}", "https+http://api", context =>
+{
+    context.AddRequestTransform(async transformContext =>
+    {
+        var token = await transformContext.HttpContext.GetTokenAsync("access_token");
+        if (!string.IsNullOrEmpty(token))
+        {
+            transformContext.ProxyRequest.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+        }
+    });
+});
+
 app.Run();
 
 record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)

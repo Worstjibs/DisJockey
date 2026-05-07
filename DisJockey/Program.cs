@@ -13,6 +13,7 @@ using DisJockey.Infrastructure.Persistence;
 using DisJockey.Middleware;
 using DisJockey.Endpoints;
 using Microsoft.Extensions.Configuration;
+using DisJockey.Hubs;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -32,6 +33,8 @@ builder.AddInfrastructureServices();
 builder.Services.AddApplicationServicesV2()
         .AddIdentityServices(builder.Configuration)
         .AddDiscordServices(builder.Configuration);
+
+builder.Services.AddSignalR();
 
 var app = builder.Build();
 
@@ -67,6 +70,8 @@ void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         endpoints.MapControllers();
         endpoints.MapDisJockeyEndpoints();
         endpoints.MapFallbackToController("Index", "Fallback");
+
+        endpoints.MapHub<TrackControlHub>("/hubs/track-control");
     });
 }
 
