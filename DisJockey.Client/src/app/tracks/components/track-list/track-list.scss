@@ -1,0 +1,12 @@
+:host {
+  display: block;
+  height: 100%;
+}
+
+#scrollable-list {
+  height: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-color: #555 #1a1a1a;
+  scrollbar-width: thin;
+}

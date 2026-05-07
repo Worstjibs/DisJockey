@@ -23,7 +23,7 @@ export abstract class BaseListComponent<T> {
             this.userParams = userParams;
         } else {
             this.userParams = new UserParams();
-        }        
+        }
 
         this.results = [];
 

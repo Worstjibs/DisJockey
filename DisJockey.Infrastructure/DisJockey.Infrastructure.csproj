@@ -21,10 +21,4 @@
       <ProjectReference Include="..\DisJockey.Messaging\DisJockey.Messaging.csproj" />
     </ItemGroup>
 
-    <ItemGroup>
-      <None Update="Persistence\SeedData.json">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </None>
-    </ItemGroup>
-
 </Project>

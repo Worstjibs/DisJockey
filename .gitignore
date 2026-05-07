@@ -441,11 +441,9 @@ $RECYCLE.BIN/
 !.vscode/launch.json
 !.vscode/extensions.json
 
-appsettings.json
-botsettings.json
+appsettings.Seed.json
 
 /DisJockey/wwwroot
-/DisJockey/Data/SeedData.json
 
 /sql/*
 

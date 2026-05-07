@@ -12,8 +12,14 @@ using DisJockey.Infrastructure;
 using DisJockey.Infrastructure.Persistence;
 using DisJockey.Middleware;
 using DisJockey.Endpoints;
+using Microsoft.Extensions.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
+
+if (builder.Environment.IsDevelopment())
+{
+    builder.Configuration.AddJsonFile("appsettings.Seed.json");
+}
 
 builder.AddServiceDefaults();
 
@@ -33,7 +39,7 @@ app.MapDefaultEndpoints();
 
 Configure(app, app.Environment);
 
-await MigrateDatabase(app.Services);
+await MigrateDatabase(app.Services, app.Configuration);
 
 await app.RunAsync();
 
@@ -64,7 +70,7 @@ void Configure(IApplicationBuilder app, IWebHostEnvironment env)
     });
 }
 
-async Task MigrateDatabase(IServiceProvider serviceProvider)
+async Task MigrateDatabase(IServiceProvider serviceProvider, IConfiguration configuration)
 {
     using var scope = app.Services.CreateScope();
     var services = scope.ServiceProvider;
@@ -78,7 +84,7 @@ async Task MigrateDatabase(IServiceProvider serviceProvider)
         var env = services.GetRequiredService<IHostEnvironment>();
         if (env.IsDevelopment())
         {
-            await Seed.SeedData(context);
+            await Seed.SeedData(context, configuration);
         }
     }
     catch (Exception e)

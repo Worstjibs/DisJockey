@@ -1,1 +1,7 @@
-<p>member-list works!</p>
+<div class="row">
+  @for (member of members(); track member.discordId) {
+    <div class="col-3 mb-4" style="cursor: pointer" [routerLink]="['/members', member.discordId]">
+      <app-member-card [member]="member" />
+    </div>
+  }
+</div>
