@@ -3,7 +3,6 @@ using DisJockey.BotService.Grpc;
 using DisJockey.Messaging;
 using DisJockey.Shared.Messaging.Contracts;
 using DisJockey.Shared.Messaging.Events;
-using Microsoft.AspNetCore.Builder;
 using Wolverine;
 using Wolverine.RabbitMQ;
 
@@ -35,6 +34,7 @@ builder.Services.AddSingleton<HubConnectionProvider>();
 var app = builder.Build();
 
 app.MapDefaultEndpoints();
+
 app.MapGrpcService<DisJockeyGrpcService>();
 
 app.Run();

@@ -1,11 +1,12 @@
 {
   "profiles": {
     "DisJockey.BotService": {
-      "commandName": "Project",
-      "environmentVariables": {
-        "DOTNET_ENVIRONMENT": "Development"
-      },
-      "dotnetRunMessages": true
+        "commandName": "Project",
+        "environmentVariables": {
+            "DOTNET_ENVIRONMENT": "Development"
+        },
+        "dotnetRunMessages": true,
+        "applicationUrl": "https://localhost:6001;http://localhost:6000"
     },
     "Docker": {
       "commandName": "Docker"

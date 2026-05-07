@@ -53,6 +53,8 @@ var bot = builder.AddProject<DisJockey_BotService>("bot")
             .WaitFor(rabbitMq)
             .WithReference(lavalink);
 
+api.WithReference(bot);
+
 builder.AddProject<DisJockey_Bff>("bff")
             .WithReference(api)
             .WaitFor(api)

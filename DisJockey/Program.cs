@@ -15,6 +15,8 @@ using DisJockey.Endpoints;
 using DisJockey.Shared.Protos;
 using Microsoft.Extensions.Configuration;
 using DisJockey.Hubs;
+using Grpc.Core;
+using Microsoft.AspNetCore.Http;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -39,9 +41,8 @@ builder.Services.AddSignalR();
 
 builder.Services.AddGrpcClient<DisJockeyGrpc.DisJockeyGrpcClient>(o =>
 {
-    o.Address = new Uri(builder.Configuration["BotService:GrpcUrl"] ?? "https://localhost:5001");
-})
-.AddStandardResilienceHandler();
+    o.Address = new Uri("https://bot");
+});
 
 var app = builder.Build();
 
@@ -79,6 +80,22 @@ void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         endpoints.MapFallbackToController("Index", "Fallback");
 
         endpoints.MapHub<TrackControlHub>("/hubs/track-control");
+
+        endpoints.MapGet(
+            "/grpc/{userId}",
+            async (DisJockeyGrpc.DisJockeyGrpcClient client, ulong userId) =>
+            {
+                try
+                {
+                    var response = await client.GetUserVoiceChannelAsync(new() { UserId = userId });
+
+                    return Results.Ok(response);
+                }
+                catch (RpcException ex) when (ex.Status.StatusCode is StatusCode.NotFound)
+                {
+                    return Results.NotFound();
+                }
+            });
     });
 }
 

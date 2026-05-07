@@ -5,11 +5,16 @@ option csharp_namespace = "DisJockey.Shared.Protos";
 package disjockey;
 
 service DisJockeyGrpc {
-  rpc Ping (PingRequest) returns (PingResponse);
+	rpc GetUserVoiceChannel (GetUserVoiceChannelRequest) returns (GetUserVoiceChannelResponse);
 }
 
-message PingRequest {}
+message GetUserVoiceChannelRequest {
+	uint64 user_id = 1;
+}
 
-message PingResponse {
-  string message = 1;
+message GetUserVoiceChannelResponse {
+	string voiceChannelName = 1;
+	uint64 voiceChannelId = 2;
+	string serverName = 3;
+	uint64 serverId = 4;
 }
