@@ -6,7 +6,8 @@ var jaeger = builder.AddContainer("jaeger", "jaegertracing/all-in-one")
             .WithHttpEndpoint(16686, targetPort: 16686, name: "portal")
             .WithHttpEndpoint(4319, targetPort: 4317, "otel");
 
-var seq = builder.AddSeq("seq");
+var seq = builder.AddSeq("seq")
+            .WithLifetime(ContainerLifetime.Persistent);
 
 builder.AddOpenTelemetryCollector("otel-collector")
         .WithAppForwarding()
@@ -51,7 +52,9 @@ var api = builder.AddProject<DisJockey>("api")
 var bot = builder.AddProject<DisJockey_BotService>("bot")
             .WithReference(rabbitMq)
             .WaitFor(rabbitMq)
-            .WithReference(lavalink);
+            .WithReference(lavalink)
+            .WithReference(keycloak)
+            .WaitFor(keycloak);
 
 api.WithReference(bot);
 

@@ -1,16 +1,21 @@
-﻿using Microsoft.AspNetCore.SignalR.Client;
+using DisJockey.BotService.Keycloak;
+using Microsoft.AspNetCore.SignalR.Client;
 
 namespace DisJockey.BotService;
 
-public class HubConnectionProvider
+internal sealed class HubConnectionProvider
 {
     private readonly ILogger<HubConnectionProvider> _logger;
+    private readonly KeycloakTokenService _keycloakTokenService;
 
     private readonly HubConnection _connection;
 
-    public HubConnectionProvider(ILogger<HubConnectionProvider> logger)
+    public HubConnectionProvider(
+        ILogger<HubConnectionProvider> logger, 
+        KeycloakTokenService keycloakTokenService)
     {
         _logger = logger;
+        _keycloakTokenService = keycloakTokenService;
 
         _connection = CreateHubConnection();
     }
@@ -18,7 +23,10 @@ public class HubConnectionProvider
     private HubConnection CreateHubConnection()
     {
         var connection = new HubConnectionBuilder()
-                            .WithUrl("https://localhost:5001/hubs/track-control") // TODO: Get from Service Discovery
+                            .WithUrl("https://localhost:5001/hubs/track-control", options =>
+                            {
+                                options.AccessTokenProvider = () => _keycloakTokenService.GetAccessTokenAsync();
+                            })
                             .WithAutomaticReconnect(
                                 [
                                     TimeSpan.FromSeconds(1),

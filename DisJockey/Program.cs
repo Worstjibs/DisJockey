@@ -79,7 +79,7 @@ void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         endpoints.MapDisJockeyEndpoints();
         endpoints.MapFallbackToController("Index", "Fallback");
 
-        endpoints.MapHub<TrackControlHub>("/hubs/track-control");
+        endpoints.MapHub<TrackControlHub>("/hubs/track-control").RequireAuthorization();
 
         endpoints.MapGet(
             "/grpc/{userId}",

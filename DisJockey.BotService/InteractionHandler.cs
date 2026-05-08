@@ -1,9 +1,7 @@
 ﻿using Discord;
 using Discord.Interactions;
 using Discord.WebSocket;
-using DisJockey.Shared.Enums;
-using DisJockey.Shared.Messaging.Contracts;
-using DisJockey.Shared.Messaging.Events;
+using DisJockey.Shared.Notifications;
 using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.Extensions.Options;
 using System.Reflection;
@@ -82,30 +80,26 @@ internal class InteractionHandler
         SocketVoiceState before,
         SocketVoiceState after)
     {
-        VoiceState? state = null;
-        ulong? voiceChannelId = null;
+        var notification = new UserVoiceStateNotification
+        {
+            DiscordId = user.Id
+        };
 
-        if (before.VoiceChannel is not null
-            && after.VoiceChannel is null)
+        if (after.VoiceChannel is not null)
         {
-            state = VoiceState.Disconnected;
-            voiceChannelId = before.VoiceChannel.Id;
-        }
-        else if (before.VoiceChannel is null
-            && after.VoiceChannel is not null)
-        {
-            state = VoiceState.Connected;
-            voiceChannelId = after.VoiceChannel.Id;
+            notification.VoiceState = VoiceState.Connected;
+            notification.VoiceChannel = new VoiceChannelInfo
+            {
+                Id = after.VoiceChannel.Id,
+                Name = after.VoiceChannel.Name,
+                ServerId = after.VoiceChannel.Guild.Id,
+                ServerName = after.VoiceChannel.Guild.Name
+            };
         }
 
-        if (state.HasValue)
-        {
-            await _hubConnectionProvider.InvokeAsync(
-                "UserVoiceStateChanged", 
-                user.Id, 
-                voiceChannelId, 
-                state.Value);
-        }
+        await _hubConnectionProvider.InvokeAsync(
+            "UserVoiceStateChanged", 
+            notification);
     }
 
     private async Task ReadyAsync()
