@@ -11,6 +11,7 @@ using Lavalink4NET.Tracks;
 using DisJockey.Shared.Messaging.Events;
 using DisJockey.Shared.Messaging.Enums;
 using DisJockey.Shared.Messaging.Contracts;
+using DisJockey.BotService.Players;
 
 namespace DisJockey.BotService.Services.Music;
 
@@ -182,20 +183,30 @@ public class MusicService : IMusicService
         await context.Interaction.FollowupAsync($"Track seeked to {time} seconds");
     }
 
+    public async ValueTask<QueuedLavalinkPlayer?> GetQueuedLavalinkPlayerAsync(
+        ulong guildId, 
+        ulong voiceChannelId, 
+        bool connectToVoiceChannel = true)
+    {
+        var playerResult = await GetQueuedPlayerResultAsync(guildId, voiceChannelId, connectToVoiceChannel).ConfigureAwait(false);
+        if (!playerResult.IsSuccess)
+        {
+            return null;
+        }
+
+        return playerResult.Player;
+    }
+
     private async ValueTask<QueuedLavalinkPlayer?> GetQueuedPlayerAsync(IInteractionContext context, bool connectToVoiceChannel = true)
     {
-        var retrieveOptions = new PlayerRetrieveOptions(
-            ChannelBehavior: connectToVoiceChannel ? PlayerChannelBehavior.Join : PlayerChannelBehavior.None);
+        var guildId = context.Guild.Id;
 
         var user = context.User as IVoiceState;
 
-        var result = await _audioService.Players
-            .RetrieveAsync(context.Guild.Id, user?.VoiceChannel?.Id, playerFactory: PlayerFactory.Queued, _queuePlayerOptions, retrieveOptions)
-            .ConfigureAwait(false);
-
-        if (!result.IsSuccess)
+        var playerResult = await GetQueuedPlayerResultAsync(guildId, user!.VoiceChannel.Id, connectToVoiceChannel).ConfigureAwait(false);
+        if (!playerResult.IsSuccess)
         {
-            var errorMessage = result.Status switch
+            var errorMessage = playerResult.Status switch
             {
                 PlayerRetrieveStatus.UserNotInVoiceChannel => "You are not connected to a voice channel.",
                 PlayerRetrieveStatus.BotNotConnected => "The bot is currently not connected.",
@@ -206,10 +217,30 @@ public class MusicService : IMusicService
             return null;
         }
 
-        return result.Player;
+        return playerResult.Player;
     }
 
-    private TrackSearchMode MapToTrackSearchMode(SearchMode? searchMode)
+    private async ValueTask<PlayerResult<NotifyingPlayer>> GetQueuedPlayerResultAsync(
+        ulong guildId,
+        ulong voiceChannelId,
+        bool connectToVoiceChannel = true)
+    {
+        var retrieveOptions = new PlayerRetrieveOptions(
+            ChannelBehavior: connectToVoiceChannel ? PlayerChannelBehavior.Join : PlayerChannelBehavior.None);
+
+        var result = await _audioService.Players
+                                .RetrieveAsync<NotifyingPlayer, QueuedLavalinkPlayerOptions>(
+                                    guildId,
+                                    voiceChannelId,
+                                    playerFactory: NotifyingPlayer.CreatePlayerAsync,
+                                    _queuePlayerOptions,
+                                    retrieveOptions)
+                                .ConfigureAwait(false);
+
+        return result;
+    }
+
+    private static TrackSearchMode MapToTrackSearchMode(SearchMode? searchMode)
     {
         return searchMode switch
         {

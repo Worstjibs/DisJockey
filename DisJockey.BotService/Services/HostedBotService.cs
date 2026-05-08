@@ -1,9 +1,10 @@
 using Discord;
 using Discord.WebSocket;
+using DisJockey.BotService.Interactions;
 using DisJockey.BotService.Services.Music;
 using Microsoft.Extensions.Options;
 
-namespace DisJockey.BotService;
+namespace DisJockey.BotService.Services;
 
 internal class HostedBotService : BackgroundService
 {

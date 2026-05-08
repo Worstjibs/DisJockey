@@ -1,12 +1,12 @@
 ﻿using Discord;
 using Discord.Interactions;
 using Discord.WebSocket;
+using DisJockey.BotService.Hubs;
 using DisJockey.Shared.Notifications;
-using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.Extensions.Options;
 using System.Reflection;
 
-namespace DisJockey.BotService;
+namespace DisJockey.BotService.Interactions;
 
 internal class InteractionHandler
 {

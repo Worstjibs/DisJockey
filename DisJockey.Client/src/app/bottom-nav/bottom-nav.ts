@@ -12,6 +12,7 @@ export class BottomNav implements OnInit, OnDestroy {
   private hubConnection: signalR.HubConnection;
 
   protected readonly message = signal<string | null>(null);
+  protected readonly trackName = signal<string | null>(null);
 
   constructor() {
     this.hubConnection = new signalR.HubConnectionBuilder()
@@ -21,6 +22,10 @@ export class BottomNav implements OnInit, OnDestroy {
 
     this.hubConnection.on('SendMessageAsync', (value: string) => {
       this.message.set(value);
+    });
+
+    this.hubConnection.on('NotifyTrackStatus', (notification: { trackName: string }) => {
+      this.trackName.set(notification.trackName);
     });
   }
 

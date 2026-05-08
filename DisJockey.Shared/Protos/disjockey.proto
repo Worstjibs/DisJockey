@@ -6,6 +6,7 @@ package disjockey;
 
 service DisJockeyGrpc {
 	rpc GetUserVoiceChannel (GetUserVoiceChannelRequest) returns (GetUserVoiceChannelResponse);
+	rpc GetTrackStatus (GetTrackStatusRequest) returns (GetTrackStatusResponse);
 }
 
 message GetUserVoiceChannelRequest {
@@ -17,4 +18,14 @@ message GetUserVoiceChannelResponse {
 	uint64 voiceChannelId = 2;
 	string serverName = 3;
 	uint64 serverId = 4;
+}
+
+message GetTrackStatusRequest {
+	uint64 server_id = 1;
+	uint64 voice_channel_id = 2;
+}
+
+message GetTrackStatusResponse {
+	string track_id = 1;
+	string track_name = 2;
 }

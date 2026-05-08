@@ -1,7 +1,16 @@
 <nav class="navbar navbar-dark bg-dark fixed-bottom">
   <div class="container">
-    @if (message(); as message) {
-      <span class="navbar-text">{{ message }}</span>
-    }
+    <div class="nav-left">
+      @if (message(); as message) {
+        <span class="navbar-text">{{ message }}</span>
+      }
+    </div>
+    <div class="nav-center">
+      @if (trackName(); as trackName) {
+        <span class="navbar-text">Track Playing: {{ trackName }}</span>
+      } @else {
+        <span class="navbar-text">No track playing</span>
+      }
+    </div>
   </div>
 </nav>

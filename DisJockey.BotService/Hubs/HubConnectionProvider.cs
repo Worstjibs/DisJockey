@@ -1,7 +1,7 @@
 using DisJockey.BotService.Keycloak;
 using Microsoft.AspNetCore.SignalR.Client;
 
-namespace DisJockey.BotService;
+namespace DisJockey.BotService.Hubs;
 
 internal sealed class HubConnectionProvider
 {

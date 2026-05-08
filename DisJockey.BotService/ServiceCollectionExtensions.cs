@@ -1,6 +1,7 @@
 ﻿using Discord;
 using Discord.Interactions;
 using Discord.WebSocket;
+using DisJockey.BotService.Interactions;
 using DisJockey.BotService.Keycloak;
 using DisJockey.BotService.Services;
 using DisJockey.BotService.Services.Music;

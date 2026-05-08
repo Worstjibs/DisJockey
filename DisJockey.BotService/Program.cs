@@ -1,5 +1,6 @@
 using DisJockey.BotService;
 using DisJockey.BotService.Grpc;
+using DisJockey.BotService.Hubs;
 using DisJockey.Messaging;
 using DisJockey.Shared.Messaging.Contracts;
 using DisJockey.Shared.Messaging.Events;
