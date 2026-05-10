@@ -4,6 +4,9 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
+using OpenTelemetry;
+using OpenTelemetry.Trace;
+using System.Diagnostics;
 using System.Net.Http.Headers;
 using Yarp.ReverseProxy.Transforms;
 
@@ -11,6 +14,9 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.AddServiceDefaults();
+
+builder.Services.AddOpenTelemetry()
+    .WithTracing(tracing => tracing.AddProcessor(new WildcardRouteActivityProcessor()));
 
 JsonWebTokenHandler.DefaultInboundClaimTypeMap.Clear();
 
@@ -86,4 +92,18 @@ app.Run();
 record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
 {
     public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
+}
+
+// Replaces the wildcard route template in span display names with the actual request path.
+// Without this, MapForwarder("/api/{**path}") always shows as "GET /api/{**path}" in traces.
+sealed class WildcardRouteActivityProcessor : BaseProcessor<Activity>
+{
+    public override void OnEnd(Activity activity)
+    {
+        if (activity.GetTagItem("http.route") is string route && route.Contains("{**") &&
+            activity.GetTagItem("url.path") is string path)
+        {
+            activity.DisplayName = $"{activity.GetTagItem("http.request.method")} {path}";
+        }
+    }
 }

@@ -6,6 +6,6 @@ namespace DisJockey.Shared.DTOs.PullUps;
 
 public class PullUpDto : BaseTrackDto
 {
-    public ICollection<PullUpTrackDto> PullUps { get; set; }
+    public ICollection<PullUpTrackDto> PullUps { get; set; } = [];
     public DateTime LastPulled { get; set; }
 }

@@ -96,6 +96,7 @@ public class VideoDetailService : IVideoDetailService
     public async Task<YouTubePagedList<Track>> QueryTracksAsync(PaginationParams paginationParams)
     {
         var searchRequest = _youTubeService.Search.List("snippet");
+
         searchRequest.Q = paginationParams.Query;
         searchRequest.Type = "video";
         searchRequest.MaxResults = paginationParams.PageSize;
@@ -110,7 +111,11 @@ public class VideoDetailService : IVideoDetailService
 
         var tracks = searchResponse.Items.Select(MapSearchResultToTrack);
 
-        var pagedList = new YouTubePagedList<Track>(tracks, paginationParams.PageToken, searchResponse.NextPageToken, searchResponse.PrevPageToken);
+        var pagedList = new YouTubePagedList<Track>(
+                            tracks, 
+                            paginationParams.PageToken ?? string.Empty, 
+                            searchResponse.NextPageToken, 
+                            searchResponse.PrevPageToken);
 
         return pagedList;
     }

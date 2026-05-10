@@ -34,6 +34,7 @@ internal sealed class HubConnectionProvider
                                     TimeSpan.FromSeconds(30),
                                     TimeSpan.FromSeconds(60)
                                 ])
+                            .WithServerTimeout(TimeSpan.FromMinutes(10))
                             .Build();
 
         connection.Reconnecting += error =>

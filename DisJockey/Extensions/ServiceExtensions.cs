@@ -38,6 +38,7 @@ public static class ServiceExtensions
             });
 
         services.AddSingleton<IUserIdProvider, DiscordUserIdProvider>();
+        services.AddSingleton<IUserConnectionTracker, UserConnectionTracker>();
 
         services.AddTransient<IHttpContextAccessor, HttpContextAccessor>();
 

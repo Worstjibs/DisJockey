@@ -1,10 +1,10 @@
-using Discord;
 using DisJockey.Shared.Notifications;
 using DisJockey.Shared.Protos;
 using Grpc.Core;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -14,14 +14,16 @@ namespace DisJockey.Hubs;
 public class TrackControlHub : Hub<ITrackControlHub>
 {
     private readonly DisJockeyGrpc.DisJockeyGrpcClient _disJockeyGrpcClient;
-
+    private readonly IUserConnectionTracker _connectionTracker;
     private readonly ILogger<TrackControlHub> _logger;
 
     public TrackControlHub(
         DisJockeyGrpc.DisJockeyGrpcClient disJockeyGrpcClient,
+        IUserConnectionTracker connectionTracker,
         ILogger<TrackControlHub> logger)
     {
         _disJockeyGrpcClient = disJockeyGrpcClient;
+        _connectionTracker = connectionTracker;
         _logger = logger;
     }
 
@@ -32,6 +34,8 @@ public class TrackControlHub : Hub<ITrackControlHub>
         {
             return;
         }
+
+        _connectionTracker.Add(userId, Context.ConnectionId);
 
         var discordId = ulong.Parse(userId);
 
@@ -52,6 +56,15 @@ public class TrackControlHub : Hub<ITrackControlHub>
         await HandleVoiceStateNotification(notification);
     }
 
+    public override async Task OnDisconnectedAsync(Exception? exception)
+    {
+        var userId = Context.UserIdentifier;
+        if (!string.IsNullOrEmpty(userId))
+        {
+            _connectionTracker.Remove(userId);
+        }
+    }
+
     public async Task UserVoiceStateChanged(UserVoiceStateNotification notification)
     {
         var voiceChannel = await GetUserVoiceChannelAsync(notification.DiscordId, Context.ConnectionAborted);
@@ -60,7 +73,11 @@ public class TrackControlHub : Hub<ITrackControlHub>
             notification.VoiceState = VoiceState.Connected;
             notification.VoiceChannel = voiceChannel;
 
-            await Groups.AddToGroupAsync(Context.ConnectionId, voiceChannel.Id.ToString(), Context.ConnectionAborted);
+            var userConnectionId = _connectionTracker.GetConnection(notification.DiscordId.ToString());
+            if (userConnectionId is not null)
+            {
+                await Groups.AddToGroupAsync(userConnectionId, voiceChannel.Id.ToString(), Context.ConnectionAborted);
+            }
         }
 
         await HandleVoiceStateNotification(notification);

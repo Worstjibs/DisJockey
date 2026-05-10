@@ -41,6 +41,8 @@ public class DisJockeyApiFixture : WebApplicationFactory<IApiMarker>, IAsyncLife
         builder.UseSetting("ConnectionStrings:disjockey-db", _sqlContainer.GetConnectionString());
         builder.UseSetting("ConnectionStrings:rabbit-mq", _rabbitMqContainer.GetConnectionString());
 
+        builder.UseSetting("YoutubeSettings:ApiKey", "TestKey"); // Include to stop exceptions thrown on startup
+
         builder.ConfigureTestServices(services =>
         {
             services.ConfigureTestJwt();

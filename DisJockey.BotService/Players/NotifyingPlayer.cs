@@ -32,7 +32,7 @@ internal class NotifyingPlayer : QueuedLavalinkPlayer
         TrackEndReason endReason, 
         CancellationToken cancellationToken = default)
     {
-        if (endReason is not TrackEndReason.Stopped)
+        if (endReason is not TrackEndReason.Stopped and not TrackEndReason.Finished)
         {
             return;
         }
