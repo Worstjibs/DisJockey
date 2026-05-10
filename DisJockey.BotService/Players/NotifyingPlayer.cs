@@ -2,6 +2,7 @@
 using DisJockey.Shared.Notifications;
 using Lavalink4NET.Players;
 using Lavalink4NET.Players.Queued;
+using Lavalink4NET.Protocol.Payloads.Events;
 
 namespace DisJockey.BotService.Players;
 
@@ -19,14 +20,29 @@ internal class NotifyingPlayer : QueuedLavalinkPlayer
         ITrackQueueItem track,
         CancellationToken cancellationToken = default)
     {
-        var notification = new TrackStatusChangedNotification(track.Track?.Title ?? string.Empty);
+        var trackName = track.Track?.Title ?? string.Empty;
+
+        var notification = new TrackStatusChangedNotification(VoiceChannelId, new(trackName));
 
         await _hubConnectionProvider.InvokeAsync("TrackStatusChanged", notification);
-
-        await base.NotifyTrackStartedAsync(track, cancellationToken);
     }
 
-    internal static ValueTask<NotifyingPlayer> CreatePlayerAsync(
+    protected override async ValueTask NotifyTrackEndedAsync(
+        ITrackQueueItem queueItem, 
+        TrackEndReason endReason, 
+        CancellationToken cancellationToken = default)
+    {
+        if (endReason is not TrackEndReason.Stopped)
+        {
+            return;
+        }
+
+        var notification = new TrackStatusChangedNotification(VoiceChannelId);
+
+        await _hubConnectionProvider.InvokeAsync("TrackStatusChanged", notification);
+    }
+
+   internal static ValueTask<NotifyingPlayer> CreatePlayerAsync(
         IPlayerProperties<NotifyingPlayer, QueuedLavalinkPlayerOptions> properties, 
         CancellationToken cancellationToken = default)
     {

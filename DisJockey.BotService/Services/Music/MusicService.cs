@@ -20,19 +20,19 @@ public class MusicService : IMusicService
     private readonly IAudioService _audioService;
     private readonly IOptions<QueuedLavalinkPlayerOptions> _queuePlayerOptions;
     private readonly WheelUpService _wheelUpService;
-    private readonly IMessageSender _messageSender;
+    private readonly IServiceScopeFactory _serviceScopeFactory;
 
     public MusicService(
         IAudioService audioService,
         IOptions<QueuedLavalinkPlayerOptions> queuePlayerOptions,
         WheelUpService wheelUpService,
-        IMessageSender messageSender
+        IServiceScopeFactory serviceScopeFactory
     )
     {
         _audioService = audioService;
         _queuePlayerOptions = queuePlayerOptions;
         _wheelUpService = wheelUpService;
-        _messageSender = messageSender;
+        _serviceScopeFactory = serviceScopeFactory;
     }
 
     public async Task PlayTrackAsync(string query, IInteractionContext context, SearchMode searchMode = SearchMode.YouTube)
@@ -63,7 +63,7 @@ public class MusicService : IMusicService
                                             socketUser.Username,
                                             SearchMode.YouTube);
 
-            await _messageSender.SendAsync(trackPlayedEvent);
+            await SendMessageAsync(trackPlayedEvent);
         }
 
         if (position is 0)
@@ -82,7 +82,7 @@ public class MusicService : IMusicService
 
         var retrieveOptions = new PlayerRetrieveOptions(PlayerChannelBehavior.Join);
 
-        var playerResult = await _audioService.Players.RetrieveAsync(guild.Id, voiceChannel.Id, playerFactory: PlayerFactory.Queued, _queuePlayerOptions, retrieveOptions);
+        var playerResult = await GetQueuedPlayerResultAsync(guild.Id, voiceChannel.Id);
         if (!playerResult.IsSuccess)
             return false;
 
@@ -248,6 +248,14 @@ public class MusicService : IMusicService
             SearchMode.SoundCloud => TrackSearchMode.SoundCloud,
             _ => TrackSearchMode.YouTube,
         };
+    }
+
+    private async Task SendMessageAsync<T>(T message)
+    {
+        using var scope = _serviceScopeFactory.CreateScope();
+        var sender = scope.ServiceProvider.GetRequiredService<IMessageSender>();
+
+        await sender.SendAsync(message);
     }
 
     public Task OnReadyAsync()

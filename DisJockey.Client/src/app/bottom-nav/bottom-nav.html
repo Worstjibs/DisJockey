@@ -1,15 +1,20 @@
 <nav class="navbar navbar-dark bg-dark fixed-bottom">
   <div class="container">
     <div class="nav-left">
-      @if (message(); as message) {
-        <span class="navbar-text">{{ message }}</span>
+      @if (trackStatus(); as trackStatus) {
+        <span class="navbar-text">Track Playing: {{ trackStatus.trackName }}</span>
+      } @else {
+        <span class="navbar-text">No track playing</span>
       }
     </div>
     <div class="nav-center">
-      @if (trackName(); as trackName) {
-        <span class="navbar-text">Track Playing: {{ trackName }}</span>
-      } @else {
-        <span class="navbar-text">No track playing</span>
+      <button class="btn btn-link text-light" (click)="togglePlayPause()">
+        <fa-icon [icon]="playPauseIcon" size="lg" />
+      </button>
+    </div>
+    <div class="nav-right">
+      @if (userStatus(); as userStatus) {
+        <span class="navbar-text">Connected to: {{ userStatus.voiceChannelName }}</span>
       }
     </div>
   </div>

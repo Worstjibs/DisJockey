@@ -1,9 +1,11 @@
+using Discord;
 using DisJockey.Shared.Notifications;
 using DisJockey.Shared.Protos;
 using Grpc.Core;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace DisJockey.Hubs;
@@ -23,20 +25,6 @@ public class TrackControlHub : Hub<ITrackControlHub>
         _logger = logger;
     }
 
-    public async Task UserVoiceStateChanged(UserVoiceStateNotification notification)
-    {
-        await HandleVoiceStateNotification(notification);
-    }
-
-    public async Task TrackStatusChanged(TrackStatusChangedNotification notification)
-    {
-        _logger.LogDebug("Received track status changed notification: {TrackName}", notification.TrackName);
-
-        var message = new TrackStatusMessage(notification.TrackName);
-
-        await Clients.All.NotifyTrackStatus(message);
-    }
-
     public override async Task OnConnectedAsync()
     {
         var userId = Context.UserIdentifier;
@@ -52,47 +40,106 @@ public class TrackControlHub : Hub<ITrackControlHub>
             DiscordId = discordId
         };
 
-        var voiceChannel = await GetUserVoiceChannelAsync(notification.DiscordId);
+        var voiceChannel = await GetUserVoiceChannelAsync(discordId, Context.ConnectionAborted);
         if (voiceChannel is not null)
         {
             notification.VoiceState = VoiceState.Connected;
             notification.VoiceChannel = voiceChannel;
+
+            await Groups.AddToGroupAsync(Context.ConnectionId, voiceChannel.Id.ToString(), Context.ConnectionAborted);
         }
 
         await HandleVoiceStateNotification(notification);
+    }
 
+    public async Task UserVoiceStateChanged(UserVoiceStateNotification notification)
+    {
+        var voiceChannel = await GetUserVoiceChannelAsync(notification.DiscordId, Context.ConnectionAborted);
         if (voiceChannel is not null)
         {
-            var trackStatus = await GetCurrentTrackStatusAsync(voiceChannel.ServerId, voiceChannel.Id);
-            if (trackStatus is not null)
-            {
-                await Clients.User(userId).NotifyTrackStatus(trackStatus);
-            }
+            notification.VoiceState = VoiceState.Connected;
+            notification.VoiceChannel = voiceChannel;
+
+            await Groups.AddToGroupAsync(Context.ConnectionId, voiceChannel.Id.ToString(), Context.ConnectionAborted);
         }
+
+        await HandleVoiceStateNotification(notification);
+    }
+
+    public async Task TrackStatusChanged(TrackStatusChangedNotification notification)
+    {
+        _logger.LogDebug(
+            "Received track status changed notification for VoiceChannel: {VoiceChannelId}",
+            notification.VoiceChannelId);
+
+        TrackStatusMessage? message = null;
+        if (notification.TrackDetails is not null)
+        {
+            message = new TrackStatusMessage(notification.TrackDetails.TrackName, Paused: false); // TODO: Fix Paused
+        }
+
+        await Clients.SendTrackNotificationAsync(notification.VoiceChannelId, message);
+    }
+
+    public async Task TogglePlayPause()
+    {
+        var userId = Context.UserIdentifier;
+        if (string.IsNullOrEmpty(userId))
+        {
+            return;
+        }
+
+        var discordId = ulong.Parse(userId);
+
+        var userStatus = await GetUserVoiceChannelAsync(discordId, Context.ConnectionAborted);
+        if (userStatus is null)
+        {
+            return;
+        }
+
+        await PlayPauseTrackAsync(userStatus.ServerId, userStatus.Id, Context.ConnectionAborted);
     }
 
     private async Task HandleVoiceStateNotification(UserVoiceStateNotification notification)
     {
         if (notification.VoiceState is VoiceState.Disconnected)
         {
-            await Clients.User(notification.DiscordId.ToString()).SendMessageAsync("Disconnected");
+            await Clients.SendUserStatusMessageAsync(notification.DiscordId, null);
             return;
         }
 
-        if (notification.VoiceChannel is null)
+        var voiceChannel = notification.VoiceChannel;
+
+        if (voiceChannel is null)
         {
             return;
         }
 
-        var message = ConstructConnectedMessage(notification.VoiceChannel.Name, notification.VoiceChannel.ServerName);
-        await Clients.User(notification.DiscordId.ToString()).SendMessageAsync(message);
+        var trackStatus = await GetCurrentTrackStatusAsync(voiceChannel.ServerId, voiceChannel.Id, Context.ConnectionAborted);
+
+        TrackStatusMessage? trackStatusMessage = null;
+        if (trackStatus is not null)
+        {
+            trackStatusMessage = new TrackStatusMessage(trackStatus.TrackName, trackStatus.Paused);
+        }
+
+        var userStatusMessage = new UserStatusMessage(
+            voiceChannel.Name,
+            voiceChannel.ServerName,
+            trackStatusMessage);
+
+        await Clients.SendUserStatusMessageAsync(notification.DiscordId, userStatusMessage);
     }
 
-    private async Task<VoiceChannelInfo?> GetUserVoiceChannelAsync(ulong userId)
+    private async Task<VoiceChannelInfo?> GetUserVoiceChannelAsync(
+        ulong userId,
+        CancellationToken cancellationToken = default)
     {
         try
         {
-            var voiceChannelDetails = await _disJockeyGrpcClient.GetUserVoiceChannelAsync(new() { UserId = userId });
+            var voiceChannelDetails = await _disJockeyGrpcClient.GetUserVoiceChannelAsync(
+                new() { UserId = userId },
+                cancellationToken: cancellationToken);
 
             return new VoiceChannelInfo
             {
@@ -109,8 +156,9 @@ public class TrackControlHub : Hub<ITrackControlHub>
     }
 
     private async Task<TrackStatusMessage?> GetCurrentTrackStatusAsync(
-        ulong serverId, 
-        ulong voiceChannelId)
+        ulong serverId,
+        ulong voiceChannelId,
+        CancellationToken cancellationToken = default)
     {
         try
         {
@@ -118,9 +166,9 @@ public class TrackControlHub : Hub<ITrackControlHub>
             {
                 ServerId = serverId,
                 VoiceChannelId = voiceChannelId
-            });
+            }, cancellationToken: cancellationToken);
 
-            return new TrackStatusMessage(trackStatus.TrackName);
+            return new TrackStatusMessage(trackStatus.TrackName, trackStatus.Paused);
         }
         catch (RpcException e) when (e.StatusCode is StatusCode.NotFound)
         {
@@ -128,14 +176,37 @@ public class TrackControlHub : Hub<ITrackControlHub>
         }
     }
 
-    private static string ConstructConnectedMessage(string voiceChannelName, string serverName)
-        => $"Connected to {voiceChannelName} in {serverName}";
+    private async Task PlayPauseTrackAsync(
+        ulong serverId,
+        ulong voiceChannelId,
+        CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            await _disJockeyGrpcClient.PlayPauseTrackAsync(new()
+            {
+                ServerId = serverId,
+                VoiceChannelId = voiceChannelId
+            }, cancellationToken: cancellationToken);
+        }
+        catch (RpcException e) when (e.StatusCode is StatusCode.NotFound)
+        {
+            // TODO: Handle NotFound errors better
+            return;
+        }
+    }
 }
 
 public interface ITrackControlHub
 {
     Task SendMessageAsync(string message);
-    Task NotifyTrackStatus(TrackStatusMessage message);
+    Task NotifyUserStatus(UserStatusMessage? message);
+    Task NotifyTrackStatus(TrackStatusMessage? message);
 }
 
-public record TrackStatusMessage(string TrackName);
+public record UserStatusMessage(
+    string VoiceChannelName,
+    string ServerName,
+    TrackStatusMessage? TrackStatusMessage);
+
+public record TrackStatusMessage(string TrackName, bool Paused);

@@ -11,7 +11,7 @@ internal sealed class HubConnectionProvider
     private readonly HubConnection _connection;
 
     public HubConnectionProvider(
-        ILogger<HubConnectionProvider> logger, 
+        ILogger<HubConnectionProvider> logger,
         KeycloakTokenService keycloakTokenService)
     {
         _logger = logger;

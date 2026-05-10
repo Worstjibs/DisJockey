@@ -80,6 +80,11 @@ internal class InteractionHandler
         SocketVoiceState before,
         SocketVoiceState after)
     {
+        if (user.IsBot)
+        {
+            return;
+        }
+
         var notification = new UserVoiceStateNotification
         {
             DiscordId = user.Id

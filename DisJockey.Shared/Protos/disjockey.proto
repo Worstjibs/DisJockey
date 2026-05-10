@@ -1,5 +1,7 @@
 syntax = "proto3";
 
+import "google/protobuf/empty.proto";
+
 option csharp_namespace = "DisJockey.Shared.Protos";
 
 package disjockey;
@@ -7,6 +9,7 @@ package disjockey;
 service DisJockeyGrpc {
 	rpc GetUserVoiceChannel (GetUserVoiceChannelRequest) returns (GetUserVoiceChannelResponse);
 	rpc GetTrackStatus (GetTrackStatusRequest) returns (GetTrackStatusResponse);
+	rpc PlayPauseTrack (PlayPauseTrackRequest) returns (google.protobuf.Empty);
 }
 
 message GetUserVoiceChannelRequest {
@@ -28,4 +31,10 @@ message GetTrackStatusRequest {
 message GetTrackStatusResponse {
 	string track_id = 1;
 	string track_name = 2;
+	bool paused = 3;
+}
+
+message PlayPauseTrackRequest {
+	uint64 server_id = 1;
+	uint64 voice_channel_id = 2;
 }

@@ -1,6 +1,7 @@
 using DisJockey.BotService.Services;
 using DisJockey.BotService.Services.Music;
 using DisJockey.Shared.Protos;
+using Google.Protobuf.WellKnownTypes;
 using Grpc.Core;
 
 namespace DisJockey.BotService.Grpc;
@@ -9,17 +10,20 @@ public class DisJockeyGrpcService : DisJockeyGrpc.DisJockeyGrpcBase
 {
     private readonly IUserVoiceStateService _userVoiceStateService;
     private readonly IMusicService _musicService;
+    private readonly ILogger<DisJockeyGrpcService> _logger;
 
     public DisJockeyGrpcService(
         IUserVoiceStateService userVoiceStateService,
-        IMusicService musicService)
+        IMusicService musicService,
+        ILogger<DisJockeyGrpcService> logger)
     {
         _userVoiceStateService = userVoiceStateService;
         _musicService = musicService;
+        _logger = logger;
     }
 
     public override async Task<GetUserVoiceChannelResponse> GetUserVoiceChannel(
-        GetUserVoiceChannelRequest request, 
+        GetUserVoiceChannelRequest request,
         ServerCallContext context)
     {
         var result = await _userVoiceStateService.GetUserVoiceStateAsync(request.UserId, context.CancellationToken)
@@ -37,17 +41,60 @@ public class DisJockeyGrpcService : DisJockeyGrpc.DisJockeyGrpcBase
     public override async Task<GetTrackStatusResponse> GetTrackStatus(GetTrackStatusRequest request, ServerCallContext context)
     {
         var player = await _musicService.GetQueuedLavalinkPlayerAsync(
-                request.ServerId, 
-                request.VoiceChannelId, 
-                connectToVoiceChannel: false) 
+                request.ServerId,
+                request.VoiceChannelId,
+                connectToVoiceChannel: false)
             ?? throw new RpcException(new Status(StatusCode.NotFound, "Player not found"));
+
+        if (player.VoiceChannelId != request.VoiceChannelId)
+        {
+            throw new RpcException(new Status(StatusCode.NotFound, "Player does not match current user voice channel"));
+        }
 
         var track = player.CurrentTrack ?? throw new RpcException(new Status(StatusCode.NotFound, "No track is currently playing"));
 
         return new GetTrackStatusResponse
         {
             TrackId = track.Identifier,
-            TrackName = track.Title
+            TrackName = track.Title,
+            Paused = player.IsPaused
         };
+    }
+
+    public override async Task<Empty> PlayPauseTrack(PlayPauseTrackRequest request, ServerCallContext context)
+    {
+        var player = await _musicService.GetQueuedLavalinkPlayerAsync(
+                request.ServerId,
+                request.VoiceChannelId,
+                connectToVoiceChannel: false)
+            ?? throw new RpcException(new Status(StatusCode.NotFound, "Player not found"));
+
+        if (player.CurrentTrack is null)
+        {
+            throw new RpcException(new Status(StatusCode.NotFound, "No track is currently playing"));
+        }
+
+        if (!player.IsPaused)
+        {
+            await player.PauseAsync();
+
+            _logger.LogPlayPausedState(
+                player.SessionId,
+                player.VoiceChannelId,
+                player.GuildId,
+                "Paused");
+        }
+        else
+        {
+            await player.ResumeAsync();
+
+            _logger.LogPlayPausedState(
+                player.SessionId,
+                player.VoiceChannelId,
+                player.GuildId,
+                "Resumed");
+        }
+
+        return new();
     }
 }

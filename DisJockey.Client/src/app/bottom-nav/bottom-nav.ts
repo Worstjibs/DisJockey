@@ -1,9 +1,12 @@
-import { Component, OnDestroy, OnInit, signal } from '@angular/core';
+import { Component, computed, OnDestroy, OnInit, signal } from '@angular/core';
 import * as signalR from '@microsoft/signalr';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { faPlay, faPause, IconDefinition } from '@fortawesome/free-solid-svg-icons';
+import { Track } from '../tracks/models/track';
 
 @Component({
   selector: 'app-bottom-nav',
-  imports: [],
+  imports: [FontAwesomeModule],
   templateUrl: './bottom-nav.html',
   styleUrl: './bottom-nav.scss',
 })
@@ -11,8 +14,29 @@ export class BottomNav implements OnInit, OnDestroy {
   private readonly hubUrl = '/hubs/track-control';
   private hubConnection: signalR.HubConnection;
 
-  protected readonly message = signal<string | null>(null);
-  protected readonly trackName = signal<string | null>(null);
+  protected readonly userStatus = signal<UserStatusMessage | null>(null);
+  protected readonly trackStatus = signal<TrackStatusMessage | null>(null);
+
+  protected get playPauseIcon(): IconDefinition {
+    const status = this.trackStatus();
+    if (!status) {
+      return faPlay; // Default icon when no track is playing
+    }
+
+    const icon = status.paused ? faPlay : faPause;
+
+    return icon;
+  }
+
+  protected togglePlayPause(): void {
+    const userStatus = this.userStatus();
+    if (!userStatus) {
+      return;
+    }
+
+    this.hubConnection.invoke('TogglePlayPause')
+      .then(() => this.trackStatus.update(status => status ? { ...status, paused: !status.paused } : null));
+  }
 
   constructor() {
     this.hubConnection = new signalR.HubConnectionBuilder()
@@ -20,12 +44,13 @@ export class BottomNav implements OnInit, OnDestroy {
       .withAutomaticReconnect()
       .build();
 
-    this.hubConnection.on('SendMessageAsync', (value: string) => {
-      this.message.set(value);
+    this.hubConnection.on('NotifyUserStatus', (notification: UserStatusMessage) => {
+      this.userStatus.set(notification);
+      this.trackStatus.set(notification?.trackStatusMessage);
     });
 
-    this.hubConnection.on('NotifyTrackStatus', (notification: { trackName: string }) => {
-      this.trackName.set(notification.trackName);
+    this.hubConnection.on('NotifyTrackStatus', (notification: TrackStatusMessage) => {
+      this.trackStatus.set(notification);
     });
   }
 
@@ -36,4 +61,15 @@ export class BottomNav implements OnInit, OnDestroy {
   async ngOnDestroy(): Promise<void> {
     await this.hubConnection?.stop();
   }
+}
+
+interface UserStatusMessage {
+  voiceChannelName: string;
+  serverName: string;
+  trackStatusMessage: TrackStatusMessage | null;
+}
+
+interface TrackStatusMessage {
+  trackName: string;
+  paused: boolean;
 }

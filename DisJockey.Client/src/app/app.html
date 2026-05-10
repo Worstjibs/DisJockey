@@ -4,4 +4,6 @@
   <router-outlet></router-outlet>
 </div>
 
-<app-bottom-nav></app-bottom-nav>
+@if (currentUser()) {
+  <app-bottom-nav></app-bottom-nav>
+}
