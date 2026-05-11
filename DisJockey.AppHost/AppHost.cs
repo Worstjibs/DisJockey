@@ -2,6 +2,9 @@ using Projects;
 
 var builder = DistributedApplication.CreateBuilder(args);
 
+builder.AddDockerComposeEnvironment("env")
+        .WithDashboard(false);
+
 var jaeger = builder.AddContainer("jaeger", "jaegertracing/all-in-one")
             .WithHttpEndpoint(16686, targetPort: 16686, name: "portal")
             .WithHttpEndpoint(4319, targetPort: 4317, "otel");
@@ -9,11 +12,21 @@ var jaeger = builder.AddContainer("jaeger", "jaegertracing/all-in-one")
 var seq = builder.AddSeq("seq")
             .WithLifetime(ContainerLifetime.Persistent);
 
-builder.AddOpenTelemetryCollector("otel-collector")
+var otelCollector = builder.AddOpenTelemetryCollector("otel-collector")
         .WithAppForwarding()
         .WithConfig("./collector-config.yml")
         .WithEnvironment("JAEGER_ENDPOINT", jaeger.GetEndpoint("otel"))
         .WithEnvironment("SEQ_ENDPOINT", $"{seq.GetEndpoint("http")}/ingest/otlp");
+
+if (builder.ExecutionContext.IsPublishMode)
+{
+    otelCollector.WithEnvironment(context =>
+    {
+        // Aspire Dashboard is disabled at publish, so we don't want these in the compose file
+        context.EnvironmentVariables.Remove("ASPIRE_ENDPOINT");
+        context.EnvironmentVariables.Remove("ASPIRE_API_KEY");
+    });
+}
 
 var sql = builder.AddSqlServer("sql")
             .WithDataVolume("sql-data")
@@ -32,16 +45,7 @@ var lavalink = builder.AddLavalinkServer("lavalink")
 
 await GetDiscordProvider();
 
-var keycloak = builder.AddKeycloak("keycloak", 8080)
-            .WithBindMount("./providers", "/opt/keycloak/providers")
-            .WithRealmImport("./realms/realm-export.json")
-            .WithDataVolume("keycloak-data")
-            .WithLifetime(ContainerLifetime.Persistent)
-            .WithOtlpExporter();
-
-#pragma warning disable ASPIRECERTIFICATES001
-keycloak.WithoutHttpsCertificate();
-#pragma warning restore ASPIRECERTIFICATES001
+var keycloak = AddKeycloak(builder);
 
 var api = builder.AddProject<DisJockey>("api")
             .WithReference(database)
@@ -58,11 +62,17 @@ var bot = builder.AddProject<DisJockey_BotService>("bot")
 
 api.WithReference(bot);
 
+var bffClientId = builder.AddParameter("bff-client-id");
+var bffClientSecret = builder.AddParameter("bff-client-secret");
+
 builder.AddProject<DisJockey_Bff>("bff")
+            .WithExternalHttpEndpoints()
             .WithReference(api)
             .WaitFor(api)
             .WithReference(keycloak)
-            .WaitFor(keycloak);
+            .WaitFor(keycloak)
+            .WithEnvironment("ClientId", bffClientId)
+            .WithEnvironment("ClientSecret", bffClientSecret);
 
 await builder.Build().RunAsync();
 
@@ -75,7 +85,7 @@ static async Task GetDiscordProvider()
         return;
     }
 
-    const string discordProviderJar = "https://github.com/wadahiro/keycloak-discord/releases/download/v0.6.1/keycloak-discord-0.6.1.jar";
+    const string discordProviderJar = "https://github.com/iForged/keycloak-discord/releases/download/v1.3.1/keycloak-discord-1.3.1.jar";
 
     using var httpClient = new HttpClient();
     var response = await httpClient.GetAsync(discordProviderJar);
@@ -85,4 +95,28 @@ static async Task GetDiscordProvider()
     await response.Content.CopyToAsync(localStream);
 
     await localStream.FlushAsync();
+}
+
+static IResourceBuilder<KeycloakResource> AddKeycloak(IDistributedApplicationBuilder builder)
+{
+    var keycloak = builder.AddKeycloak("keycloak", 8080)
+           .WithBindMount("./providers", "/opt/keycloak/providers")
+           .WithRealmImport("./realms")
+           .WithDataVolume("keycloak-data")
+           .WithLifetime(ContainerLifetime.Persistent)
+           .WithOtlpExporter();
+
+#pragma warning disable ASPIRECERTIFICATES001
+    keycloak.WithoutHttpsCertificate();
+#pragma warning restore ASPIRECERTIFICATES001
+
+    if (builder.ExecutionContext.IsPublishMode)
+    {
+        // Keycloak will exist behind a proxy, so we can safely disable https
+        keycloak.WithEnvironment("KC_HTTP_ENABLED", "true");
+        keycloak.WithEnvironment("KC_PROXY_HEADERS", "xforwarded");
+        keycloak.WithEnvironment("KC_HOSTNAME_STRICT", "false");
+    }
+
+    return keycloak;
 }

@@ -451,3 +451,6 @@ appsettings.Seed.json
 **/DisJockey.AppHost/realms/**
 
 **/.claude/**
+
+**/aspire-output/**
+**/.aspire/**
