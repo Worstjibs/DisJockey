@@ -41,9 +41,10 @@ public static class AuthEndpointExtensions
 
             builder.MapGet("/account/login", async (HttpContext context) =>
             {
+                var baseUrl = $"{context.Request.Scheme}://{context.Request.Host}";
                 var authProperties = new AuthenticationProperties
                 {
-                    RedirectUri = "https://localhost:7230/signin-oidc"
+                    RedirectUri = $"{baseUrl}/signin-oidc"
                 };
 
                 await context.ChallengeAsync(authProperties);
@@ -51,9 +52,10 @@ public static class AuthEndpointExtensions
 
             builder.MapGet("/account/logout", async (HttpContext context) =>
             {
+                var baseUrl = $"{context.Request.Scheme}://{context.Request.Host}";
                 var authProperties = new AuthenticationProperties
                 {
-                    RedirectUri = "https://localhost:7230/"
+                    RedirectUri = $"{baseUrl}/"
                 };
 
                 await context.SignOutAsync(OpenIdConnectDefaults.AuthenticationScheme, authProperties);

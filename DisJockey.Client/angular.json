@@ -46,6 +46,10 @@
           },
           "configurations": {
             "production": {
+              "outputPath": {
+                "base": "../DisJockey.Bff/wwwroot",
+                "browser": ""
+              },
               "budgets": [
                 {
                   "type": "initial",

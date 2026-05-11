@@ -18,4 +18,8 @@
     <ProjectReference Include="..\DisJockey.Shared\DisJockey.Shared.csproj" />
   </ItemGroup>
 
+  <Target Name="PublishAngularApp" BeforeTargets="Build" Condition="'$(Configuration)' == 'Release'">
+    <Exec Command="npm run build" WorkingDirectory="..\DisJockey.Client" />
+  </Target>
+
 </Project>

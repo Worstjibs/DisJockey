@@ -48,20 +48,25 @@ builder.Services
 builder.Services.AddHttpForwarderWithServiceDiscovery();
 
 builder.Services.AddReverseProxy()
-    .LoadFromConfig(builder.Configuration.GetSection("ReverseProxy"));
+    .LoadFromConfig(builder.Configuration.GetSection("ReverseProxy"))
+    .AddServiceDiscoveryDestinationResolver();
 
 var app = builder.Build();
 
 app.MapDefaultEndpoints();
 
 // Configure the HTTP request pipeline.
+if (!app.Environment.IsDevelopment())
+{
+    app.UseDefaultFiles();
+    app.UseStaticFiles();
+}
+
 app.UseHttpsRedirection();
 
 app.UseAuthentication();
 
 app.MapAuthEndpoints();
-
-app.MapReverseProxy();
 
 app.MapForwarder("/api/{**path}", "https+http://api", context =>
 {
@@ -86,6 +91,16 @@ app.MapForwarder("/hubs/{**path}", "https+http://api", context =>
         }
     });
 });
+
+
+if (app.Environment.IsDevelopment())
+{
+    app.MapReverseProxy();
+}
+else
+{
+    app.MapFallbackToFile("index.html");
+}
 
 app.Run();
 
