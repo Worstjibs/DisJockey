@@ -41,9 +41,6 @@ jobs:
       - name: Install Aspire CLI
         run: dotnet tool install -g aspire.cli --prerelease
 
-      - name: Install Aspire CLI
-        run: dotnet tool install -g aspire.cli --prerelease
-
       - name: Aspire Publish
         run: aspire publish -o docker-compose-artifacts
 

@@ -92,6 +92,8 @@ static IResourceBuilder<KeycloakResource> AddKeycloak(IDistributedApplicationBui
 {
     var keycloakPublicUrl = builder.AddParameter("keycloak-public-url", string.Empty);
 
+    Directory.CreateDirectory("./realms");
+
     var keycloak = builder.AddKeycloak("keycloak", 8080)
                     .WithBindMount("./providers", "/opt/keycloak/providers")
                     .WithRealmImport("./realms")
