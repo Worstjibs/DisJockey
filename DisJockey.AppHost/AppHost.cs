@@ -66,9 +66,10 @@ await builder.Build().RunAsync();
 
 static async Task GetDiscordProvider()
 {
-    const string localFilePath = "./providers/keycloak-discord-0.6.1.jar";
+    const string localFilePath = "./providers";
+    const string fileName = "keycloak-discord-0.6.1.jar";
 
-    if (File.Exists(localFilePath))
+    if (File.Exists(Path.Combine(localFilePath, fileName)))
     {
         return;
     }
@@ -78,7 +79,9 @@ static async Task GetDiscordProvider()
     using var httpClient = new HttpClient();
     var response = await httpClient.GetAsync(discordProviderJar);
 
-    using var localStream = File.OpenWrite(localFilePath);
+    Directory.CreateDirectory(localFilePath);
+
+    using var localStream = File.OpenWrite(Path.Combine(localFilePath, fileName));
 
     await response.Content.CopyToAsync(localStream);
 
