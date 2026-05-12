@@ -38,6 +38,11 @@ jobs:
         with:
           dotnet-version: 10.x
 
+      - name: Use Node.js 24 LTS
+        uses: actions/setup-node@v2
+        with:
+          node-version: '24'
+
       - name: Install Aspire CLI
         run: dotnet tool install -g aspire.cli --prerelease
 
