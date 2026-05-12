@@ -2,6 +2,7 @@ using DisJockey.Bff.Endpoints;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using OpenTelemetry;
@@ -43,8 +44,8 @@ builder.Services
 
             options.SaveTokens = true;
 
-            options.Scope.Add("profile"); 
-            
+            options.Scope.Add("profile");
+
             var keycloakPublicUrl = builder.Configuration["KeycloakPublicUrl"];
             if (string.IsNullOrEmpty(keycloakPublicUrl))
             {
@@ -53,7 +54,7 @@ builder.Services
 
             options.TokenValidationParameters.ValidIssuer = $"{keycloakPublicUrl}/realms/master";
 
-            options.Events.OnRedirectToIdentityProvider = context =>
+            Task RedirectForPublicUrl(RedirectContext context)
             {
                 var keycloakPublicUrl = builder.Configuration["KeycloakPublicUrl"];
                 if (string.IsNullOrEmpty(keycloakPublicUrl))
@@ -64,7 +65,10 @@ builder.Services
                 var issuerUri = new Uri(context.ProtocolMessage.IssuerAddress);
                 context.ProtocolMessage.IssuerAddress = $"{keycloakPublicUrl}{issuerUri.AbsolutePath}{issuerUri.Query}";
                 return Task.CompletedTask;
-            };
+            }
+
+            options.Events.OnRedirectToIdentityProvider = RedirectForPublicUrl;
+            options.Events.OnRedirectToIdentityProviderForSignOut = RedirectForPublicUrl;
         });
 
 builder.Services.AddHttpForwarderWithServiceDiscovery();
