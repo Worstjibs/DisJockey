@@ -102,8 +102,6 @@ static async Task GetDiscordProvider()
 
 static IResourceBuilder<KeycloakResource> AddKeycloak(IDistributedApplicationBuilder builder)
 {
-    var keycloakPublicUrl = builder.AddParameter("keycloak-public-url", string.Empty);
-
     Directory.CreateDirectory("./realms");
 
     var keycloak = builder.AddKeycloak("keycloak", 8080)
@@ -111,9 +109,9 @@ static IResourceBuilder<KeycloakResource> AddKeycloak(IDistributedApplicationBui
                     .WithRealmImport("./realms")
                     .WithDataVolume("keycloak-data")
                     .WithArgs("--verbose")
-                    .WithOtlpExporter()
-                    .WithEnvironment("KeycloakPublicUrl", keycloakPublicUrl)
                     .WithLifetime(ContainerLifetime.Persistent);
+
+    var keycloakHostname = builder.AddParameter("keycloak-hostname");
 
 #pragma warning disable ASPIRECERTIFICATES001
     keycloak.WithoutHttpsCertificate();
@@ -124,7 +122,8 @@ static IResourceBuilder<KeycloakResource> AddKeycloak(IDistributedApplicationBui
         // Keycloak will exist behind a proxy, so we can safely disable https
         keycloak.WithEnvironment("KC_HTTP_ENABLED", "true");
         keycloak.WithEnvironment("KC_PROXY_HEADERS", "xforwarded");
-        keycloak.WithEnvironment("KC_HOSTNAME_STRICT", "false");
+        keycloak.WithEnvironment("KC_HOSTNAME", keycloakHostname);
+        keycloak.WithEnvironment("KC_HOSTNAME_BACKCHANNEL_DYNAMIC", "true");
     }
 
     return keycloak;

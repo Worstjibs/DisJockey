@@ -45,30 +45,6 @@ builder.Services
             options.SaveTokens = true;
 
             options.Scope.Add("profile");
-
-            var keycloakPublicUrl = builder.Configuration["KeycloakPublicUrl"];
-            if (string.IsNullOrEmpty(keycloakPublicUrl))
-            {
-                return;
-            }
-
-            options.TokenValidationParameters.ValidIssuer = $"{keycloakPublicUrl}/realms/master";
-
-            Task RedirectForPublicUrl(RedirectContext context)
-            {
-                var keycloakPublicUrl = builder.Configuration["KeycloakPublicUrl"];
-                if (string.IsNullOrEmpty(keycloakPublicUrl))
-                {
-                    return Task.CompletedTask;
-                }
-
-                var issuerUri = new Uri(context.ProtocolMessage.IssuerAddress);
-                context.ProtocolMessage.IssuerAddress = $"{keycloakPublicUrl}{issuerUri.AbsolutePath}{issuerUri.Query}";
-                return Task.CompletedTask;
-            }
-
-            options.Events.OnRedirectToIdentityProvider = RedirectForPublicUrl;
-            options.Events.OnRedirectToIdentityProviderForSignOut = RedirectForPublicUrl;
         });
 
 builder.Services.AddHttpForwarderWithServiceDiscovery();

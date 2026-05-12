@@ -27,12 +27,6 @@ public static class ServiceExtensions
 
                     options.Audience = "account";
 
-                    var keycloakPublicUrl = config["KeycloakPublicUrl"];
-                    if (!string.IsNullOrEmpty(keycloakPublicUrl))
-                    {
-                        options.TokenValidationParameters.ValidIssuer = $"{keycloakPublicUrl}/realms/master";
-                    }
-
                     // SignalR WebSocket/SSE connections cannot send Authorization headers,
                     // so the token is passed as a query parameter instead.
                     options.Events = new JwtBearerEvents
