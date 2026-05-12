@@ -44,6 +44,12 @@ jobs:
       - name: Aspire Publish
         run: aspire publish -o docker-compose-artifacts
 
+      - name: Aspire Build
+        run: aspire do build
+
+      - name: Aspire Push
+        run: aspire do push
+
       - name: upload aspire output
         uses: actions/upload-artifact@v4
         with:
