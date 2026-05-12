@@ -21,7 +21,7 @@ jobs:
     - name: Build
       run: dotnet build ./DisJockey.slnx --no-restore
     - name: Test
-      run: dotnet test --solution ./DisJockey.Tests/DisJockey.slnx --no-restore --no-build --verbosity normal
+      run: dotnet test --solution ./DisJockey.slnx --no-restore --no-build --verbosity normal
 
   # build-bot:
   #   runs-on: ubuntu-latest
