@@ -42,6 +42,10 @@ jobs:
         uses: actions/setup-node@v2
         with:
           node-version: '24'
+      
+      - name: Install Angular app Modules
+        run: npm install
+        working-directory: ./DisJockey.Client
 
       - name: Install Aspire CLI
         run: dotnet tool install -g aspire.cli --prerelease
