@@ -1,7 +1,7 @@
-﻿using DisJockey.Services.Interfaces;
+﻿using DisJockey.Application.Contracts;
+using DisJockey.Services.Interfaces;
 using DisJockey.Shared.DTOs.Track;
 using DisJockey.Shared.Helpers;
-using MediatR;
 
 namespace DisJockey.Application.Features.Playlists.Queries;
 
@@ -14,10 +14,12 @@ public class GetPlaylistTracksHandler : IRequestHandler<GetPlaylistTracksQuery, 
         _playlistRepository = playlistRepository;
     }
 
-    public async Task<PagedList<TrackListDto>> Handle(GetPlaylistTracksQuery request, CancellationToken cancellationToken)
+    public async Task<PagedList<TrackListDto>> HandleAsync(
+        GetPlaylistTracksQuery request, 
+        CancellationToken cancellationToken = default)
     {
-        var tracks = await _playlistRepository.GetPlaylistTracks(request.Pagination, request.YouTubeId);
-
-        return tracks;
+        return await _playlistRepository.GetPlaylistTracks(request.Pagination, request.YouTubeId);
     }
 }
+
+public record GetPlaylistTracksQuery(PaginationParams Pagination, string YouTubeId) : IRequest<PagedList<TrackListDto>>;

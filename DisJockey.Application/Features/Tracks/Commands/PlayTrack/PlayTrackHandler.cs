@@ -1,26 +1,31 @@
-﻿using DisJockey.MassTransit.Events;
-using DisJockey.Services.Interfaces;
+﻿using DisJockey.Application.Contracts;
+using DisJockey.Application.Interfaces;
+using DisJockey.Shared.Messaging.Contracts;
+using DisJockey.Shared.Messaging.Events;
 using ErrorOr;
-using MassTransit;
-using MediatR;
 
 namespace DisJockey.Application.Features.Tracks.Commands.PlayTrack;
 
 public class PlayTrackHandler : IRequestHandler<PlayTrackCommand, ErrorOr<Success>>
 {
     private readonly ITrackRepository _trackRepository;
-    private readonly IBus _bus;
+    private readonly IMessageSender _sender;
 
-    public PlayTrackHandler(ITrackRepository trackRepository, IBus bus)
+    public PlayTrackHandler(
+        ITrackRepository trackRepository,
+        IMessageSender sender)
     {
         _trackRepository = trackRepository;
-        _bus = bus;
+        _sender = sender;
     }
 
-    public async Task<ErrorOr<Success>> Handle(PlayTrackCommand request, CancellationToken cancellationToken)
+    public async Task<ErrorOr<Success>> HandleAsync(PlayTrackCommand request, CancellationToken cancellationToken)
     {
-        if (await _trackRepository.IsTrackBlacklisted(request.YouTubeId))
+        var trackIsBlacklisted = await _trackRepository.IsTrackBlacklisted(request.YouTubeId);
+        if (trackIsBlacklisted)
+        {
             return Error.Validation(description: "Track is blacklisted");
+        }
 
         var playTrackEvent = new PlayTrackEvent
         {
@@ -29,8 +34,10 @@ public class PlayTrackHandler : IRequestHandler<PlayTrackCommand, ErrorOr<Succes
             Queue = !request.PlayNow
         };
 
-        await _bus.Publish(playTrackEvent);
+        await _sender.SendAsync(playTrackEvent);
 
         return Result.Success;
     }
 }
+
+public record PlayTrackCommand(string YouTubeId, ulong DiscordId, bool PlayNow) : IRequest<ErrorOr<Success>>;

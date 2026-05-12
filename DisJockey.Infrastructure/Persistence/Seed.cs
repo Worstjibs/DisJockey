@@ -1,38 +1,41 @@
-using System.Text.Json;
 using DisJockey.Core;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 
 namespace DisJockey.Infrastructure.Persistence;
 
 public class Seed
 {
-    public static async Task SeedData(DataContext context)
+    public static async Task SeedData(DataContext context, IConfiguration configuration)
     {
         if (await context.Users.AnyAsync())
         {
             return;
         }
 
-        var filePath = AppDomain.CurrentDomain.BaseDirectory + "Persistence/SeedData.json";
-
-        if (File.Exists(filePath))
+        var seedData = configuration.GetSection("SeedData").Get<SeedData>();
+        if (seedData is null)
         {
-            var seedDataString = await File.ReadAllTextAsync(filePath);
-
-            var json = JsonSerializer.Deserialize<SeedData>(seedDataString);
-
-            await context.Users.AddRangeAsync(json!.Users);
-            await context.Tracks.AddRangeAsync(json.Tracks);
-
-            await context.SaveChangesAsync();
-
-            var users = await context.Users.ToListAsync();
-            var tracks = await context.Tracks.ToListAsync();
-
-            await SeedTrackPlays(users, tracks, context);
-
-            await SeedPlaylists(users, tracks, context);
+            return;
         }
+
+        if (seedData.Users.Count > 0)
+        {
+            await context.Users.AddRangeAsync(seedData.Users);
+        }
+
+        if (seedData.Tracks.Count > 0)
+        {
+            await context.Tracks.AddRangeAsync(seedData.Tracks);
+        }
+
+        await context.SaveChangesAsync();
+
+        var users = await context.Users.ToListAsync();
+        var tracks = await context.Tracks.ToListAsync();
+
+        await SeedTrackPlays(users, tracks, context);
+        await SeedPlaylists(users, tracks, context);
     }
 
     private static async Task SeedTrackPlays(List<AppUser> users, List<Track> tracks, DataContext context)
@@ -43,10 +46,10 @@ public class Seed
 
         tracks.ForEach(track =>
         {
-            track.TrackPlays = new List<TrackPlay>();
+            track.TrackPlays = [];
             var trackPlays = (List<TrackPlay>)track.TrackPlays;
 
-            track.PullUps = new List<PullUp>();
+            track.PullUps = [];
             var pullUps = (List<PullUp>)track.PullUps;
 
             users.ForEach(user =>
@@ -57,11 +60,9 @@ public class Seed
                     User = user,
                     TrackId = track.Id,
                     Track = track,
-                    TrackPlayHistory = new List<TrackPlayHistory>() {
-                            new TrackPlayHistory {
-                                CreatedOn = dateToSet
-                            }
-                        },
+                    TrackPlayHistory = [
+                        new() { CreatedOn = dateToSet }
+                    ],
                     LastPlayed = dateToSet
                 };
 
@@ -92,7 +93,7 @@ public class Seed
     {
         users.ForEach(user =>
         {
-            user.Playlists = new List<Playlist>();
+            user.Playlists = [];
 
             for (int i = 0; i < 5; i++)
             {
@@ -102,7 +103,7 @@ public class Seed
                     YoutubeId = $"{user.DiscordId}{i}"
                 };
 
-                playlist.Tracks = tracks.Select(t => new PlaylistTrack
+                playlist.Tracks = [.. tracks.Select(t => new PlaylistTrack
                 {
                     Playlist = playlist,
                     PlaylistId = playlist.Id,
@@ -110,7 +111,7 @@ public class Seed
                     TrackId = t.Id,
                     CreatedBy = user,
                     CreatedOn = DateTime.UtcNow
-                }).ToList();
+                })];
 
                 user.Playlists.Add(playlist);
             }

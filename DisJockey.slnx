@@ -1,0 +1,36 @@
+<Solution>
+  <Configurations>
+    <Platform Name="Any CPU" />
+    <Platform Name="x64" />
+    <Platform Name="x86" />
+  </Configurations>
+  <Folder Name="/Solution Items/">
+    <File Path=".editorconfig" />
+    <File Path=".gitignore" />
+    <File Path="application.yml" />
+  </Folder>
+  <Folder Name="/src/" />
+  <Folder Name="/src/api/">
+    <Project Path="DisJockey.Application/DisJockey.Application.csproj" />
+    <Project Path="DisJockey.Core/DisJockey.Core.csproj" />
+    <Project Path="DisJockey.Infrastructure/DisJockey.Infrastructure.csproj" />
+    <Project Path="DisJockey/DisJockey.csproj" />
+  </Folder>
+  <Folder Name="/src/aspire/">
+    <Project Path="DisJockey.AppHost/DisJockey.AppHost.csproj" />
+    <Project Path="DisJockey.ServiceDefaults/DisJockey.ServiceDefaults.csproj" />
+  </Folder>
+  <Folder Name="/src/bot/">
+    <Project Path="DisJockey.BotService/DisJockey.BotService.csproj" />
+  </Folder>
+  <Folder Name="/src/client/">
+    <Project Path="DisJockey.Bff/DisJockey.Bff.csproj" />
+  </Folder>
+  <Folder Name="/src/shared/">
+    <Project Path="DisJockey.Messaging/DisJockey.Messaging.csproj" />
+    <Project Path="DisJockey.Shared/DisJockey.Shared.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="DisJockey.Api.Integration.Tests/DisJockey.Api.Integration.Tests.csproj" Id="a51cb74c-0309-404e-affd-bef83637f833" />
+  </Folder>
+</Solution>

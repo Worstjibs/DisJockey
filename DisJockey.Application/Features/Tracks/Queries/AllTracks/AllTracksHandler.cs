@@ -1,7 +1,7 @@
-﻿using DisJockey.Services.Interfaces;
+using DisJockey.Application.Contracts;
+using DisJockey.Application.Interfaces;
 using DisJockey.Shared.DTOs.Track;
 using DisJockey.Shared.Helpers;
-using MediatR;
 
 namespace DisJockey.Application.Features.Tracks.Queries.AllTracks;
 
@@ -14,10 +14,12 @@ public class AllTracksHandler : IRequestHandler<AllTracksQuery, PagedList<TrackL
         _trackRepository = trackRepository;
     }
 
-    public async Task<PagedList<TrackListDto>> Handle(AllTracksQuery request, CancellationToken cancellationToken)
+    public async Task<PagedList<TrackListDto>> HandleAsync(AllTracksQuery request, CancellationToken cancellationToken)
     {
         var tracks = await _trackRepository.GetTracks(request.Pagination);
 
         return tracks;
     }
 }
+
+public record AllTracksQuery(PaginationParams Pagination) : IRequest<PagedList<TrackListDto>>;

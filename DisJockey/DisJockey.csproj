@@ -11,31 +11,29 @@
 
     <ItemGroup>
         <PackageReference Include="AspNet.Security.OAuth.Discord" Version="10.0.0" />
-        <PackageReference Include="Azure.Extensions.AspNetCore.Configuration.Secrets" Version="1.4.0" />
+        <PackageReference Include="Grpc.Net.ClientFactory" Version="2.80.0" />
 
-        <PackageReference Include="Discord.Net.Rest" Version="3.18.0" />
+        <PackageReference Include="Discord.Net.Rest" Version="3.19.1" />
 
-        <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.1">
+        <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="10.0.7" />
+
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.7">
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
             <PrivateAssets>all</PrivateAssets>
         </PackageReference>
-        <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="10.0.1">
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="10.0.7">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
 
-        <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.22.1" />
-    </ItemGroup>
-
-    <ItemGroup>
-        <PackageReference Include="System.Linq.Async" Version="7.0.0">
-            <ExcludeAssets>compile</ExcludeAssets>
-        </PackageReference>
+        <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.23.0" />
+        <PackageReference Include="Aspire.Keycloak.Authentication" Version="13.3.0-preview.1.26256.5" />
     </ItemGroup>
 
     <ItemGroup>
         <ProjectReference Include="..\DisJockey.Application\DisJockey.Application.csproj" />
         <ProjectReference Include="..\DisJockey.Infrastructure\DisJockey.Infrastructure.csproj" />
+        <ProjectReference Include="..\DisJockey.ServiceDefaults\DisJockey.ServiceDefaults.csproj" />
     </ItemGroup>
 
 </Project>

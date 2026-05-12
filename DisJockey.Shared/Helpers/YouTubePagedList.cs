@@ -17,5 +17,5 @@ public class YouTubePagedList<T> : List<T>
         AddRange(items);
     }
 
-    public static YouTubePagedList<T> Empty() => new YouTubePagedList<T>(Enumerable.Empty<T>(), string.Empty, string.Empty, string.Empty);
+    public static YouTubePagedList<T> Empty() => new([], string.Empty, string.Empty, string.Empty);
 }

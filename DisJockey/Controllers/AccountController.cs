@@ -6,51 +6,50 @@ using AspNet.Security.OAuth.Discord;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using DisJockey.Shared.Extensions;
 
-namespace DisJockey.Controllers
+namespace DisJockey.Controllers;
+
+public class AccountController : BaseApiController
 {
-    public class AccountController : BaseApiController
+
+    [HttpGet("login")]
+    public ActionResult Login()
     {
+        var redirectUri = "/tracks";
 
-        [HttpGet("login")]
-        public ActionResult Login()
+        // if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Development") redirectUri = "https://localhost:4200" + redirectUri;
+
+        var challenge = Challenge(new AuthenticationProperties { RedirectUri = redirectUri }, DiscordAuthenticationDefaults.AuthenticationScheme);
+        return challenge;
+    }
+
+    [HttpGet("logout")]
+    public async Task<ActionResult> Logout()
+    {
+        await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+
+        return Redirect("/");
+    }
+
+    [HttpGet("claims")]
+    public ActionResult<UserDto> GetUserInfo()
+    {
+        var discordId = User.GetDiscordId();
+
+        if (discordId.HasValue)
         {
-            var redirectUri = "/tracks";
+            var username = User.GetUsername();
+            var avatarUrl = User.GetAvatarUrl();
 
-            // if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Development") redirectUri = "https://localhost:4200" + redirectUri;
-
-            var challenge = Challenge(new AuthenticationProperties { RedirectUri = redirectUri }, DiscordAuthenticationDefaults.AuthenticationScheme);
-            return challenge;
-        }
-
-        [HttpGet("logout")]
-        public async Task<ActionResult> Logout()
-        {
-            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
-
-            return Redirect("/");
-        }
-
-        [HttpGet("claims")]
-        public ActionResult<UserDto> GetUserInfo()
-        {
-            var discordId = User.GetDiscordId();
-
-            if (discordId.HasValue)
+            var userDto = new UserDto
             {
-                var username = User.GetUsername();
-                var avatarUrl = User.GetAvatarUrl();
+                AvatarUrl = avatarUrl,
+                DiscordId = discordId.Value.ToString(),
+                Username = username
+            };
 
-                var userDto = new UserDto
-                {
-                    AvatarUrl = avatarUrl,
-                    DiscordId = discordId.Value.ToString(),
-                    Username = username
-                };
-
-                return Ok(userDto);
-            }
-
-            return Ok(null);
+            return Ok(userDto);
         }
+
+        return Ok(null);
     }
 }

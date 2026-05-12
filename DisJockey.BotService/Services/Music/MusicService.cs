@@ -5,12 +5,13 @@ using Lavalink4NET.Players;
 using Lavalink4NET.Rest.Entities.Tracks;
 using Microsoft.Extensions.Options;
 using DisJockey.BotService.Services.WheelUp;
-using MassTransit;
 using Discord.WebSocket;
-using DisJockey.MassTransit.Enums;
-using DisJockey.MassTransit.Events;
 using Lavalink4NET.Events.Players;
 using Lavalink4NET.Tracks;
+using DisJockey.Shared.Messaging.Events;
+using DisJockey.Shared.Messaging.Enums;
+using DisJockey.Shared.Messaging.Contracts;
+using DisJockey.BotService.Players;
 
 namespace DisJockey.BotService.Services.Music;
 
@@ -19,19 +20,19 @@ public class MusicService : IMusicService
     private readonly IAudioService _audioService;
     private readonly IOptions<QueuedLavalinkPlayerOptions> _queuePlayerOptions;
     private readonly WheelUpService _wheelUpService;
-    private readonly IBus _bus;
+    private readonly IServiceScopeFactory _serviceScopeFactory;
 
     public MusicService(
         IAudioService audioService,
         IOptions<QueuedLavalinkPlayerOptions> queuePlayerOptions,
         WheelUpService wheelUpService,
-        IBus bus
+        IServiceScopeFactory serviceScopeFactory
     )
     {
         _audioService = audioService;
         _queuePlayerOptions = queuePlayerOptions;
         _wheelUpService = wheelUpService;
-        _bus = bus;
+        _serviceScopeFactory = serviceScopeFactory;
     }
 
     public async Task PlayTrackAsync(string query, IInteractionContext context, SearchMode searchMode = SearchMode.YouTube)
@@ -55,14 +56,14 @@ public class MusicService : IMusicService
 
         if (track.Provider is StreamProvider.YouTube)
         {
-            await _bus.Publish(new TrackPlayedEvent
-            {
-                SearchMode = searchMode,
-                TrackId = track.Identifier,
-                DiscordId = socketUser.Id,
-                AvatarUrl = socketUser.GetAvatarUrl(),
-                UserName = socketUser.Username
-            });
+            var trackPlayedEvent = new TrackPlayedEvent(
+                                            track.Identifier,
+                                            socketUser.Id,
+                                            socketUser.GetAvatarUrl(),
+                                            socketUser.Username,
+                                            SearchMode.YouTube);
+
+            await SendMessageAsync(trackPlayedEvent);
         }
 
         if (position is 0)
@@ -81,7 +82,7 @@ public class MusicService : IMusicService
 
         var retrieveOptions = new PlayerRetrieveOptions(PlayerChannelBehavior.Join);
 
-        var playerResult = await _audioService.Players.RetrieveAsync(guild.Id, voiceChannel.Id, playerFactory: PlayerFactory.Queued, _queuePlayerOptions, retrieveOptions);
+        var playerResult = await GetQueuedPlayerResultAsync(guild.Id, voiceChannel.Id);
         if (!playerResult.IsSuccess)
             return false;
 
@@ -182,20 +183,30 @@ public class MusicService : IMusicService
         await context.Interaction.FollowupAsync($"Track seeked to {time} seconds");
     }
 
+    public async ValueTask<QueuedLavalinkPlayer?> GetQueuedLavalinkPlayerAsync(
+        ulong guildId, 
+        ulong voiceChannelId, 
+        bool connectToVoiceChannel = true)
+    {
+        var playerResult = await GetQueuedPlayerResultAsync(guildId, voiceChannelId, connectToVoiceChannel).ConfigureAwait(false);
+        if (!playerResult.IsSuccess)
+        {
+            return null;
+        }
+
+        return playerResult.Player;
+    }
+
     private async ValueTask<QueuedLavalinkPlayer?> GetQueuedPlayerAsync(IInteractionContext context, bool connectToVoiceChannel = true)
     {
-        var retrieveOptions = new PlayerRetrieveOptions(
-            ChannelBehavior: connectToVoiceChannel ? PlayerChannelBehavior.Join : PlayerChannelBehavior.None);
+        var guildId = context.Guild.Id;
 
         var user = context.User as IVoiceState;
 
-        var result = await _audioService.Players
-            .RetrieveAsync(context.Guild.Id, user?.VoiceChannel?.Id, playerFactory: PlayerFactory.Queued, _queuePlayerOptions, retrieveOptions)
-            .ConfigureAwait(false);
-
-        if (!result.IsSuccess)
+        var playerResult = await GetQueuedPlayerResultAsync(guildId, user!.VoiceChannel.Id, connectToVoiceChannel).ConfigureAwait(false);
+        if (!playerResult.IsSuccess)
         {
-            var errorMessage = result.Status switch
+            var errorMessage = playerResult.Status switch
             {
                 PlayerRetrieveStatus.UserNotInVoiceChannel => "You are not connected to a voice channel.",
                 PlayerRetrieveStatus.BotNotConnected => "The bot is currently not connected.",
@@ -206,10 +217,30 @@ public class MusicService : IMusicService
             return null;
         }
 
-        return result.Player;
+        return playerResult.Player;
     }
 
-    private TrackSearchMode MapToTrackSearchMode(SearchMode? searchMode)
+    private async ValueTask<PlayerResult<NotifyingPlayer>> GetQueuedPlayerResultAsync(
+        ulong guildId,
+        ulong voiceChannelId,
+        bool connectToVoiceChannel = true)
+    {
+        var retrieveOptions = new PlayerRetrieveOptions(
+            ChannelBehavior: connectToVoiceChannel ? PlayerChannelBehavior.Join : PlayerChannelBehavior.None);
+
+        var result = await _audioService.Players
+                                .RetrieveAsync<NotifyingPlayer, QueuedLavalinkPlayerOptions>(
+                                    guildId,
+                                    voiceChannelId,
+                                    playerFactory: NotifyingPlayer.CreatePlayerAsync,
+                                    _queuePlayerOptions,
+                                    retrieveOptions)
+                                .ConfigureAwait(false);
+
+        return result;
+    }
+
+    private static TrackSearchMode MapToTrackSearchMode(SearchMode? searchMode)
     {
         return searchMode switch
         {
@@ -217,6 +248,14 @@ public class MusicService : IMusicService
             SearchMode.SoundCloud => TrackSearchMode.SoundCloud,
             _ => TrackSearchMode.YouTube,
         };
+    }
+
+    private async Task SendMessageAsync<T>(T message)
+    {
+        using var scope = _serviceScopeFactory.CreateScope();
+        var sender = scope.ServiceProvider.GetRequiredService<IMessageSender>();
+
+        await sender.SendAsync(message);
     }
 
     public Task OnReadyAsync()

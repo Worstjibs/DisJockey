@@ -1,20 +1,16 @@
-﻿using AutoMapper;
-using AutoMapper.QueryableExtensions;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using DisJockey.Core;
 using DisJockey.Services.Interfaces;
 using DisJockey.Shared.DTOs.Track;
 using DisJockey.Shared.Helpers;
+using DisJockey.Application.Mappers;
 
 namespace DisJockey.Infrastructure.Persistence.Repositories;
 
 public class PlaylistRepository : BaseRepository, IPlaylistRepository
 {
-    private readonly IMapper _mapper;
-
-    public PlaylistRepository(DataContext context, IMapper mapper) : base(context)
+    public PlaylistRepository(DataContext context) : base(context)
     {
-        _mapper = mapper;
     }
 
     public async Task AddMissingTracks(IList<PlaylistTrack> playlistTracks)
@@ -49,7 +45,8 @@ public class PlaylistRepository : BaseRepository, IPlaylistRepository
             Name = playlist.Name,
             YoutubeId = playlist.YoutubeId
         };
-        playlistToSave.Tracks = playlistTracks.Select(x => new PlaylistTrack
+
+        playlistToSave.Tracks = [.. playlistTracks.Select(x => new PlaylistTrack
         {
             CreatedOn = DateTime.Now,
             CreatedBy = user,
@@ -57,7 +54,7 @@ public class PlaylistRepository : BaseRepository, IPlaylistRepository
             PlaylistId = playlistToSave.Id,
             Track = x,
             TrackId = x.Id
-        }).ToList();
+        })];
 
         user.Playlists.Add(playlistToSave);
 
@@ -75,7 +72,7 @@ public class PlaylistRepository : BaseRepository, IPlaylistRepository
     {
         var source = _context.Tracks.AsNoTracking()
             .Where(x => x.Playlists.Any(p => p.Playlist.YoutubeId == youtubeId))
-            .ProjectTo<TrackListDto>(_mapper.ConfigurationProvider)
+            .Select(TrackMapper.ToListDtoExpression())
             .OrderBy(x => x.Title);
 
         return await PagedList<TrackListDto>.CreateAsync(source, paginationParams.PageNumber, paginationParams.PageSize);

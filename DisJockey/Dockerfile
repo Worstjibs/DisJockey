@@ -16,7 +16,7 @@ ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
 COPY ["DisJockey/DisJockey.csproj", "DisJockey/"]
 COPY ["DisJockey.Core/DisJockey.Core.csproj", "DisJockey.Core/"]
-COPY ["DisJockey.MassTransit/DisJockey.MassTransit.csproj", "DisJockey.MassTransit/"]
+COPY ["DisJockey.Messaging/DisJockey.Messaging.csproj", "DisJockey.Messaging/"]
 COPY ["DisJockey.Application/DisJockey.Application.csproj", "DisJockey.Application/"]
 COPY ["DisJockey.Infrastructure/DisJockey.Infrastructure.csproj", "DisJockey.Infrastructure/"]
 COPY ["DisJockey.Shared/DisJockey.Shared.csproj", "DisJockey.Shared/"]

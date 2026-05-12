@@ -11,15 +11,12 @@ namespace DisJockey.Infrastructure.YouTube;
 
 public class VideoDetailService : IVideoDetailService
 {
-    private const int MAX_ITEMS = 10000;
+    private const int _maxItems = 10000;
 
     private readonly YouTubeService _youTubeService;
-    public VideoDetailService(IOptions<YoutubeSettings> config)
+    public VideoDetailService(YouTubeService youTubeService)
     {
-        _youTubeService = new YouTubeService(new BaseClientService.Initializer()
-        {
-            ApiKey = config.Value.ApiKey
-        });
+        _youTubeService = youTubeService;
     }
 
     public async Task<Playlist?> GetPlaylistDetailsAsync(string playlistId)
@@ -34,7 +31,11 @@ public class VideoDetailService : IVideoDetailService
             return null;
         }
 
-        var playlistResult = playlistResponse.Items.First();
+        var playlistResult = playlistResponse?.Items.FirstOrDefault();
+        if (playlistResult is null)
+        {
+            return null;
+        }
 
         var playlist = new Playlist
         {
@@ -50,15 +51,19 @@ public class VideoDetailService : IVideoDetailService
         {
             var playlistItemsRequest = _youTubeService.PlaylistItems.List("snippet,contentDetails");
             playlistItemsRequest.PlaylistId = playlistId;
-            playlistItemsRequest.MaxResults = playlistItemCount < MAX_ITEMS ? playlistItemCount : MAX_ITEMS;
+            playlistItemsRequest.MaxResults = playlistItemCount < _maxItems ? playlistItemCount : _maxItems;
             playlistItemsRequest.PageToken = pageToken;
 
             var playlistItemsResponse = await playlistItemsRequest.ExecuteAsync();
 
             var playlistTracks = playlistItemsResponse?.Items;
 
-            ProcessTracks(playlist, playlistTracks);
-            pageToken = playlist.Tracks.Count >= MAX_ITEMS || playlist.Tracks.Count == playlistItemCount ? null : playlistItemsResponse.NextPageToken;
+            ProcessTracks(playlist, playlistTracks ?? []);
+
+            pageToken = playlist.Tracks.Count >= _maxItems || playlist.Tracks.Count == playlistItemCount
+                            ? null
+                            : playlistItemsResponse?.NextPageToken;
+
         } while (pageToken != null);
 
         return playlist;
@@ -91,6 +96,7 @@ public class VideoDetailService : IVideoDetailService
     public async Task<YouTubePagedList<Track>> QueryTracksAsync(PaginationParams paginationParams)
     {
         var searchRequest = _youTubeService.Search.List("snippet");
+
         searchRequest.Q = paginationParams.Query;
         searchRequest.Type = "video";
         searchRequest.MaxResults = paginationParams.PageSize;
@@ -105,13 +111,17 @@ public class VideoDetailService : IVideoDetailService
 
         var tracks = searchResponse.Items.Select(MapSearchResultToTrack);
 
-        var pagedList = new YouTubePagedList<Track>(tracks, paginationParams.PageToken, searchResponse.NextPageToken, searchResponse.PrevPageToken);
+        var pagedList = new YouTubePagedList<Track>(
+                            tracks, 
+                            paginationParams.PageToken ?? string.Empty, 
+                            searchResponse.NextPageToken, 
+                            searchResponse.PrevPageToken);
 
         return pagedList;
     }
 
 
-    private static void ProcessTracks(Playlist playlist, IList<GoogleData.PlaylistItem> playlistItems)
+    private static void ProcessTracks(Playlist playlist, IEnumerable<GoogleData.PlaylistItem> playlistItems)
     {
         var playlistTracks = playlistItems.Select(x => new PlaylistTrack
         {

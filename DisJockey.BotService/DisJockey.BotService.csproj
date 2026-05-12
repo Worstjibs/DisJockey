@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.Worker">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
     <PropertyGroup>
         <TargetFramework>net10.0</TargetFramework>
@@ -9,15 +9,16 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Discord.Net" Version="3.18.0" />
-        <PackageReference Include="Lavalink4NET.Discord.NET" Version="4.1.0" />
-        <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="10.0.1" />
-        <PackageReference Include="Microsoft.Extensions.Hosting" Version="10.0.1" />
-        <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.22.1" />
+        <PackageReference Include="Discord.Net" Version="3.19.1" />
+        <PackageReference Include="Grpc.AspNetCore" Version="2.80.0" />
+        <PackageReference Include="Lavalink4NET.Discord.NET" Version="4.2.1" />
+        <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="10.0.7" />
+        <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.23.0" />
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\DisJockey.MassTransit\DisJockey.MassTransit.csproj" />
+        <ProjectReference Include="..\DisJockey.Messaging\DisJockey.Messaging.csproj" />
+        <ProjectReference Include="..\DisJockey.ServiceDefaults\DisJockey.ServiceDefaults.csproj" />
         <ProjectReference Include="..\DisJockey.Shared\DisJockey.Shared.csproj" />
     </ItemGroup>
 </Project>

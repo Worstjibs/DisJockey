@@ -1,6 +1,6 @@
 ﻿using Discord.Interactions;
 using DisJockey.BotService.Services.Music;
-using DisJockey.MassTransit.Enums;
+using DisJockey.Shared.Messaging.Enums;
 
 namespace DisJockey.BotService.Modules;
 

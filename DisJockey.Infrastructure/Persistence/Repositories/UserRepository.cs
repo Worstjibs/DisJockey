@@ -1,20 +1,14 @@
 using DisJockey.Shared.DTOs.Member;
 using DisJockey.Core;
-using AutoMapper;
-using AutoMapper.QueryableExtensions;
 using Microsoft.EntityFrameworkCore;
 using DisJockey.Services.Interfaces;
+using DisJockey.Application.Mappers;
 
 namespace DisJockey.Infrastructure.Persistence.Repositories;
 
 public class UserRepository : BaseRepository, IUserRepository
 {
-    private readonly IMapper _mapper;
-
-    public UserRepository(DataContext context, IMapper mapper) : base(context)
-    {
-        _mapper = mapper;
-    }
+    public UserRepository(DataContext context) : base(context) { }
 
     public async Task<AppUser?> GetUserByIdAsync(int id)
     {
@@ -30,17 +24,21 @@ public class UserRepository : BaseRepository, IUserRepository
 
     public async Task<MemberDetailDto?> GetMemberByDiscordIdAsync(ulong discordId)
     {
-        return await _context.Users.AsQueryable()
-            .Where(x => x.DiscordId == discordId)
-            .ProjectTo<MemberDetailDto>(_mapper.ConfigurationProvider)
-            .FirstOrDefaultAsync();
+        var user = await _context.Users
+            .Include(x => x.Tracks)
+            .Include(x => x.Playlists)
+            .FirstOrDefaultAsync(x => x.DiscordId == discordId);
+
+        return user?.ToDetailDto();
     }
 
     public async Task<IEnumerable<MemberListDto>> GetMembersAsync()
     {
-        return await _context.Users
-            .ProjectTo<MemberListDto>(_mapper.ConfigurationProvider)
+        var users = await _context.Users
+            .Include(x => x.Tracks)
             .ToListAsync();
+
+        return users.Select(u => u.ToListDto());
     }
 
     public void AddUser(AppUser user)

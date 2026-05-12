@@ -1,34 +1,38 @@
 using DisJockey.Core;
-using AutoMapper;
-using AutoMapper.QueryableExtensions;
 using Microsoft.EntityFrameworkCore;
 using DisJockey.Shared.DTOs.Track;
 using DisJockey.Shared.Helpers;
-using DisJockey.Services.Interfaces;
 using DisJockey.Shared.DTOs.PullUps;
 using DisJockey.Shared.Extensions;
 using Microsoft.AspNetCore.Http;
+using DisJockey.Application.Interfaces;
+using DisJockey.Application.Mappers;
+using DisJockey.Shared.DTOs.Shared;
 
 namespace DisJockey.Infrastructure.Persistence.Repositories;
 
 public class TrackRepository : BaseRepository, ITrackRepository
 {
-    private readonly IMapper _mapper;
     private readonly IHttpContextAccessor _httpContext;
 
     private ulong? DiscordId;
 
-    public TrackRepository(DataContext context, IMapper mapper, IHttpContextAccessor httpContext) : base(context)
+    public TrackRepository(DataContext context, IHttpContextAccessor httpContext) : base(context)
     {
-        _mapper = mapper;
         _httpContext = httpContext;
 
         DiscordId = _httpContext.HttpContext?.User.GetDiscordId();
     }
 
-    public async Task<Track?> GetTrackByIdAsync(int id)
+    public async Task<Track?> GetTrackByIdAsync(int id, bool ignoreFilters = false)
     {
-        return await _context.Tracks.FindAsync(id);
+        var query = _context.Tracks.AsQueryable();
+        if (ignoreFilters)
+        {
+            query = query.IgnoreQueryFilters();
+        }
+
+        return await query.FirstOrDefaultAsync(x => x.Id == id);
     }
 
     public async Task<Track?> GetTrackByYoutubeIdAsync(string youtubeId)
@@ -43,11 +47,10 @@ public class TrackRepository : BaseRepository, ITrackRepository
 
     public async Task<PagedList<TrackListDto>> GetTracks(PaginationParams paginationParams)
     {
-
         var query = _context.Tracks.AsNoTracking()
             .Include(x => x.TrackPlays)
             .Where(x => x.TrackPlays.Count > 0)
-            .ProjectTo<TrackListDto>(_mapper.ConfigurationProvider, new { DiscordId });
+            .Select(TrackMapper.ToListDtoExpression(DiscordId));
 
         return await CreatePagedList(paginationParams, query);
     }
@@ -56,7 +59,7 @@ public class TrackRepository : BaseRepository, ITrackRepository
     {
         var query = _context.Tracks.AsNoTracking()
             .Where(x => x.TrackPlays.Any(tp => tp.User.DiscordId == discordId))
-            .ProjectTo<TrackListDto>(_mapper.ConfigurationProvider, new { DiscordId });
+            .Select(TrackMapper.ToListDtoExpression(DiscordId));
 
         return await CreatePagedList(paginationParams, query);
     }
@@ -70,7 +73,7 @@ public class TrackRepository : BaseRepository, ITrackRepository
     {
         var query = _context.Tracks.AsNoTracking()
             .Where(x => x.PullUps.Any(tp => tp.User.DiscordId == discordId))
-            .ProjectTo<PullUpDto>(_mapper.ConfigurationProvider, new { DiscordId });
+            .Select(PullUpMapper.ToListDtoExpression(DiscordId));
 
         query = paginationParams.SortBy switch
         {
@@ -86,7 +89,7 @@ public class TrackRepository : BaseRepository, ITrackRepository
     {
         var query = await _context.Tracks.AsNoTracking()
             .Where(x => youTubeIds.Contains(x.YoutubeId))
-            .ProjectTo<TrackListDto>(_mapper.ConfigurationProvider)
+            .Select(TrackMapper.ToListDtoExpression(null))
             .ToListAsync();
 
         return query;

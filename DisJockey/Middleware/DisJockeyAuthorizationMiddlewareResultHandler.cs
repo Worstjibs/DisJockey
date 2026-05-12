@@ -1,6 +1,6 @@
 ﻿using Discord;
 using Discord.Rest;
-using DisJockey.Services;
+using DisJockey.Application.Services;
 using DisJockey.Shared.Extensions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Authorization.Policy;

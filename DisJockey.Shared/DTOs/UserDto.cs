@@ -1,7 +1,8 @@
-namespace DisJockey.Shared.DTOs {
-    public class UserDto {
-        public string Username { get; set; }
-        public string DiscordId { get; set; }
-        public string AvatarUrl { get; set; }
-    }
+namespace DisJockey.Shared.DTOs;
+
+public class UserDto
+{
+    public string? Username { get; set; }
+    public string? DiscordId { get; set; }
+    public string? AvatarUrl { get; set; }
 }

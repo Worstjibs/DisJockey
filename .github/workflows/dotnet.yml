@@ -1,4 +1,4 @@
-name: Build DisJockey
+name: Build and Test DisJockey
 
 on:
   push:
@@ -7,7 +7,7 @@ on:
     branches: [ master ]
 
 jobs:
-  build-api:
+  build-and-test-api:
     runs-on: ubuntu-latest
 
     steps:
@@ -15,45 +15,47 @@ jobs:
     - name: Setup .NET
       uses: actions/setup-dotnet@v4
       with:
-        dotnet-version: 8.0.x
-    - name: Restore dependencies
-      run: dotnet restore ./DisJockey/DisJockey.csproj
+        dotnet-version: 10.0.x
+    - name: Restore
+      run: dotnet restore ./DisJockey.slnx
     - name: Build
-      run: dotnet build ./DisJockey/DisJockey.csproj --no-restore
+      run: dotnet build ./DisJockey.slnx --no-restore
+    - name: Test
+      run: dotnet test --solution ./DisJockey.slnx --no-restore --no-build --verbosity normal
 
-  build-bot:
-    runs-on: ubuntu-latest
+  # build-bot:
+  #   runs-on: ubuntu-latest
 
-    steps:
-    - uses: actions/checkout@v4
-    - name: Setup .NET
-      uses: actions/setup-dotnet@v4
-      with:
-        dotnet-version: 8.0.x
-    - name: Restore dependencies
-      run: dotnet restore ./DisJockey.BotService/DisJockey.BotService.csproj
-    - name: Build
-      run: dotnet build ./DisJockey.BotService/DisJockey.BotService.csproj --no-restore
+  #   steps:
+  #   - uses: actions/checkout@v4
+  #   - name: Setup .NET
+  #     uses: actions/setup-dotnet@v4
+  #     with:
+  #       dotnet-version: 8.0.x
+  #   - name: Restore dependencies
+  #     run: dotnet restore ./DisJockey.BotService/DisJockey.BotService.csproj
+  #   - name: Build
+  #     run: dotnet build ./DisJockey.BotService/DisJockey.BotService.csproj --no-restore
 
   
-  build-angular:
-    runs-on: ubuntu-latest
+  # build-angular:
+  #   runs-on: ubuntu-latest
 
-    env:
-      working-directory: ./DisJockey/ClientApp
+  #   env:
+  #     working-directory: ./DisJockey/ClientApp
 
-    steps:
-    - uses: actions/checkout@v2.3.2
+  #   steps:
+  #   - uses: actions/checkout@v2.3.2
 
-    - name: Use Node.js 14 LTS
-      uses: actions/setup-node@v2
-      with:
-        node-version: '14'
+  #   - name: Use Node.js 14 LTS
+  #     uses: actions/setup-node@v2
+  #     with:
+  #       node-version: '14'
       
-    - name: Install NPM Modules
-      run: npm install
-      working-directory: ${{env.working-directory}}
+  #   - name: Install NPM Modules
+  #     run: npm install
+  #     working-directory: ${{env.working-directory}}
 
-    - name: Build Project
-      run: npm run build-prod
-      working-directory: ${{env.working-directory}}
+  #   - name: Build Project
+  #     run: npm run build-prod
+  #     working-directory: ${{env.working-directory}}

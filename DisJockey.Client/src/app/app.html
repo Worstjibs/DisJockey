@@ -1,0 +1,9 @@
+<app-nav></app-nav>
+
+<div class="container" style="margin-top: 100px;">
+  <router-outlet></router-outlet>
+</div>
+
+@if (currentUser()) {
+  <app-bottom-nav></app-bottom-nav>
+}

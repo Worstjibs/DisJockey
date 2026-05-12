@@ -1,19 +1,41 @@
 using DisJockey.BotService;
-using DisJockey.MassTransit;
-using DisJockey.Shared.Extensions;
-using System.Reflection;
+using DisJockey.BotService.Grpc;
+using DisJockey.BotService.Hubs;
+using DisJockey.Messaging;
+using DisJockey.Shared.Messaging.Contracts;
+using DisJockey.Shared.Messaging.Events;
+using Wolverine;
+using Wolverine.RabbitMQ;
 
-var builder = Host.CreateApplicationBuilder(args);
+var builder = WebApplication.CreateBuilder(args);
 
-builder.Configuration.AddAzureKeyVault();
+builder.AddServiceDefaults();
+
+builder.Services.AddGrpc();
 
 builder.Services.AddDiscordServices(builder.Configuration);
 
-builder.Services.AddMassTransit(
-                        builder.Configuration,
-                        builder.Environment,
-                        [Assembly.GetExecutingAssembly()]);
+builder.UseWolverine(options =>
+{
+    options.ListenToRabbitQueue("play-track-queue");
 
-var host = builder.Build();
+    options.PublishMessage<TrackPlayedEvent>()
+            .ToRabbitExchange("track-played-exchange", config =>
+            {
+                config.BindQueue("track-played-queue");
+            });
 
-host.Run();
+    options.UseRabbitMqUsingNamedConnection("rabbit-mq").AutoProvision();
+});
+
+builder.Services.AddScoped<IMessageSender, MessageSender>();
+
+builder.Services.AddSingleton<HubConnectionProvider>();
+
+var app = builder.Build();
+
+app.MapDefaultEndpoints();
+
+app.MapGrpcService<DisJockeyGrpcService>();
+
+app.Run();

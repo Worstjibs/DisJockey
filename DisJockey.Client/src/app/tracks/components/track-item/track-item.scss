@@ -1,0 +1,80 @@
+.fa-thumbs-up {
+    color: green;
+}
+
+.fa-thumbs-down {
+    color: red;
+}
+
+.liked-by-user {
+    color: white !important;
+}
+
+.like-num {
+    color: #a5a5a5;
+}
+
+.like-icon {
+    transform: scale(1);
+    transition: all .5s ease-in-out;
+    margin-right: 8px;
+
+    :hover {
+        transform: scale(1.5);
+        transition: all .5s ease-in-out;
+    }
+
+    :active {
+        transform: scale(1.7);
+        transition: all .1s ease-out;
+    }
+}
+
+.img-wrapper {
+    overflow: hidden;
+    position: relative;
+    box-shadow: 0px 0px 4px 1px rgb(95 112 190);
+}
+
+.play-button {
+    opacity: 0;
+    transition: opacity 0.3s ease-in-out;
+}
+
+.track-item-container {
+    transition: background-color ease-in 0.2s;
+    width: 99%;
+
+    &:hover {
+        background-color: #363636;
+
+        .play-button {
+            opacity: 1;
+        }
+
+        #track-thumbnail-img {
+            transform: scale(1.1);
+        }
+    }
+}
+
+.track-cols {
+    transition: all ease .7s;
+}
+
+#track-thumbnail-img {
+    transform: scale(1);
+    transition: all .5s ease;
+}
+
+.user-list {
+    max-height: 0;
+    opacity: 0;
+    overflow: hidden;
+    transition: opacity .2s linear, max-height .5s ease-in-out;
+
+    &.user-list-open {
+        opacity: 1 !important;
+        max-height: 500px !important;
+    }
+}

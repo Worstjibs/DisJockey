@@ -1,0 +1,27 @@
+.container {
+  max-width: 1300px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  position: relative;
+}
+
+.nav-left {
+  flex: 1;
+  display: flex;
+  align-items: center;
+}
+
+.nav-center {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+}
+
+.nav-right {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+}

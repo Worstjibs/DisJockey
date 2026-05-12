@@ -1,4 +1,4 @@
-using AutoMapper;
+using DisJockey.Application.Interfaces;
 using DisJockey.Services.Interfaces;
 using Microsoft.AspNetCore.Http;
 
@@ -7,7 +7,7 @@ namespace DisJockey.Infrastructure.Persistence;
 public class UnitOfWork : IUnitOfWork
 {
     private readonly DataContext _context;
-    private readonly IMapper _mapper;
+
     private readonly IHttpContextAccessor _httpContext;
     private readonly IUserRepository _userRepository;
     private readonly ITrackRepository _trackRepository;
@@ -15,13 +15,11 @@ public class UnitOfWork : IUnitOfWork
 
     public UnitOfWork(
         DataContext context,
-        IMapper mapper,
         IHttpContextAccessor httpContext,
         IUserRepository userRepository,
         ITrackRepository trackRepository,
         IPlaylistRepository playlistRepository)
     {
-        _mapper = mapper;
         _httpContext = httpContext;
         _userRepository = userRepository;
         _trackRepository = trackRepository;

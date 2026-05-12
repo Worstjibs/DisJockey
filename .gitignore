@@ -441,10 +441,18 @@ $RECYCLE.BIN/
 !.vscode/launch.json
 !.vscode/extensions.json
 
-appsettings.json
-botsettings.json
+appsettings.Seed.json
 
 /DisJockey/wwwroot
-/DisJockey/Data/SeedData.json
 
 /sql/*
+
+**/DisJockey.AppHost/providers/**
+**/DisJockey.AppHost/realms/**
+
+**/.claude/**
+
+**/aspire-output/**
+**/.aspire/**
+
+**/wwwroot/**

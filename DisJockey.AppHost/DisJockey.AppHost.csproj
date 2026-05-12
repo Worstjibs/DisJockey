@@ -1,0 +1,30 @@
+﻿<Project Sdk="Aspire.AppHost.Sdk/13.3.0">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <UserSecretsId>ab43cb54-7952-4ba4-b77a-65e4cc03a72a</UserSecretsId>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Aspire.Hosting.Docker" Version="13.3.0" />
+    <PackageReference Include="Aspire.Hosting.Keycloak" Version="13.3.0-preview.1.26256.5" />
+    <PackageReference Include="Aspire.Hosting.RabbitMQ" Version="13.3.0" />
+    <PackageReference Include="Aspire.Hosting.Seq" Version="13.3.0" />
+    <PackageReference Include="Aspire.Hosting.SqlServer" Version="13.3.0" />
+    <!--<PackageReference Include="CommunityToolkit.Aspire.Hosting.OpenTelemetryCollector" Version="13.1.1" />-->
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\DisJockey.Bff\DisJockey.Bff.csproj" />
+    <ProjectReference Include="..\DisJockey.BotService\DisJockey.BotService.csproj" />
+    <ProjectReference Include="..\DisJockey\DisJockey.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="providers\" />
+  </ItemGroup>
+
+</Project>

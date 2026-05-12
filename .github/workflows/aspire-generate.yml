@@ -1,0 +1,54 @@
+name: Aspire Generate
+
+on:
+  workflow_dispatch:
+  push:
+    branches: ["master"]
+
+permissions:
+  contents: read
+  issues: write
+  packages: write
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}-api
+
+jobs:
+  build-images:  
+    defaults:
+      run:
+        shell: bash
+        working-directory: ./DisJockey.AppHost
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Log in to the Container registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.x
+
+      - name: Install Aspire CLI
+        run: dotnet tool install -g aspire.cli --prerelease
+
+      - name: Install Aspire CLI
+        run: dotnet tool install -g aspire.cli --prerelease
+
+      - name: Aspire Publish
+        run: aspire publish -o docker-compose-artifacts
+
+      - name: upload aspire output
+        uses: actions/upload-artifact@v4
+        with:
+          name: aspire-publish-output
+          path: ./DisJockey.AppHost/docker-compose-artifacts

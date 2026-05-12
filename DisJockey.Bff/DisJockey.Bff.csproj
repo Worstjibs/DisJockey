@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UserSecretsId>a0131f14-6f23-4953-a5fa-2f8a2f76bd37</UserSecretsId>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Aspire.Keycloak.Authentication" Version="13.3.0-preview.1.26256.5" />
+    <PackageReference Include="Microsoft.Extensions.ServiceDiscovery.Yarp" Version="10.5.0" />
+    <PackageReference Include="Yarp.ReverseProxy" Version="2.3.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\DisJockey.ServiceDefaults\DisJockey.ServiceDefaults.csproj" />
+    <ProjectReference Include="..\DisJockey.Shared\DisJockey.Shared.csproj" />
+  </ItemGroup>
+
+  <Target Name="PublishAngularApp" BeforeTargets="Build" Condition="'$(Configuration)' == 'Release'">
+    <Exec Command="npm run build" WorkingDirectory="..\DisJockey.Client" />
+  </Target>
+
+</Project>

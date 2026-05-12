@@ -1,79 +1,57 @@
 ﻿using Discord.Rest;
 using DisJockey.Application.Interfaces;
 using DisJockey.Application.Services;
-using DisJockey.Infrastructure.Persistence;
-using DisJockey.Infrastructure.Persistence.Repositories;
-using DisJockey.Infrastructure.YouTube;
+using DisJockey.Hubs;
 using DisJockey.Middleware;
-using DisJockey.Profiles;
-using DisJockey.Services;
-using DisJockey.Services.Interfaces;
-using DisJockey.Shared.Helpers;
-using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
-using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using System.Reflection;
-using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace DisJockey.Extensions;
 
 public static class ServiceExtensions
 {
-    public static IServiceCollection AddApplicationServices(this IServiceCollection services, IConfiguration config)
-    {
-        services.AddAutoMapper(configuration =>
-        {
-            configuration.AddProfile<AutoMapperProfiles>();
-        });
-
-        services.Configure<YoutubeSettings>(config.GetSection("YoutubeSettings"));
-
-        services.AddScoped<IUnitOfWork, UnitOfWork>();
-
-        services.AddScoped<IUserRepository, UserRepository>();
-        services.AddScoped<IPlaylistRepository, PlaylistRepository>();
-        services.AddScoped<ITrackRepository, TrackRepository>();
-
-        services.AddScoped<IVideoDetailService, VideoDetailService>();
-
-        var dbConnectionString = config.GetConnectionString("DefaultConnection");
-        services.AddDbContext<DataContext>(options =>
-        {
-            options.UseSqlServer(dbConnectionString);
-        });
-
-        services.AddMediatR(config => config.RegisterServicesFromAssembly(Assembly.Load("DisJockey.Application")));
-
-        return services;
-    }
-
     public static IServiceCollection AddIdentityServices(this IServiceCollection services, IConfiguration config)
     {
-        var authenticationSettings = config.GetRequiredSection("AuthenticationSettings").Get<AuthenticationSettings>()!;
-        services.AddSingleton(authenticationSettings);
+        services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+            .AddKeycloakJwtBearer(
+                serviceName: "keycloak",
+                realm: "master",
+                options =>
+                {
+                    options.RequireHttpsMetadata = false;
 
-        services.AddAuthentication(options =>
-        {
-            options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-        })
-        .AddCookie()
-        .AddDiscord(options =>
-        {
-            options.ClientId = authenticationSettings.DiscordClientId;
-            options.ClientSecret = authenticationSettings.DiscordClientSecret;
-            options.Scope.Add("guilds");
+                    options.Audience = "account";
 
-            options.Events.OnCreatingTicket = context =>
-            {
-                context.Identity!.AddClaim(new Claim("discord_token", context.AccessToken!));
+                    var keycloakPublicUrl = config["KeycloakPublicUrl"];
+                    if (!string.IsNullOrEmpty(keycloakPublicUrl))
+                    {
+                        options.TokenValidationParameters.ValidIssuer = $"{keycloakPublicUrl}/realms/master";
+                    }
 
-                return Task.CompletedTask;
-            };
-        });
+                    // SignalR WebSocket/SSE connections cannot send Authorization headers,
+                    // so the token is passed as a query parameter instead.
+                    options.Events = new JwtBearerEvents
+                    {
+                        OnMessageReceived = context =>
+                        {
+                            var accessToken = context.Request.Query["access_token"];
+                            if (!string.IsNullOrEmpty(accessToken) &&
+                                context.HttpContext.Request.Path.StartsWithSegments("/hubs"))
+                            {
+                                context.Token = accessToken;
+                            }
+                            return Task.CompletedTask;
+                        }
+                    };
+                });
+
+        services.AddSingleton<IUserIdProvider, DiscordUserIdProvider>();
+        services.AddSingleton<IUserConnectionTracker, UserConnectionTracker>();
 
         services.AddTransient<IHttpContextAccessor, HttpContextAccessor>();
 
@@ -84,10 +62,12 @@ public static class ServiceExtensions
     {
         services.AddScoped<IDiscordTrackService, DiscordTrackService>();
 
-        services.AddScoped<DiscordRestClient>();
-        services.AddScoped<IAuthorizationMiddlewareResultHandler, DisJockeyAuthorizationMiddlewareResultHandler>();
-        services.AddSingleton<BotGuildsService>();
-        services.AddHostedService<BotGuildsScheduledService>();
+        // Disabling for now; users won't be able to play any tracks anyway
+        //services.AddScoped<DiscordRestClient>();
+        //services.AddScoped<IAuthorizationMiddlewareResultHandler, DisJockeyAuthorizationMiddlewareResultHandler>();
+        //services.AddSingleton<BotGuildsService>();
+
+        //services.AddHostedService<BotGuildsScheduledService>();
 
         return services;
     }
