@@ -8,6 +8,7 @@ using OpenTelemetry;
 using OpenTelemetry.Trace;
 using System.Diagnostics;
 using System.Net.Http.Headers;
+using System.Text;
 using Yarp.ReverseProxy.Transforms;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -42,14 +43,34 @@ builder.Services
 
             options.SaveTokens = true;
 
-            options.Scope.Add("profile");
+            options.Scope.Add("profile"); 
+            
+            var keycloakPublicUrl = builder.Configuration["KeycloakPublicUrl"];
+            if (string.IsNullOrEmpty(keycloakPublicUrl))
+            {
+                return;
+            }
+
+            options.TokenValidationParameters.ValidIssuer = $"{keycloakPublicUrl}/realms/master";
+
+            options.Events.OnRedirectToIdentityProvider = context =>
+            {
+                var keycloakPublicUrl = builder.Configuration["KeycloakPublicUrl"];
+                if (string.IsNullOrEmpty(keycloakPublicUrl))
+                {
+                    return Task.CompletedTask;
+                }
+
+                var issuerUri = new Uri(context.ProtocolMessage.IssuerAddress);
+                context.ProtocolMessage.IssuerAddress = $"{keycloakPublicUrl}{issuerUri.AbsolutePath}{issuerUri.Query}";
+                return Task.CompletedTask;
+            };
         });
 
 builder.Services.AddHttpForwarderWithServiceDiscovery();
 
 builder.Services.AddReverseProxy()
-    .LoadFromConfig(builder.Configuration.GetSection("ReverseProxy"))
-    .AddServiceDiscoveryDestinationResolver();
+    .LoadFromConfig(builder.Configuration.GetSection("ReverseProxy"));
 
 var app = builder.Build();
 

@@ -2,7 +2,9 @@ using Projects;
 
 var builder = DistributedApplication.CreateBuilder(args);
 
-AddMonitoringServices(builder);
+builder.AddDockerComposeEnvironment("env");
+
+//AddMonitoringServices(builder);
 
 var sql = builder.AddSqlServer("sql")
             .WithDataVolume("sql-data")
@@ -22,11 +24,16 @@ await GetDiscordProvider();
 
 var keycloak = AddKeycloak(builder);
 
+var youtubeApiKey = builder.AddParameter("youtube-api-key");
+
 var api = builder.AddProject<DisJockey>("api")
             .WithReference(database)
             .WaitFor(database)
             .WithReference(rabbitMq)
-            .WaitFor(rabbitMq);
+            .WaitFor(rabbitMq)
+            .WithReference(keycloak)
+            .WaitFor(keycloak)
+            .WithEnvironment("YoutubeSettings__APIKey", youtubeApiKey);
 
 var bot = builder.AddProject<DisJockey_BotService>("bot")
             .WithReference(rabbitMq)
@@ -36,6 +43,7 @@ var bot = builder.AddProject<DisJockey_BotService>("bot")
             .WithReference(keycloak);
 
 api.WithReference(bot);
+bot.WithReference(api);
 
 var bffClientId = builder.AddParameter("bff-client-id");
 var bffClientSecret = builder.AddParameter("bff-client-secret");
@@ -79,10 +87,15 @@ static async Task GetDiscordProvider()
 
 static IResourceBuilder<KeycloakResource> AddKeycloak(IDistributedApplicationBuilder builder)
 {
+    var keycloakPublicUrl = builder.AddParameter("keycloak-public-url", string.Empty);
+
     var keycloak = builder.AddKeycloak("keycloak", 8080)
                     .WithBindMount("./providers", "/opt/keycloak/providers")
                     .WithRealmImport("./realms")
                     .WithDataVolume("keycloak-data")
+                    .WithArgs("--verbose")
+                    .WithOtlpExporter()
+                    .WithEnvironment("KeycloakPublicUrl", keycloakPublicUrl)
                     .WithLifetime(ContainerLifetime.Persistent);
 
 #pragma warning disable ASPIRECERTIFICATES001
@@ -95,7 +108,6 @@ static IResourceBuilder<KeycloakResource> AddKeycloak(IDistributedApplicationBui
         keycloak.WithEnvironment("KC_HTTP_ENABLED", "true");
         keycloak.WithEnvironment("KC_PROXY_HEADERS", "xforwarded");
         keycloak.WithEnvironment("KC_HOSTNAME_STRICT", "false");
-
     }
 
     return keycloak;

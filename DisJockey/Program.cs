@@ -41,7 +41,7 @@ builder.Services.AddSignalR();
 
 builder.Services.AddGrpcClient<DisJockeyGrpc.DisJockeyGrpcClient>(o =>
 {
-    o.Address = new Uri("https://bot");
+    o.Address = new Uri("http://bot");
 });
 
 var app = builder.Build();

@@ -7,26 +7,30 @@ internal sealed class HubConnectionProvider
 {
     private readonly ILogger<HubConnectionProvider> _logger;
     private readonly KeycloakTokenService _keycloakTokenService;
-
+    private readonly IHttpMessageHandlerFactory _httpMessageHandlerFactory;
     private readonly HubConnection _connection;
 
     public HubConnectionProvider(
         ILogger<HubConnectionProvider> logger,
-        KeycloakTokenService keycloakTokenService)
+        KeycloakTokenService keycloakTokenService,
+        IHttpMessageHandlerFactory httpMessageHandlerFactory)
     {
         _logger = logger;
         _keycloakTokenService = keycloakTokenService;
-
+        _httpMessageHandlerFactory = httpMessageHandlerFactory;
         _connection = CreateHubConnection();
     }
 
     private HubConnection CreateHubConnection()
     {
         var connection = new HubConnectionBuilder()
-                            .WithUrl("https://localhost:5001/hubs/track-control", options =>
-                            {
-                                options.AccessTokenProvider = () => _keycloakTokenService.GetAccessTokenAsync();
-                            })
+                            .WithUrl(
+                                "https+http://api/hubs/track-control",
+                                options =>
+                                {
+                                    options.HttpMessageHandlerFactory = _ => _httpMessageHandlerFactory.CreateHandler();
+                                    options.AccessTokenProvider = () => _keycloakTokenService.GetAccessTokenAsync();
+                                })
                             .WithAutomaticReconnect(
                                 [
                                     TimeSpan.FromSeconds(1),
@@ -90,9 +94,9 @@ internal sealed class HubConnectionProvider
                 _logger.LogInformation("Successfully connected to Hub: {ConnectionId}", _connection.ConnectionId);
                 return;
             }
-            catch
+            catch (Exception ex)
             {
-                _logger.LogWarning("Failed to connect to Hub, delaying for {Delay} seconds", delay.Seconds);
+                _logger.LogWarning(ex, "Failed to connect to Hub, delaying for {Delay} seconds", delay.Seconds);
                 await Task.Delay(delay);
                 delay = TimeSpan.FromSeconds(Math.Min(delay.TotalSeconds * 2, 300));
             }
