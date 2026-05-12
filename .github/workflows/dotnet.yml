@@ -17,9 +17,9 @@ jobs:
       with:
         dotnet-version: 10.0.x
     - name: Restore
-      run: dotnet restore ./DisJockey/DisJockey.slnx
+      run: dotnet restore ./DisJockey.slnx
     - name: Build
-      run: dotnet build ./DisJockey/DisJockey.slnx --no-restore
+      run: dotnet build ./DisJockey.slnx --no-restore
     - name: Test
       run: dotnet test --solution ./DisJockey.Tests/DisJockey.slnx --no-restore --no-build --verbosity normal
 
