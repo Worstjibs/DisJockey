@@ -72,6 +72,8 @@ if (builder.ExecutionContext.IsPublishMode)
     bff.WithEndpoint("http", e => e.Port = 8080);
 }
 
+TagImagesWithLatest(builder);
+
 await builder.Build().RunAsync();
 
 static async Task GetDiscordProvider()
@@ -156,5 +158,23 @@ static void AddMonitoringServices(IDistributedApplicationBuilder builder)
             context.EnvironmentVariables.Remove("ASPIRE_ENDPOINT");
             context.EnvironmentVariables.Remove("ASPIRE_API_KEY");
         });
+    }
+}
+
+static void TagImagesWithLatest(IDistributedApplicationBuilder builder)
+{
+    if (!builder.ExecutionContext.IsPublishMode)
+    {
+        return;
+    }
+
+    var projects = builder.Resources.OfType<ProjectResource>().ToArray();
+    foreach (var project in projects)
+    {
+        var projectBuilder = builder.CreateResourceBuilder(project);
+
+#pragma warning disable ASPIREPIPELINES003
+        projectBuilder.WithImagePushOptions(options => options.Options.RemoteImageTag = "latest");
+#pragma warning restore ASPIREPIPELINES003
     }
 }
