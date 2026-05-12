@@ -4,6 +4,16 @@ var builder = DistributedApplication.CreateBuilder(args);
 
 builder.AddDockerComposeEnvironment("env");
 
+if (builder.ExecutionContext.IsPublishMode)
+{
+    var registryEndpoint = builder.AddParameter("registry-endpoint");
+    var registryRepository = builder.AddParameter("registry-repository");
+
+#pragma warning disable ASPIRECOMPUTE003
+    builder.AddContainerRegistry("container-registry", registryEndpoint, registryRepository);
+#pragma warning restore ASPIRECOMPUTE003
+}
+
 //AddMonitoringServices(builder);
 
 var sql = builder.AddSqlServer("sql")

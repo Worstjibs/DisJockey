@@ -58,6 +58,9 @@ jobs:
 
       - name: Aspire Push
         run: aspire do push
+        env:
+          Parameters__registry_endpoint: ghcr.io
+          Parameters__registry_repository: ${{ github.repository }}
 
       - name: upload aspire output
         uses: actions/upload-artifact@v4
