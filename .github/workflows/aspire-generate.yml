@@ -52,15 +52,15 @@ jobs:
 
       - name: Aspire Publish
         run: aspire publish -o docker-compose-artifacts
-
-      - name: Aspire Build
-        run: aspire do build
+        
+      - name: Lowercase repository name
+        run: echo "REPO_LOWER=$(echo '${{ github.repository }}' | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
 
       - name: Aspire Push
         run: aspire do push
         env:
           Parameters__registry_endpoint: ghcr.io
-          Parameters__registry_repository: ${{ github.repository }}
+          Parameters__registry_repository: ${{ env.REPO_LOWER }}
 
       - name: upload aspire output
         uses: actions/upload-artifact@v4
