@@ -49,8 +49,9 @@ var bot = builder.AddProject<DisJockey_BotService>("bot")
             .WithReference(rabbitMq)
             .WaitFor(rabbitMq)
             .WithReference(lavalink)
-            .WaitFor(keycloak)
-            .WithReference(keycloak);
+            .WaitFor(lavalink)
+            .WithReference(keycloak)
+            .WaitFor(keycloak);
 
 api.WithReference(bot);
 bot.WithReference(api);

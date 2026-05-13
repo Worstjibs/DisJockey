@@ -49,6 +49,7 @@ public static class ServiceCollectionExtensions
             services.ConfigureLavalink(config =>
             {
                 config.BaseAddress = new Uri(configuration.GetConnectionString("lavalink")!);
+                config.ReadyTimeout = TimeSpan.FromMinutes(1);
             });
 
             services.Configure<QueuedLavalinkPlayerOptions>(x => new QueuedLavalinkPlayerOptions());
