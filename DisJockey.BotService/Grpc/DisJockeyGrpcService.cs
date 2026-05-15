@@ -61,6 +61,24 @@ public class DisJockeyGrpcService : DisJockeyGrpc.DisJockeyGrpcBase
         };
     }
 
+    public override async Task<Empty> SeekTrack(SeekTrackRequest request, ServerCallContext context)
+    {
+        var player = await _musicService.GetQueuedLavalinkPlayerAsync(
+                request.ServerId,
+                request.VoiceChannelId,
+                connectToVoiceChannel: false)
+            ?? throw new RpcException(new Status(StatusCode.NotFound, "Player not found"));
+
+        if (player.CurrentTrack is null)
+        {
+            throw new RpcException(new Status(StatusCode.NotFound, "No track is currently playing"));
+        }
+
+        await player.SeekAsync(TimeSpan.FromSeconds(request.PositionSeconds));
+
+        return new();
+    }
+
     public override async Task<Empty> PlayPauseTrack(PlayPauseTrackRequest request, ServerCallContext context)
     {
         var player = await _musicService.GetQueuedLavalinkPlayerAsync(

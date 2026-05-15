@@ -83,6 +83,13 @@ public class TrackControlHub : Hub<ITrackControlHub>
         await HandleVoiceStateNotification(notification);
     }
 
+    public async Task PublishTrackProgress(TrackProgressNotification notification)
+    {
+        await Clients.SendTrackProgressNotificationAsync(
+            notification.VoiceChannelId, 
+            new TrackProgressMessage(notification.ElapsedSeconds, notification.TotalSeconds));
+    }
+
     public async Task TrackStatusChanged(TrackStatusChangedNotification notification)
     {
         _logger.LogDebug(
@@ -96,6 +103,25 @@ public class TrackControlHub : Hub<ITrackControlHub>
         }
 
         await Clients.SendTrackNotificationAsync(notification.VoiceChannelId, message);
+    }
+
+    public async Task SeekTrack(int positionSeconds)
+    {
+        var userId = Context.UserIdentifier;
+        if (string.IsNullOrEmpty(userId))
+        {
+            return;
+        }
+
+        var discordId = ulong.Parse(userId);
+
+        var userStatus = await GetUserVoiceChannelAsync(discordId, Context.ConnectionAborted);
+        if (userStatus is null)
+        {
+            return;
+        }
+
+        await SeekTrackAsync(userStatus.ServerId, userStatus.Id, positionSeconds, Context.ConnectionAborted);
     }
 
     public async Task TogglePlayPause()
@@ -193,6 +219,27 @@ public class TrackControlHub : Hub<ITrackControlHub>
         }
     }
 
+    private async Task SeekTrackAsync(
+        ulong serverId,
+        ulong voiceChannelId,
+        int positionSeconds,
+        CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            await _disJockeyGrpcClient.SeekTrackAsync(new()
+            {
+                ServerId = serverId,
+                VoiceChannelId = voiceChannelId,
+                PositionSeconds = positionSeconds
+            }, cancellationToken: cancellationToken);
+        }
+        catch (RpcException e) when (e.StatusCode is StatusCode.NotFound)
+        {
+            return;
+        }
+    }
+
     private async Task PlayPauseTrackAsync(
         ulong serverId,
         ulong voiceChannelId,
@@ -219,6 +266,7 @@ public interface ITrackControlHub
     Task SendMessageAsync(string message);
     Task NotifyUserStatus(UserStatusMessage? message);
     Task NotifyTrackStatus(TrackStatusMessage? message);
+    Task NotifyTrackProgress(TrackProgressMessage message);
 }
 
 public record UserStatusMessage(
@@ -227,3 +275,5 @@ public record UserStatusMessage(
     TrackStatusMessage? TrackStatusMessage);
 
 public record TrackStatusMessage(string TrackName, bool Paused);
+
+public record TrackProgressMessage(int Elapsed, int Total);

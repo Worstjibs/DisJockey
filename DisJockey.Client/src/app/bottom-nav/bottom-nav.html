@@ -1,4 +1,13 @@
 <nav class="navbar navbar-dark bg-dark fixed-bottom">
+  <input
+    type="range"
+    class="progress-slider"
+    min="0"
+    [max]="trackProgress()?.total ?? 0"
+    [value]="trackProgress()?.elapsed ?? 0"
+    [style.background]="sliderBackground()"
+    (change)="onSeek($event)"
+  />
   <div class="container">
     <div class="nav-left">
       @if (trackStatus(); as trackStatus) {

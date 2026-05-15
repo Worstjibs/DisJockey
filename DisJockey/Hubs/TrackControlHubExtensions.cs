@@ -27,4 +27,12 @@ public static class TrackControlHubExtensions
     {
         return hubContext.Groups(voiceChannelId.ToString()).NotifyTrackStatus(message);
     }
+
+    public static Task SendTrackProgressNotificationAsync(
+        this IHubCallerClients<ITrackControlHub> hubContext,
+        ulong voiceChannelId,
+        TrackProgressMessage message)
+    {
+        return hubContext.Groups(voiceChannelId.ToString()).NotifyTrackProgress(message);
+    }
 }

@@ -16,6 +16,18 @@ export class BottomNav implements OnInit, OnDestroy {
 
   protected readonly userStatus = signal<UserStatusMessage | null>(null);
   protected readonly trackStatus = signal<TrackStatusMessage | null>(null);
+  protected readonly trackProgress = signal<TrackProgressMessage | null>(null);
+
+  protected readonly progressPercent = computed(() => {
+    const progress = this.trackProgress();
+    if (!progress || progress.total === 0) { return 0; }
+    return (progress.elapsed / progress.total) * 100;
+  });
+
+  protected readonly sliderBackground = computed(() => {
+    const pct = this.progressPercent();
+    return `linear-gradient(to right, white ${pct}%, rgba(255,255,255,0.2) ${pct}%)`;
+  });
 
   protected get playPauseIcon(): IconDefinition {
     const status = this.trackStatus();
@@ -26,6 +38,11 @@ export class BottomNav implements OnInit, OnDestroy {
     const icon = status.paused ? faPlay : faPause;
 
     return icon;
+  }
+
+  protected onSeek(event: Event): void {
+    const positionSeconds = Number((event.target as HTMLInputElement).value);
+    this.hubConnection.invoke('SeekTrack', positionSeconds);
   }
 
   protected togglePlayPause(): void {
@@ -51,6 +68,11 @@ export class BottomNav implements OnInit, OnDestroy {
 
     this.hubConnection.on('NotifyTrackStatus', (notification: TrackStatusMessage) => {
       this.trackStatus.set(notification);
+      this.trackProgress.set(null);
+    });
+
+    this.hubConnection.on('NotifyTrackProgress', (notification: TrackProgressMessage) => {
+      this.trackProgress.set(notification);
     });
   }
 
@@ -72,4 +94,9 @@ interface UserStatusMessage {
 interface TrackStatusMessage {
   trackName: string;
   paused: boolean;
+}
+
+interface TrackProgressMessage {
+  elapsed: number;
+  total: number;
 }
