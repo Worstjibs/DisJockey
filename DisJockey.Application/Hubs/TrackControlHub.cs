@@ -1,6 +1,5 @@
+using DisJockey.Application.Clients;
 using DisJockey.Shared.Notifications;
-using DisJockey.Shared.Protos;
-using Grpc.Core;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
 
@@ -8,16 +7,16 @@ namespace DisJockey.Application.Hubs;
 
 public class TrackControlHub : Hub<ITrackControlHub>
 {
-    private readonly DisJockeyGrpc.DisJockeyGrpcClient _disJockeyGrpcClient;
+    private readonly IBotServiceClient _botServiceClient;
     private readonly IUserConnectionTracker _connectionTracker;
     private readonly ILogger<TrackControlHub> _logger;
 
     public TrackControlHub(
-        DisJockeyGrpc.DisJockeyGrpcClient disJockeyGrpcClient,
+        IBotServiceClient botServiceClient,
         IUserConnectionTracker connectionTracker,
         ILogger<TrackControlHub> logger)
     {
-        _disJockeyGrpcClient = disJockeyGrpcClient;
+        _botServiceClient = botServiceClient;
         _connectionTracker = connectionTracker;
         _logger = logger;
     }
@@ -34,16 +33,16 @@ public class TrackControlHub : Hub<ITrackControlHub>
 
         var discordId = ulong.Parse(userId);
 
-        var voiceChannel = await GetUserVoiceChannelAsync(discordId, Context.ConnectionAborted);
+        var voiceChannel = await _botServiceClient.GetUserVoiceChannelAsync(discordId, Context.ConnectionAborted);
         if (voiceChannel is not null)
         {
             await Groups.AddToGroupAsync(
-                Context.ConnectionId, 
-                voiceChannel.VoiceChannelId.ToString(), 
+                Context.ConnectionId,
+                voiceChannel.VoiceChannelId.ToString(),
                 Context.ConnectionAborted);
         }
 
-        await HandleVoiceStateNotification(discordId, voiceChannel);
+        await HandleVoiceStateNotificationAsync(discordId, voiceChannel);
     }
 
     public override async Task OnDisconnectedAsync(Exception? exception)
@@ -58,7 +57,7 @@ public class TrackControlHub : Hub<ITrackControlHub>
     public async Task PublishTrackProgress(TrackProgressNotification notification)
     {
         await Clients.SendTrackProgressNotificationAsync(
-            notification.VoiceChannelId, 
+            notification.VoiceChannelId,
             new TrackProgressMessage(notification.ElapsedSeconds, notification.TotalSeconds));
     }
 
@@ -86,14 +85,14 @@ public class TrackControlHub : Hub<ITrackControlHub>
         }
 
         var discordId = ulong.Parse(userId);
-            
-        var userStatus = await GetUserVoiceChannelAsync(discordId, Context.ConnectionAborted);
-        if (userStatus is null)
+
+        var voiceChannel = await _botServiceClient.GetUserVoiceChannelAsync(discordId, Context.ConnectionAborted);
+        if (voiceChannel is null)
         {
             return;
         }
 
-        await SeekTrackAsync(userStatus.ServerId, userStatus.VoiceChannelId, positionSeconds, Context.ConnectionAborted);
+        await _botServiceClient.SeekTrackAsync(voiceChannel.ServerId, voiceChannel.VoiceChannelId, positionSeconds, Context.ConnectionAborted);
     }
 
     public async Task TogglePlayPause()
@@ -106,16 +105,16 @@ public class TrackControlHub : Hub<ITrackControlHub>
 
         var discordId = ulong.Parse(userId);
 
-        var userStatus = await GetUserVoiceChannelAsync(discordId, Context.ConnectionAborted);
-        if (userStatus is null)
+        var voiceChannel = await _botServiceClient.GetUserVoiceChannelAsync(discordId, Context.ConnectionAborted);
+        if (voiceChannel is null)
         {
             return;
         }
 
-        await PlayPauseTrackAsync(userStatus.ServerId, userStatus.VoiceChannelId, Context.ConnectionAborted);
+        await _botServiceClient.PlayPauseTrackAsync(voiceChannel.ServerId, voiceChannel.VoiceChannelId, Context.ConnectionAborted);
     }
 
-    private async Task HandleVoiceStateNotification(ulong discordId, VoiceChannelInfo? voiceChannelInfo)
+    private async Task HandleVoiceStateNotificationAsync(ulong discordId, VoiceChannelInfo? voiceChannelInfo)
     {
         if (voiceChannelInfo is null)
         {
@@ -123,18 +122,14 @@ public class TrackControlHub : Hub<ITrackControlHub>
             return;
         }
 
-        if (voiceChannelInfo is null)
-        {
-            return;
-        }
+        var trackStatus = await _botServiceClient.GetTrackStatusAsync(
+            voiceChannelInfo.ServerId,
+            voiceChannelInfo.VoiceChannelId,
+            Context.ConnectionAborted);
 
-        var trackStatus = await GetCurrentTrackStatusAsync(voiceChannelInfo.ServerId, voiceChannelInfo.VoiceChannelId, Context.ConnectionAborted);
-
-        TrackStatusMessage? trackStatusMessage = null;
-        if (trackStatus is not null)
-        {
-            trackStatusMessage = new TrackStatusMessage(trackStatus.TrackName, trackStatus.Paused);
-        }
+        var trackStatusMessage = trackStatus is not null
+                                    ? new TrackStatusMessage(trackStatus.TrackName, trackStatus.Paused)
+                                    : null;
 
         var userStatusMessage = new UserStatusMessage(
             voiceChannelInfo.VoiceChannelName,
@@ -143,95 +138,10 @@ public class TrackControlHub : Hub<ITrackControlHub>
 
         await Clients.SendUserStatusMessageAsync(discordId, userStatusMessage);
     }
-
-    private async Task<VoiceChannelInfo?> GetUserVoiceChannelAsync(
-        ulong userId,
-        CancellationToken cancellationToken = default)
-    {
-        try
-        {
-            var voiceChannelDetails = await _disJockeyGrpcClient.GetUserVoiceChannelAsync(
-                new() { UserId = userId },
-                cancellationToken: cancellationToken);
-
-            return new VoiceChannelInfo(
-                            voiceChannelDetails.VoiceChannelId, 
-                            voiceChannelDetails.VoiceChannelName, 
-                            voiceChannelDetails.ServerId, 
-                            voiceChannelDetails.ServerName);
-        }
-        catch (RpcException e) when (e.StatusCode is StatusCode.NotFound)
-        {
-            return null;
-        }
-    }
-
-    private async Task<TrackStatusMessage?> GetCurrentTrackStatusAsync(
-        ulong serverId,
-        ulong voiceChannelId,
-        CancellationToken cancellationToken = default)
-    {
-        try
-        {
-            var trackStatus = await _disJockeyGrpcClient.GetTrackStatusAsync(new()
-            {
-                ServerId = serverId,
-                VoiceChannelId = voiceChannelId
-            }, cancellationToken: cancellationToken);
-
-            return new TrackStatusMessage(trackStatus.TrackName, trackStatus.Paused);
-        }
-        catch (RpcException e) when (e.StatusCode is StatusCode.NotFound)
-        {
-            return null;
-        }
-    }
-
-    private async Task SeekTrackAsync(
-        ulong serverId,
-        ulong voiceChannelId,
-        int positionSeconds,
-        CancellationToken cancellationToken = default)
-    {
-        try
-        {
-            await _disJockeyGrpcClient.SeekTrackAsync(new()
-            {
-                ServerId = serverId,
-                VoiceChannelId = voiceChannelId,
-                PositionSeconds = positionSeconds
-            }, cancellationToken: cancellationToken);
-        }
-        catch (RpcException e) when (e.StatusCode is StatusCode.NotFound)
-        {
-            return;
-        }
-    }
-
-    private async Task PlayPauseTrackAsync(
-        ulong serverId,
-        ulong voiceChannelId,
-        CancellationToken cancellationToken = default)
-    {
-        try
-        {
-            await _disJockeyGrpcClient.PlayPauseTrackAsync(new()
-            {
-                ServerId = serverId,
-                VoiceChannelId = voiceChannelId
-            }, cancellationToken: cancellationToken);
-        }
-        catch (RpcException e) when (e.StatusCode is StatusCode.NotFound)
-        {
-            // TODO: Handle NotFound errors better
-            return;
-        }
-    }
 }
 
 public interface ITrackControlHub
 {
-    Task SendMessageAsync(string message);
     Task NotifyUserStatus(UserStatusMessage? message);
     Task NotifyTrackStatus(TrackStatusMessage? message);
     Task NotifyTrackProgress(TrackProgressMessage message);
@@ -246,8 +156,3 @@ public record TrackStatusMessage(string TrackName, bool Paused);
 
 public record TrackProgressMessage(int Elapsed, int Total);
 
-public record VoiceChannelInfo(
-     ulong VoiceChannelId,
-     string VoiceChannelName,
-     ulong ServerId,
-     string ServerName);

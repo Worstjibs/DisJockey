@@ -1,4 +1,5 @@
-﻿using DisJockey.Application.Contracts;
+﻿using DisJockey.Application.Clients;
+using DisJockey.Application.Contracts;
 using DisJockey.Shared.Protos;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -33,6 +34,8 @@ public static class ServiceCollectionExtensions
             {
                 o.Address = new Uri("http://bot");
             });
+
+            services.AddTransient<IBotServiceClient, BotServiceClient>();
 
             return services;
         }

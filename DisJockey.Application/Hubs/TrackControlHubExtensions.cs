@@ -4,13 +4,6 @@ namespace DisJockey.Application.Hubs;
 
 public static class TrackControlHubExtensions
 {
-    public static Task SendToUserAsync(
-        this IHubClients<ITrackControlHub> hubContext, 
-        ulong discordId, 
-        string message)
-    {
-        return hubContext.User(discordId.ToString()).SendMessageAsync(message);
-    }
     public static Task SendUserStatusMessageAsync(
         this IHubClients<ITrackControlHub> hubContext,
         ulong discordId,
