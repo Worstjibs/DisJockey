@@ -68,6 +68,20 @@ public static class HostBuilderExtensions
                         q.QueueType = QueueType.stream;
                     });
 
+                options.ListenToRabbitQueue(
+                    "track-status-changed-queue",
+                    q =>
+                    {
+                        q.QueueType = QueueType.stream;
+                    });
+
+                options.ListenToRabbitQueue(
+                    "track-progress-queue",
+                    q =>
+                    {
+                        q.QueueType = QueueType.stream;
+                    });
+
                 options.UseRabbitMqUsingNamedConnection("rabbit-mq")
                     .AutoProvision();
 

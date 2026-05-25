@@ -49,12 +49,9 @@ var bot = builder.AddProject<DisJockey_BotService>("bot")
             .WithReference(rabbitMq)
             .WaitFor(rabbitMq)
             .WithReference(lavalink)
-            .WaitFor(lavalink)
-            .WithReference(keycloak)
-            .WaitFor(keycloak);
+            .WaitFor(lavalink);
 
 api.WithReference(bot);
-bot.WithReference(api);
 
 var bffClientId = builder.AddParameter("bff-client-id");
 var bffClientSecret = builder.AddParameter("bff-client-secret");

@@ -2,7 +2,6 @@
 using Discord.Interactions;
 using Discord.WebSocket;
 using DisJockey.BotService.Interactions;
-using DisJockey.BotService.Keycloak;
 using DisJockey.BotService.Services;
 using DisJockey.BotService.Services.Music;
 using DisJockey.BotService.Services.WheelUp;
@@ -18,10 +17,6 @@ public static class ServiceCollectionExtensions
         public IServiceCollection AddDiscordServices(IConfiguration configuration)
         {
             services.Configure<BotSettings>(configuration.GetSection("BotSettings"));
-
-            services.Configure<KeycloakSettings>(configuration.GetSection("Keycloak"));
-            services.AddHttpClient();
-            services.AddSingleton<KeycloakTokenService>();
 
             services.AddSingleton(new DiscordSocketClient(new DiscordSocketConfig
             {

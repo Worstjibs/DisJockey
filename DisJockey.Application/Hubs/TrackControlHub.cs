@@ -1,5 +1,4 @@
 using DisJockey.Application.Clients;
-using DisJockey.Shared.Notifications;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
 
@@ -52,28 +51,6 @@ public class TrackControlHub : Hub<ITrackControlHub>
         {
             _connectionTracker.Remove(userId);
         }
-    }
-
-    public async Task PublishTrackProgress(TrackProgressNotification notification)
-    {
-        await Clients.SendTrackProgressNotificationAsync(
-            notification.VoiceChannelId,
-            new TrackProgressMessage(notification.ElapsedSeconds, notification.TotalSeconds));
-    }
-
-    public async Task TrackStatusChanged(TrackStatusChangedNotification notification)
-    {
-        _logger.LogDebug(
-            "Received track status changed notification for VoiceChannel: {VoiceChannelId}",
-            notification.VoiceChannelId);
-
-        TrackStatusMessage? message = null;
-        if (notification.TrackDetails is not null)
-        {
-            message = new TrackStatusMessage(notification.TrackDetails.TrackName, Paused: false); // TODO: Fix Paused
-        }
-
-        await Clients.SendTrackNotificationAsync(notification.VoiceChannelId, message);
     }
 
     public async Task SeekTrack(int positionSeconds)

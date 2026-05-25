@@ -1,5 +1,5 @@
-using DisJockey.BotService.Hubs;
-using DisJockey.Shared.Notifications;
+using DisJockey.Shared.Messaging.Contracts;
+using DisJockey.Shared.Messaging.Events;
 using Lavalink4NET.Players;
 using Lavalink4NET.Players.Queued;
 using Lavalink4NET.Protocol.Payloads.Events;
@@ -8,13 +8,13 @@ namespace DisJockey.BotService.Players;
 
 internal class NotifyingPlayer : QueuedLavalinkPlayer
 {
-    private readonly HubConnectionProvider _hubConnectionProvider;
+    private readonly IServiceScopeFactory _scopeFactory;
     private CancellationTokenSource? _trackTimerCts;
 
     public NotifyingPlayer(IPlayerProperties<NotifyingPlayer, QueuedLavalinkPlayerOptions> properties)
         : base(properties)
     {
-        _hubConnectionProvider = properties.ServiceProvider!.GetRequiredService<HubConnectionProvider>();
+        _scopeFactory = properties.ServiceProvider!.GetRequiredService<IServiceScopeFactory>();
     }
 
     protected override async ValueTask NotifyTrackStartedAsync(
@@ -26,9 +26,7 @@ internal class NotifyingPlayer : QueuedLavalinkPlayer
         _trackTimerCts = new CancellationTokenSource();
         _ = RunTrackTimerAsync(_trackTimerCts.Token);
 
-        var notification = new TrackStatusChangedNotification(VoiceChannelId, new(trackName));
-
-        await _hubConnectionProvider.InvokeAsync("TrackStatusChanged", notification);
+        await PublishEventAsync(new TrackStatusChangedEvent(VoiceChannelId, new TrackDetails(trackName)));
     }
 
     protected override async ValueTask NotifyTrackEndedAsync(
@@ -43,9 +41,7 @@ internal class NotifyingPlayer : QueuedLavalinkPlayer
             return;
         }
 
-        var notification = new TrackStatusChangedNotification(VoiceChannelId);
-
-        await _hubConnectionProvider.InvokeAsync("TrackStatusChanged", notification);
+        await PublishEventAsync(new TrackStatusChangedEvent(VoiceChannelId, null));
     }
 
     private async Task RunTrackTimerAsync(CancellationToken cancellationToken)
@@ -61,8 +57,7 @@ internal class NotifyingPlayer : QueuedLavalinkPlayer
             var elapsed = (int)Position!.Value.Position.TotalSeconds;
             var total = (int)CurrentTrack!.Duration.TotalSeconds;
 
-            var notification = new TrackProgressNotification(VoiceChannelId, elapsed, total);
-            await _hubConnectionProvider.InvokeAsync("PublishTrackProgress", notification);
+            await PublishEventAsync(new TrackProgressEvent(VoiceChannelId, elapsed, total));
         }
     }
 
@@ -76,6 +71,13 @@ internal class NotifyingPlayer : QueuedLavalinkPlayer
         await _trackTimerCts.CancelAsync();
         _trackTimerCts.Dispose();
         _trackTimerCts = null;
+    }
+
+    private async Task PublishEventAsync<T>(T @event)
+    {
+        using var scope = _scopeFactory.CreateScope();
+        var messageSender = scope.ServiceProvider.GetRequiredService<IMessageSender>();
+        await messageSender.SendAsync(@event);
     }
 
     internal static ValueTask<NotifyingPlayer> CreatePlayerAsync(
