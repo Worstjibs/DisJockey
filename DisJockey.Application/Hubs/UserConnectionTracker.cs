@@ -1,7 +1,6 @@
 using System.Collections.Concurrent;
-using System.Collections.Generic;
 
-namespace DisJockey.Hubs;
+namespace DisJockey.Application.Hubs;
 
 public interface IUserConnectionTracker
 {

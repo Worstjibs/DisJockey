@@ -1,7 +1,7 @@
 using DisJockey.Shared.Extensions;
 using Microsoft.AspNetCore.SignalR;
 
-namespace DisJockey.Hubs;
+namespace DisJockey.Application.Hubs;
 
 public sealed class DiscordUserIdProvider : IUserIdProvider
 {

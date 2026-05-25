@@ -1,16 +1,11 @@
 using DisJockey.Shared.Notifications;
 using DisJockey.Shared.Protos;
 using Grpc.Core;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Threading;
-using System.Threading.Tasks;
 
-namespace DisJockey.Hubs;
+namespace DisJockey.Application.Hubs;
 
-[Authorize]
 public class TrackControlHub : Hub<ITrackControlHub>
 {
     private readonly DisJockeyGrpc.DisJockeyGrpcClient _disJockeyGrpcClient;
@@ -39,21 +34,16 @@ public class TrackControlHub : Hub<ITrackControlHub>
 
         var discordId = ulong.Parse(userId);
 
-        var notification = new UserVoiceStateNotification
-        {
-            DiscordId = discordId
-        };
-
         var voiceChannel = await GetUserVoiceChannelAsync(discordId, Context.ConnectionAborted);
         if (voiceChannel is not null)
         {
-            notification.VoiceState = VoiceState.Connected;
-            notification.VoiceChannel = voiceChannel;
-
-            await Groups.AddToGroupAsync(Context.ConnectionId, voiceChannel.Id.ToString(), Context.ConnectionAborted);
+            await Groups.AddToGroupAsync(
+                Context.ConnectionId, 
+                voiceChannel.VoiceChannelId.ToString(), 
+                Context.ConnectionAborted);
         }
 
-        await HandleVoiceStateNotification(notification);
+        await HandleVoiceStateNotification(discordId, voiceChannel);
     }
 
     public override async Task OnDisconnectedAsync(Exception? exception)
@@ -63,24 +53,6 @@ public class TrackControlHub : Hub<ITrackControlHub>
         {
             _connectionTracker.Remove(userId);
         }
-    }
-
-    public async Task UserVoiceStateChanged(UserVoiceStateNotification notification)
-    {
-        var voiceChannel = await GetUserVoiceChannelAsync(notification.DiscordId, Context.ConnectionAborted);
-        if (voiceChannel is not null)
-        {
-            notification.VoiceState = VoiceState.Connected;
-            notification.VoiceChannel = voiceChannel;
-
-            var userConnectionId = _connectionTracker.GetConnection(notification.DiscordId.ToString());
-            if (userConnectionId is not null)
-            {
-                await Groups.AddToGroupAsync(userConnectionId, voiceChannel.Id.ToString(), Context.ConnectionAborted);
-            }
-        }
-
-        await HandleVoiceStateNotification(notification);
     }
 
     public async Task PublishTrackProgress(TrackProgressNotification notification)
@@ -114,14 +86,14 @@ public class TrackControlHub : Hub<ITrackControlHub>
         }
 
         var discordId = ulong.Parse(userId);
-
+            
         var userStatus = await GetUserVoiceChannelAsync(discordId, Context.ConnectionAborted);
         if (userStatus is null)
         {
             return;
         }
 
-        await SeekTrackAsync(userStatus.ServerId, userStatus.Id, positionSeconds, Context.ConnectionAborted);
+        await SeekTrackAsync(userStatus.ServerId, userStatus.VoiceChannelId, positionSeconds, Context.ConnectionAborted);
     }
 
     public async Task TogglePlayPause()
@@ -140,25 +112,23 @@ public class TrackControlHub : Hub<ITrackControlHub>
             return;
         }
 
-        await PlayPauseTrackAsync(userStatus.ServerId, userStatus.Id, Context.ConnectionAborted);
+        await PlayPauseTrackAsync(userStatus.ServerId, userStatus.VoiceChannelId, Context.ConnectionAborted);
     }
 
-    private async Task HandleVoiceStateNotification(UserVoiceStateNotification notification)
+    private async Task HandleVoiceStateNotification(ulong discordId, VoiceChannelInfo? voiceChannelInfo)
     {
-        if (notification.VoiceState is VoiceState.Disconnected)
+        if (voiceChannelInfo is null)
         {
-            await Clients.SendUserStatusMessageAsync(notification.DiscordId, null);
+            await Clients.SendUserStatusMessageAsync(discordId, null);
             return;
         }
 
-        var voiceChannel = notification.VoiceChannel;
-
-        if (voiceChannel is null)
+        if (voiceChannelInfo is null)
         {
             return;
         }
 
-        var trackStatus = await GetCurrentTrackStatusAsync(voiceChannel.ServerId, voiceChannel.Id, Context.ConnectionAborted);
+        var trackStatus = await GetCurrentTrackStatusAsync(voiceChannelInfo.ServerId, voiceChannelInfo.VoiceChannelId, Context.ConnectionAborted);
 
         TrackStatusMessage? trackStatusMessage = null;
         if (trackStatus is not null)
@@ -167,11 +137,11 @@ public class TrackControlHub : Hub<ITrackControlHub>
         }
 
         var userStatusMessage = new UserStatusMessage(
-            voiceChannel.Name,
-            voiceChannel.ServerName,
+            voiceChannelInfo.VoiceChannelName,
+            voiceChannelInfo.ServerName,
             trackStatusMessage);
 
-        await Clients.SendUserStatusMessageAsync(notification.DiscordId, userStatusMessage);
+        await Clients.SendUserStatusMessageAsync(discordId, userStatusMessage);
     }
 
     private async Task<VoiceChannelInfo?> GetUserVoiceChannelAsync(
@@ -184,13 +154,11 @@ public class TrackControlHub : Hub<ITrackControlHub>
                 new() { UserId = userId },
                 cancellationToken: cancellationToken);
 
-            return new VoiceChannelInfo
-            {
-                Id = voiceChannelDetails.VoiceChannelId,
-                Name = voiceChannelDetails.VoiceChannelName,
-                ServerId = voiceChannelDetails.ServerId,
-                ServerName = voiceChannelDetails.ServerName
-            };
+            return new VoiceChannelInfo(
+                            voiceChannelDetails.VoiceChannelId, 
+                            voiceChannelDetails.VoiceChannelName, 
+                            voiceChannelDetails.ServerId, 
+                            voiceChannelDetails.ServerName);
         }
         catch (RpcException e) when (e.StatusCode is StatusCode.NotFound)
         {
@@ -277,3 +245,9 @@ public record UserStatusMessage(
 public record TrackStatusMessage(string TrackName, bool Paused);
 
 public record TrackProgressMessage(int Elapsed, int Total);
+
+public record VoiceChannelInfo(
+     ulong VoiceChannelId,
+     string VoiceChannelName,
+     ulong ServerId,
+     string ServerName);

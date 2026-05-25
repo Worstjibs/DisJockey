@@ -1,8 +1,8 @@
 ﻿using Discord;
 using Discord.Interactions;
 using Discord.WebSocket;
-using DisJockey.BotService.Hubs;
-using DisJockey.Shared.Notifications;
+using DisJockey.Shared.Messaging.Contracts;
+using DisJockey.Shared.Messaging.Events;
 using Microsoft.Extensions.Options;
 using System.Reflection;
 
@@ -14,7 +14,7 @@ internal class InteractionHandler
     private readonly DiscordSocketClient _client;
     private readonly IServiceProvider _serviceProvider;
     private readonly IHostEnvironment _environment;
-    private readonly HubConnectionProvider _hubConnectionProvider;
+    private readonly IServiceScopeFactory _serviceScopeFactory;
     private readonly BotSettings _settings;
 
     public InteractionHandler(
@@ -22,7 +22,7 @@ internal class InteractionHandler
         DiscordSocketClient client,
         IServiceProvider serviceProvider,
         IHostEnvironment environment,
-        HubConnectionProvider hubConnectionProvider,
+        IServiceScopeFactory serviceScopeFactory,
         IOptions<BotSettings> settings
     )
     {
@@ -30,7 +30,7 @@ internal class InteractionHandler
         _client = client;
         _serviceProvider = serviceProvider;
         _environment = environment;
-        _hubConnectionProvider = hubConnectionProvider;
+        _serviceScopeFactory = serviceScopeFactory;
         _settings = settings.Value;
     }
 
@@ -43,8 +43,6 @@ internal class InteractionHandler
         _client.InteractionCreated += HandleInteraction;
 
         _client.UserVoiceStateUpdated += HandleUserVoiceStatusUpdate;
-
-        await _hubConnectionProvider.InitializeAsync();
     }
 
     private async Task HandleInteraction(SocketInteraction interaction)
@@ -85,26 +83,26 @@ internal class InteractionHandler
             return;
         }
 
-        var notification = new UserVoiceStateNotification
-        {
-            DiscordId = user.Id
-        };
+        UserVoiceChannelDetails? userVoiceChannelDetails = null;
 
-        if (after.VoiceChannel is not null)
+        var voiceChannel = after.VoiceChannel;
+        if (voiceChannel is not null)
         {
-            notification.VoiceState = VoiceState.Connected;
-            notification.VoiceChannel = new VoiceChannelInfo
-            {
-                Id = after.VoiceChannel.Id,
-                Name = after.VoiceChannel.Name,
-                ServerId = after.VoiceChannel.Guild.Id,
-                ServerName = after.VoiceChannel.Guild.Name
-            };
+            userVoiceChannelDetails = new(
+                VoiceChannelId: after.VoiceChannel.Id,
+                VoiceChannelName: after.VoiceChannel.Name,
+                ServerId: after.VoiceChannel.Guild.Id,
+                ServerName: after.VoiceChannel.Guild.Name);
         }
 
-        await _hubConnectionProvider.InvokeAsync(
-            "UserVoiceStateChanged", 
-            notification);
+        var voiceStateChangedEvent = new UserVoiceStateChangedEvent(
+            DiscordId: user.Id,
+            VoiceChannelDetails: userVoiceChannelDetails);
+
+        using var scope = _serviceScopeFactory.CreateScope();
+
+        var messageSender = scope.ServiceProvider.GetRequiredService<IMessageSender>();
+        await messageSender.SendAsync(voiceStateChangedEvent);
     }
 
     private async Task ReadyAsync()

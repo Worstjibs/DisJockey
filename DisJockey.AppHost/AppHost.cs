@@ -130,6 +130,7 @@ static IResourceBuilder<KeycloakResource> AddKeycloak(IDistributedApplicationBui
     return keycloak;
 }
 
+#pragma warning disable CS8321 // Local function is declared but never used
 static void AddMonitoringServices(IDistributedApplicationBuilder builder)
 {
     if (builder.ExecutionContext.IsRunMode)
@@ -160,6 +161,7 @@ static void AddMonitoringServices(IDistributedApplicationBuilder builder)
         });
     }
 }
+#pragma warning restore CS8321 // Local function is declared but never used
 
 static void TagImagesWithLatest(IDistributedApplicationBuilder builder)
 {

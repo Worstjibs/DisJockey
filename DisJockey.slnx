@@ -8,6 +8,7 @@
     <File Path=".editorconfig" />
     <File Path=".gitignore" />
     <File Path="application.yml" />
+    <File Path="Directory.Build.props" />
   </Folder>
   <Folder Name="/src/" />
   <Folder Name="/src/api/">

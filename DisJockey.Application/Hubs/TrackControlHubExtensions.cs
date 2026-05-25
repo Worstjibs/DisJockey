@@ -1,19 +1,18 @@
 ﻿using Microsoft.AspNetCore.SignalR;
-using System.Threading.Tasks;
 
-namespace DisJockey.Hubs;
+namespace DisJockey.Application.Hubs;
 
 public static class TrackControlHubExtensions
 {
     public static Task SendToUserAsync(
-        this IHubCallerClients<ITrackControlHub> hubContext, 
+        this IHubClients<ITrackControlHub> hubContext, 
         ulong discordId, 
         string message)
     {
         return hubContext.User(discordId.ToString()).SendMessageAsync(message);
     }
     public static Task SendUserStatusMessageAsync(
-        this IHubCallerClients<ITrackControlHub> hubContext,
+        this IHubClients<ITrackControlHub> hubContext,
         ulong discordId,
         UserStatusMessage? message)
     {
@@ -21,7 +20,7 @@ public static class TrackControlHubExtensions
     }
 
     public static Task SendTrackNotificationAsync(
-        this IHubCallerClients<ITrackControlHub> hubContext,
+        this IHubClients<ITrackControlHub> hubContext,
         ulong voiceChannelId,
         TrackStatusMessage? message)
     {
@@ -29,7 +28,7 @@ public static class TrackControlHubExtensions
     }
 
     public static Task SendTrackProgressNotificationAsync(
-        this IHubCallerClients<ITrackControlHub> hubContext,
+        this IHubClients<ITrackControlHub> hubContext,
         ulong voiceChannelId,
         TrackProgressMessage message)
     {

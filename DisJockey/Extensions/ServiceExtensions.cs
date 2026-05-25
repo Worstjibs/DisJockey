@@ -1,10 +1,7 @@
-﻿using Discord.Rest;
+﻿using DisJockey.Application.Hubs;
 using DisJockey.Application.Interfaces;
 using DisJockey.Application.Services;
-using DisJockey.Hubs;
-using DisJockey.Middleware;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Configuration;

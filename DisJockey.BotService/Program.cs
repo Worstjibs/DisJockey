@@ -6,6 +6,7 @@ using DisJockey.Shared.Messaging.Contracts;
 using DisJockey.Shared.Messaging.Events;
 using Wolverine;
 using Wolverine.RabbitMQ;
+using Wolverine.RabbitMQ.Internal;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -25,7 +26,15 @@ builder.UseWolverine(options =>
                 config.BindQueue("track-played-queue");
             });
 
-    options.UseRabbitMqUsingNamedConnection("rabbit-mq").AutoProvision();
+    options.PublishMessage<UserVoiceStateChangedEvent>()
+            .ToRabbitExchange("user-voice-state-changed-exchange", config =>  
+            {
+                config.BindQueue("user-voice-state-changed-queue");
+            });
+
+    options.UseRabbitMqUsingNamedConnection("rabbit-mq")
+        .DeclareQueue("user-voice-state-changed-queue", q => q.QueueType = QueueType.stream)
+        .AutoProvision();
 });
 
 builder.Services.AddScoped<IMessageSender, MessageSender>();

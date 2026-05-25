@@ -15,6 +15,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Wolverine;
 using Wolverine.RabbitMQ;
+using Wolverine.RabbitMQ.Internal;
 
 namespace DisJockey.Infrastructure;
 
@@ -43,6 +44,15 @@ public static class HostBuilderExtensions
 
             builder.Services.AddScoped<IVideoDetailService, VideoDetailService>();
 
+            builder.AddWolverine();
+
+            builder.Services.AddScoped<IMessageSender, MessageSender>();
+
+            return builder;
+        }
+
+        private IHostApplicationBuilder AddWolverine()
+        {
             builder.UseWolverine(options =>
             {
                 options.PublishMessage<PlayTrackEvent>().ToRabbitExchange("play-track-exchange", config =>
@@ -51,14 +61,18 @@ public static class HostBuilderExtensions
                 });
 
                 options.ListenToRabbitQueue("track-played-queue");
+                options.ListenToRabbitQueue(
+                    "user-voice-state-changed-queue",
+                    q =>
+                    {
+                        q.QueueType = QueueType.stream;
+                    });
 
                 options.UseRabbitMqUsingNamedConnection("rabbit-mq")
                     .AutoProvision();
 
                 options.ApplicationAssembly = typeof(TrackPlayedEventConsumer).Assembly;
             });
-
-            builder.Services.AddScoped<IMessageSender, MessageSender>();
 
             return builder;
         }
