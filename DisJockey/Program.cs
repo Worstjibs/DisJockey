@@ -22,7 +22,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 if (builder.Environment.IsDevelopment())
 {
-    builder.Configuration.AddJsonFile("appsettings.Seed.json");
+    builder.Configuration.AddJsonFile("appsettings.Seed.json", optional: true);
 }
 
 builder.AddServiceDefaults();

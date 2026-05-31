@@ -1,5 +1,3 @@
-﻿using Discord;
-using Discord.WebSocket;
 using DisJockey.BotService.Players;
 using DisJockey.BotService.Services.WheelUp;
 using DisJockey.Shared.Messaging.Contracts;
@@ -35,12 +33,19 @@ public class MusicService : IMusicService
         _serviceScopeFactory = serviceScopeFactory;
     }
 
-    public async Task PlayTrackAsync(string query, IInteractionContext context, SearchMode searchMode = SearchMode.YouTube)
+    public async Task<string?> PlayTrackAsync(
+        string query,
+        ulong guildId,
+        ulong voiceChannelId,
+        ulong userId,
+        string avatarUrl,
+        string username,
+        SearchMode searchMode = SearchMode.YouTube)
     {
-        var player = await GetQueuedPlayerAsync(context, connectToVoiceChannel: true).ConfigureAwait(false);
-        if (player is null)
+        var playerResult = await GetQueuedPlayerResultAsync(guildId, voiceChannelId, connectToVoiceChannel: true).ConfigureAwait(false);
+        if (!playerResult.IsSuccess)
         {
-            return;
+            return GetPlayerErrorMessage(playerResult.Status);
         }
 
         var sanitizedQuery = RegexHelpers.StripSpecialCharacters(query);
@@ -48,146 +53,119 @@ public class MusicService : IMusicService
         var track = await _audioService.Tracks.LoadTrackAsync(sanitizedQuery, MapToTrackSearchMode(searchMode));
         if (track is null)
         {
-            await context.Interaction.FollowupAsync("😖 No results.").ConfigureAwait(false);
-            return;
+            return "😖 No results.";
         }
 
-        var position = await player.PlayAsync(track);
-
-        var socketUser = (context.User as SocketUser)!;
+        var position = await playerResult.Player.PlayAsync(track);
 
         if (track.Provider is StreamProvider.YouTube)
         {
             var trackPlayedEvent = new TrackPlayedEvent(
-                                            track.Identifier,
-                                            socketUser.Id,
-                                            socketUser.GetAvatarUrl(),
-                                            socketUser.Username,
-                                            SearchMode.YouTube);
+                track.Identifier,
+                userId,
+                avatarUrl,
+                username,
+                SearchMode.YouTube);
 
             await SendMessageAsync(trackPlayedEvent);
         }
 
-        if (position is 0)
-        {
-            await context.Interaction.FollowupAsync($"🔈 Playing: {track.Uri}").ConfigureAwait(false);
-        }
-        else
-        {
-            await context.Interaction.FollowupAsync($"🔈 Added to queue: {track.Uri}").ConfigureAwait(false);
-        }
+        return position is 0
+            ? $"🔈 Playing: {track.Uri}"
+            : $"🔈 Added to queue: {track.Uri}";
     }
 
-    public async Task<bool> PlayTrackAsync(string youtubeId, SocketUser discordUser, SocketGuild guild, bool queue)
+    public async Task<bool> PlayTrackAsync(string youtubeId, ulong guildId, ulong voiceChannelId, bool queue)
     {
-        var voiceChannel = guild.VoiceChannels.First(x => x.ConnectedUsers.Any(u => u.Id == discordUser.Id));
-
-        var retrieveOptions = new PlayerRetrieveOptions(PlayerChannelBehavior.Join);
-
-        var playerResult = await GetQueuedPlayerResultAsync(guild.Id, voiceChannel.Id);
-        if (!playerResult.IsSuccess)
-            return false;
-
         var track = await _audioService.Tracks.LoadTrackAsync(youtubeId, TrackSearchMode.YouTube);
         if (track is null)
+        {
             return false;
+        }
+
+        var playerResult = await GetQueuedPlayerResultAsync(guildId, voiceChannelId);
+        if (!playerResult.IsSuccess)
+        {
+            return false;
+        }
 
         await playerResult.Player.PlayAsync(track, enqueue: queue);
 
         return true;
     }
 
-    public async Task StopAsync(IInteractionContext context)
+    public async Task<string> StopAsync(ulong guildId, ulong voiceChannelId)
     {
-        var player = await GetQueuedPlayerAsync(context, connectToVoiceChannel: false).ConfigureAwait(false);
-        if (player is null)
+        var playerResult = await GetQueuedPlayerResultAsync(guildId, voiceChannelId, connectToVoiceChannel: false).ConfigureAwait(false);
+        if (!playerResult.IsSuccess)
         {
-            return;
+            return GetPlayerErrorMessage(playerResult.Status);
         }
 
-        if (player is null)
-        {
-            await context.Interaction.FollowupAsync("Player is not currently playing");
-            return;
-        }
+        await playerResult.Player.StopAsync().ConfigureAwait(false);
 
-        await player.StopAsync().ConfigureAwait(false);
-
-        await context.Interaction.FollowupAsync("🔇 Music stopped");
+        return "🔇 Music stopped";
     }
 
-    public async Task SkipAsync(IInteractionContext context)
+    public async Task<string> SkipAsync(ulong guildId, ulong voiceChannelId)
     {
-        var player = await GetQueuedPlayerAsync(context, connectToVoiceChannel: false).ConfigureAwait(false);
-        if (player is null)
+        var playerResult = await GetQueuedPlayerResultAsync(guildId, voiceChannelId, connectToVoiceChannel: false).ConfigureAwait(false);
+        if (!playerResult.IsSuccess)
         {
-            return;
+            return GetPlayerErrorMessage(playerResult.Status);
         }
 
-        if (player is null)
-        {
-            await context.Interaction.FollowupAsync("Player is not currently playing");
-            return;
-        }
+        await playerResult.Player.SkipAsync().ConfigureAwait(false);
 
-        await player.SkipAsync().ConfigureAwait(false);
-
-        var newTrack = player.CurrentTrack;
+        var newTrack = playerResult.Player.CurrentTrack;
         if (newTrack is not null)
         {
-            await context.Interaction.FollowupAsync($"Track skipped, 🔈 Now Playing: {newTrack?.Uri}").ConfigureAwait(false);
+            return $"Track skipped, 🔈 Now Playing: {newTrack.Uri}";
         }
-        else
-        {
-            await context.Interaction.FollowupAsync($"Nothing left in the queue, disconnecting").ConfigureAwait(false);
-        }
+
+        return "Nothing left in the queue, disconnecting";
     }
 
-    public async Task PullUpTrackAsync(IInteractionContext context)
+    public async Task<string> PullUpTrackAsync(ulong guildId, ulong voiceChannelId)
     {
-        var player = await GetQueuedPlayerAsync(context, connectToVoiceChannel: false).ConfigureAwait(false);
-        if (player is null)
+        var playerResult = await GetQueuedPlayerResultAsync(guildId, voiceChannelId, connectToVoiceChannel: false).ConfigureAwait(false);
+        if (!playerResult.IsSuccess)
         {
-            await context.Interaction.FollowupAsync("Player is not currently playing");
-            return;
+            return GetPlayerErrorMessage(playerResult.Status);
         }
 
-        var currentTrack = player.CurrentTrack;
+        var currentTrack = playerResult.Player.CurrentTrack;
         if (currentTrack is null)
         {
-            await context.Interaction.FollowupAsync("Player is not currently playing");
-            return;
+            return "Player is not currently playing";
         }
 
-        await context.Interaction.FollowupAsync("Wheel that one up");
+        await _wheelUpService.PullUp(currentTrack, playerResult.Player).ConfigureAwait(false);
 
-        await _wheelUpService.PullUp(currentTrack, player).ConfigureAwait(false);
+        return "Wheel that one up";
     }
 
-    public async Task SeekAsync(IInteractionContext context, int time)
+    public async Task<string> SeekAsync(ulong guildId, ulong voiceChannelId, int time)
     {
-        var player = await GetQueuedPlayerAsync(context, connectToVoiceChannel: false).ConfigureAwait(false);
-        if (player is null)
+        var playerResult = await GetQueuedPlayerResultAsync(guildId, voiceChannelId, connectToVoiceChannel: false).ConfigureAwait(false);
+        if (!playerResult.IsSuccess)
         {
-            await context.Interaction.FollowupAsync("Player is not currently playing");
-            return;
+            return GetPlayerErrorMessage(playerResult.Status);
         }
 
-        var currentTrack = player.CurrentTrack;
-        if (currentTrack is null)
+        if (playerResult.Player.CurrentTrack is null)
         {
-            await context.Interaction.FollowupAsync("Player is not currently playing");
-            return;
+            return "Player is not currently playing";
         }
 
-        await player.SeekAsync(TimeSpan.FromSeconds(time));
+        await playerResult.Player.SeekAsync(TimeSpan.FromSeconds(time));
 
-        await context.Interaction.FollowupAsync($"Track seeked to {time} seconds");
+        return $"Track seeked to {time} seconds";
     }
 
     public async ValueTask<QueuedLavalinkPlayer?> GetQueuedLavalinkPlayerAsync(
-        ulong guildId, 
-        ulong voiceChannelId, 
+        ulong guildId,
+        ulong voiceChannelId,
         bool connectToVoiceChannel = true)
     {
         var playerResult = await GetQueuedPlayerResultAsync(guildId, voiceChannelId, connectToVoiceChannel).ConfigureAwait(false);
@@ -196,28 +174,6 @@ public class MusicService : IMusicService
             return null;
         }
 
-        return playerResult.Player;
-    }
-
-    private async ValueTask<QueuedLavalinkPlayer?> GetQueuedPlayerAsync(IInteractionContext context, bool connectToVoiceChannel = true)
-    {
-        var guildId = context.Guild.Id;
-
-        var user = context.User as IVoiceState;
-
-        var playerResult = await GetQueuedPlayerResultAsync(guildId, user!.VoiceChannel.Id, connectToVoiceChannel).ConfigureAwait(false);
-        if (!playerResult.IsSuccess)
-        {
-            var errorMessage = playerResult.Status switch
-            {
-                PlayerRetrieveStatus.UserNotInVoiceChannel => "You are not connected to a voice channel.",
-                PlayerRetrieveStatus.BotNotConnected => "The bot is currently not connected.",
-                _ => "Unknown error.",
-            };
-
-            await context.Interaction.FollowupAsync(errorMessage).ConfigureAwait(false);
-            return null;
-        }
 
         return playerResult.Player;
     }
@@ -241,6 +197,13 @@ public class MusicService : IMusicService
 
         return result;
     }
+
+    private static string GetPlayerErrorMessage(PlayerRetrieveStatus status) => status switch
+    {
+        PlayerRetrieveStatus.UserNotInVoiceChannel => "You are not connected to a voice channel.",
+        PlayerRetrieveStatus.BotNotConnected => "The bot is currently not connected.",
+        _ => "Unknown error.",
+    };
 
     private static TrackSearchMode MapToTrackSearchMode(SearchMode? searchMode)
     {

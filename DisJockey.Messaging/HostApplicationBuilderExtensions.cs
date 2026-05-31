@@ -1,5 +1,6 @@
 ﻿using ImTools;
 using JasperFx.CodeGeneration;
+using JasperFx.CodeGeneration.Model;
 using Microsoft.Extensions.Hosting;
 using System.Reflection;
 using Wolverine;
@@ -39,6 +40,8 @@ public static class HostApplicationBuilderExtensions
                                             : TypeLoadMode.Dynamic;
 
                 options.CodeGeneration.TypeLoadMode = loadMode;
+
+                options.ServiceLocationPolicy = ServiceLocationPolicy.AlwaysAllowed;
             });
 
             return builder;

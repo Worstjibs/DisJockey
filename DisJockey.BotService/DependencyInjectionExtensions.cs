@@ -1,6 +1,7 @@
 ﻿using Discord;
 using Discord.Interactions;
 using Discord.WebSocket;
+using DisJockey.BotService.Consumers;
 using DisJockey.BotService.Interactions;
 using DisJockey.BotService.Services;
 using DisJockey.BotService.Services.Music;
@@ -57,7 +58,8 @@ public static class ServiceCollectionExtensions
                         .DeclareQueue("user-voice-state-changed-queue", q => q.QueueType = QueueType.stream)
                         .DeclareQueue("track-status-changed-queue", q => q.QueueType = QueueType.stream)
                         .DeclareQueue("track-progress-queue", q => q.QueueType = QueueType.stream);
-                });
+                },
+                typeof(PlayTrackEventConsumer).Assembly);
 
             builder.Services.AddScoped<IMessageSender, MessageSender>();
 

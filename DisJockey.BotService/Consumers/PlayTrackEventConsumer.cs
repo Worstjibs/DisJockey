@@ -1,4 +1,4 @@
-﻿using Discord.WebSocket;
+using Discord.WebSocket;
 using DisJockey.BotService.Services.Music;
 using DisJockey.Shared.Messaging.Contracts;
 using DisJockey.Shared.Messaging.Enums;
@@ -25,23 +25,28 @@ public class PlayTrackEventConsumer
 
     public async Task Consume(PlayTrackEvent playtrackEvent)
     {
-        var discordUser = await _discordClient.GetUserAsync(playtrackEvent.DiscordId) as SocketUser 
+        var discordUser = await _discordClient.GetUserAsync(playtrackEvent.DiscordId) as SocketUser
             ?? throw new Exception("Discord user not found");
 
-        var guild = discordUser.MutualGuilds.FirstOrDefault(g => g.VoiceChannels.Any(v => v.ConnectedUsers.Any(u => u.Id == playtrackEvent.DiscordId)))
-            ?? throw new Exception("Music first be connected to a voice channel");
+        var guild = discordUser.MutualGuilds
+            .FirstOrDefault(g => g.VoiceChannels.Any(v => v.ConnectedUsers.Any(u => u.Id == playtrackEvent.DiscordId)))
+            ?? throw new Exception("User must be connected to a voice channel");
 
-        var result = await _musicService.PlayTrackAsync(playtrackEvent.YoutubeId, discordUser, guild, playtrackEvent.Queue);
+        var voiceChannel = guild.VoiceChannels.First(v => v.ConnectedUsers.Any(u => u.Id == playtrackEvent.DiscordId));
+
+        var result = await _musicService.PlayTrackAsync(playtrackEvent.YoutubeId, guild.Id, voiceChannel.Id, playtrackEvent.Queue);
 
         if (!result)
+        {
             return;
+        }
 
         var trackPlayedEvent = new TrackPlayedEvent(
-                                        playtrackEvent.YoutubeId,
-                                        discordUser.Id,
-                                        discordUser.GetAvatarUrl(),
-                                        discordUser.Username,
-                                        SearchMode.YouTube);
+            playtrackEvent.YoutubeId,
+            discordUser.Id,
+            discordUser.GetAvatarUrl(),
+            discordUser.Username,
+            SearchMode.YouTube);
 
         await _messageSender.SendAsync(trackPlayedEvent);
     }

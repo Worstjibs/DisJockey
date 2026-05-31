@@ -1,5 +1,3 @@
-﻿using Discord;
-using Discord.WebSocket;
 using DisJockey.Shared.Messaging.Enums;
 using Lavalink4NET.Players.Queued;
 
@@ -7,12 +5,12 @@ namespace DisJockey.BotService.Services.Music;
 
 public interface IMusicService
 {
-    Task PlayTrackAsync(string query, IInteractionContext context, SearchMode searchMode = SearchMode.YouTube);
-    Task<bool> PlayTrackAsync(string youtubeId, SocketUser discordUser, SocketGuild guild, bool queue);
-    Task StopAsync(IInteractionContext context);
-    Task SkipAsync(IInteractionContext context);
-    Task PullUpTrackAsync(IInteractionContext context);
-    Task SeekAsync(IInteractionContext context, int time);
+    Task<string?> PlayTrackAsync(string query, ulong guildId, ulong voiceChannelId, ulong userId, string avatarUrl, string username, SearchMode searchMode = SearchMode.YouTube);
+    Task<bool> PlayTrackAsync(string youtubeId, ulong guildId, ulong voiceChannelId, bool queue);
+    Task<string> StopAsync(ulong guildId, ulong voiceChannelId);
+    Task<string> SkipAsync(ulong guildId, ulong voiceChannelId);
+    Task<string> PullUpTrackAsync(ulong guildId, ulong voiceChannelId);
+    Task<string> SeekAsync(ulong guildId, ulong voiceChannelId, int time);
     Task OnReadyAsync();
     ValueTask<QueuedLavalinkPlayer?> GetQueuedLavalinkPlayerAsync(ulong guildId, ulong voiceChannelId, bool connectToVoiceChannel = true);
 }
