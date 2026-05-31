@@ -9,7 +9,7 @@ public static class ServiceCollectionExtensions
 {
     extension(IServiceCollection services)
     {
-        public IServiceCollection AddApplicationServicesV2()
+        public IServiceCollection AddApplicationServices()
         {
             services.RegisterHandlers();
 

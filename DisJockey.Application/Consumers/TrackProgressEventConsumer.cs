@@ -1,6 +1,6 @@
-using DisJockey.Application.Hubs;
+using DisJockey.Application.Contracts;
 using DisJockey.Shared.Messaging.Events;
-using Microsoft.AspNetCore.SignalR;
+using DisJockey.Shared.Notifications;
 using Microsoft.Extensions.Logging;
 
 namespace DisJockey.Application.Consumers;
@@ -8,14 +8,14 @@ namespace DisJockey.Application.Consumers;
 public class TrackProgressEventConsumer
 {
     private readonly ILogger<TrackProgressEventConsumer> _logger;
-    private readonly IHubContext<TrackControlHub, ITrackControlHub> _hubContext;
+    private readonly INotifier _notifier;
 
     public TrackProgressEventConsumer(
         ILogger<TrackProgressEventConsumer> logger,
-        IHubContext<TrackControlHub, ITrackControlHub> hubContext)
+        INotifier notifier)
     {
         _logger = logger;
-        _hubContext = hubContext;
+        _notifier = notifier;
     }
 
     public async Task Consume(TrackProgressEvent trackProgressEvent)
@@ -25,8 +25,10 @@ public class TrackProgressEventConsumer
             nameof(TrackProgressEvent),
             trackProgressEvent.VoiceChannelId);
 
-        await _hubContext.Clients.SendTrackProgressNotificationAsync(
+        var trackProgressNotification = new TrackProgressNotification(trackProgressEvent.ElapsedSeconds, trackProgressEvent.TotalSeconds);
+
+        await _notifier.SendTrackProgressNotificationAsync(
             trackProgressEvent.VoiceChannelId,
-            new TrackProgressMessage(trackProgressEvent.ElapsedSeconds, trackProgressEvent.TotalSeconds));
+            trackProgressNotification);
     }
 }

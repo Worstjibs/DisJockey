@@ -1,23 +1,28 @@
 using DisJockey.Application.Clients;
+using DisJockey.Shared.Notifications;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
 
-namespace DisJockey.Application.Hubs;
+namespace DisJockey.Infrastructure.Hubs;
+
+public interface ITrackControlHub
+{
+    Task NotifyUserStatus(UserStatusNotification? notification);
+    Task NotifyTrackStatus(TrackStatusNotification? notification);
+    Task NotifyTrackProgress(TrackProgressNotification notification);
+}
 
 public class TrackControlHub : Hub<ITrackControlHub>
 {
     private readonly IBotServiceClient _botServiceClient;
     private readonly IUserConnectionTracker _connectionTracker;
-    private readonly ILogger<TrackControlHub> _logger;
 
     public TrackControlHub(
         IBotServiceClient botServiceClient,
-        IUserConnectionTracker connectionTracker,
-        ILogger<TrackControlHub> logger)
+        IUserConnectionTracker connectionTracker)
     {
         _botServiceClient = botServiceClient;
         _connectionTracker = connectionTracker;
-        _logger = logger;
     }
 
     public override async Task OnConnectedAsync()
@@ -105,10 +110,10 @@ public class TrackControlHub : Hub<ITrackControlHub>
             Context.ConnectionAborted);
 
         var trackStatusMessage = trackStatus is not null
-                                    ? new TrackStatusMessage(trackStatus.TrackName, trackStatus.Paused)
+                                    ? new TrackStatusNotification(trackStatus.TrackName, trackStatus.Paused)
                                     : null;
 
-        var userStatusMessage = new UserStatusMessage(
+        var userStatusMessage = new UserStatusNotification(
             voiceChannelInfo.VoiceChannelName,
             voiceChannelInfo.ServerName,
             trackStatusMessage);
@@ -116,20 +121,3 @@ public class TrackControlHub : Hub<ITrackControlHub>
         await Clients.SendUserStatusMessageAsync(discordId, userStatusMessage);
     }
 }
-
-public interface ITrackControlHub
-{
-    Task NotifyUserStatus(UserStatusMessage? message);
-    Task NotifyTrackStatus(TrackStatusMessage? message);
-    Task NotifyTrackProgress(TrackProgressMessage message);
-}
-
-public record UserStatusMessage(
-    string VoiceChannelName,
-    string ServerName,
-    TrackStatusMessage? TrackStatusMessage);
-
-public record TrackStatusMessage(string TrackName, bool Paused);
-
-public record TrackProgressMessage(int Elapsed, int Total);
-

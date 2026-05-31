@@ -16,7 +16,7 @@ using DisJockey.Shared.Protos;
 using Microsoft.Extensions.Configuration;
 using Grpc.Core;
 using Microsoft.AspNetCore.Http;
-using DisJockey.Application.Hubs;
+using DisJockey.Infrastructure.Hubs;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -33,7 +33,7 @@ builder.Services.AddCors();
 
 builder.AddInfrastructureServices();
 
-builder.Services.AddApplicationServicesV2()
+builder.Services.AddApplicationServices()
         .AddIdentityServices(builder.Configuration)
         .AddDiscordServices(builder.Configuration);
 

@@ -1,5 +1,7 @@
 ﻿using DisJockey.Application.Consumers;
+using DisJockey.Application.Contracts;
 using DisJockey.Application.Interfaces;
+using DisJockey.Infrastructure.Hubs;
 using DisJockey.Infrastructure.Persistence;
 using DisJockey.Infrastructure.Persistence.Repositories;
 using DisJockey.Infrastructure.YouTube;
@@ -10,6 +12,7 @@ using DisJockey.Shared.Messaging.Contracts;
 using DisJockey.Shared.Messaging.Events;
 using Google.Apis.Services;
 using Google.Apis.YouTube.v3;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -47,6 +50,11 @@ public static class HostBuilderExtensions
             builder.AddWolverine();
 
             builder.Services.AddScoped<IMessageSender, MessageSender>();
+
+            builder.Services.AddSingleton<IUserIdProvider, DiscordUserIdProvider>();
+            builder.Services.AddSingleton<IUserConnectionTracker, UserConnectionTracker>();
+
+            builder.Services.AddScoped<INotifier, HubNotifier>();
 
             return builder;
         }

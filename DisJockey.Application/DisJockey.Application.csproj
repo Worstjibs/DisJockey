@@ -8,12 +8,10 @@
 
     <ItemGroup>
         <PackageReference Include="Grpc.Net.ClientFactory" Version="2.80.0" />
-        <PackageReference Include="Microsoft.AspNetCore.SignalR.Core" Version="1.2.10" />
     </ItemGroup>
 
     <ItemGroup>
         <ProjectReference Include="..\DisJockey.Core\DisJockey.Core.csproj" />
-        <ProjectReference Include="..\DisJockey.Messaging\DisJockey.Messaging.csproj" />
         <ProjectReference Include="..\DisJockey.Shared\DisJockey.Shared.csproj" />
     </ItemGroup>
 

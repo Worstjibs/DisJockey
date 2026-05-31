@@ -1,6 +1,6 @@
-﻿using DisJockey.Application.Hubs;
-using DisJockey.Application.Interfaces;
+﻿using DisJockey.Application.Interfaces;
 using DisJockey.Application.Services;
+using DisJockey.Infrastructure.Hubs;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.SignalR;
@@ -40,9 +40,6 @@ public static class ServiceExtensions
                         }
                     };
                 });
-
-        services.AddSingleton<IUserIdProvider, DiscordUserIdProvider>();
-        services.AddSingleton<IUserConnectionTracker, UserConnectionTracker>();
 
         services.AddTransient<IHttpContextAccessor, HttpContextAccessor>();
 

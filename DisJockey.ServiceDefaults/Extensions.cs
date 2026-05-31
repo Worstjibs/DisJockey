@@ -73,6 +73,7 @@ public static class Extensions
                     //.AddGrpcClientInstrumentation()
                     .AddHttpClientInstrumentation()
                     .AddSource("Wolverine")
+                    .AddSource("DisJockey.*")
                     .AddSignalRInstrumentation();
             });
 

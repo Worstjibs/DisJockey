@@ -1,7 +1,7 @@
 using DisJockey.Application.Clients;
-using DisJockey.Application.Hubs;
+using DisJockey.Application.Contracts;
 using DisJockey.Shared.Messaging.Events;
-using Microsoft.AspNetCore.SignalR;
+using DisJockey.Shared.Notifications;
 using Microsoft.Extensions.Logging;
 
 namespace DisJockey.Application.Consumers;
@@ -9,19 +9,16 @@ namespace DisJockey.Application.Consumers;
 public class UserVoiceStateChangedEventConsumer
 {
     private readonly ILogger<UserVoiceStateChangedEventConsumer> _logger;
-    private readonly IHubContext<TrackControlHub, ITrackControlHub> _hubContext;
-    private readonly IUserConnectionTracker _userConnectionTracker;
+    private readonly INotifier _notifier;
     private readonly IBotServiceClient _botServiceClient;
 
     public UserVoiceStateChangedEventConsumer(
         ILogger<UserVoiceStateChangedEventConsumer> logger,
-        IHubContext<TrackControlHub, ITrackControlHub> hubContext,
-        IUserConnectionTracker userConnectionTracker,
+        INotifier notifier,
         IBotServiceClient botServiceClient)
     {
         _logger = logger;
-        _hubContext = hubContext;
-        _userConnectionTracker = userConnectionTracker;
+        _notifier = notifier;
         _botServiceClient = botServiceClient;
     }
 
@@ -35,28 +32,24 @@ public class UserVoiceStateChangedEventConsumer
         var voiceChannel = userVoiceStateChangedEvent.VoiceChannelDetails;
         if (voiceChannel is not null)
         {
-            var userConnectionId = _userConnectionTracker.GetConnection(userVoiceStateChangedEvent.DiscordId.ToString());
-            if (userConnectionId is not null)
-            {
-                await _hubContext.Groups.AddToGroupAsync(userConnectionId, voiceChannel.VoiceChannelId.ToString());
-            }
+            await _notifier.UpdateUserConnectionVoiceChannelAsync(userVoiceStateChangedEvent.DiscordId, voiceChannel.VoiceChannelId);
 
             var trackStatus = await _botServiceClient.GetTrackStatusAsync(voiceChannel.ServerId, voiceChannel.VoiceChannelId);
 
             var trackStatusMessage = trackStatus is not null
-                                        ? new TrackStatusMessage(trackStatus.TrackName, trackStatus.Paused)
+                                        ? new TrackStatusNotification(trackStatus.TrackName, trackStatus.Paused)
                                         : null;
 
-            var userStatusMessage = new UserStatusMessage(
+            var userStatusMessage = new UserStatusNotification(
                 voiceChannel.VoiceChannelName,
                 voiceChannel.ServerName,
                 trackStatusMessage);
 
-            await _hubContext.Clients.SendUserStatusMessageAsync(userVoiceStateChangedEvent.DiscordId, userStatusMessage);
+            await _notifier.SendUserStatusMessageAsync(userVoiceStateChangedEvent.DiscordId, userStatusMessage);
         }
         else
         {
-            await _hubContext.Clients.SendUserStatusMessageAsync(userVoiceStateChangedEvent.DiscordId, null);
+            await _notifier.SendUserStatusMessageAsync(userVoiceStateChangedEvent.DiscordId, null);
         }
     }
 }

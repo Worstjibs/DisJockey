@@ -1,6 +1,6 @@
-using DisJockey.Application.Hubs;
+using DisJockey.Application.Contracts;
 using DisJockey.Shared.Messaging.Events;
-using Microsoft.AspNetCore.SignalR;
+using DisJockey.Shared.Notifications;
 using Microsoft.Extensions.Logging;
 
 namespace DisJockey.Application.Consumers;
@@ -8,14 +8,14 @@ namespace DisJockey.Application.Consumers;
 public class TrackStatusChangedEventConsumer
 {
     private readonly ILogger<TrackStatusChangedEventConsumer> _logger;
-    private readonly IHubContext<TrackControlHub, ITrackControlHub> _hubContext;
+    private readonly INotifier _notifier;
 
     public TrackStatusChangedEventConsumer(
         ILogger<TrackStatusChangedEventConsumer> logger,
-        IHubContext<TrackControlHub, ITrackControlHub> hubContext)
+        INotifier notifier)
     {
         _logger = logger;
-        _hubContext = hubContext;
+        _notifier = notifier;
     }
 
     public async Task Consume(TrackStatusChangedEvent trackStatusChangedEvent)
@@ -25,12 +25,12 @@ public class TrackStatusChangedEventConsumer
             nameof(TrackStatusChangedEvent),
             trackStatusChangedEvent.VoiceChannelId);
 
-        TrackStatusMessage? message = null;
+        TrackStatusNotification? message = null;
         if (trackStatusChangedEvent.TrackDetails is not null)
         {
-            message = new TrackStatusMessage(trackStatusChangedEvent.TrackDetails.TrackName, Paused: false); // TODO: Fix Paused
+            message = new TrackStatusNotification(trackStatusChangedEvent.TrackDetails.TrackName, Paused: false); // TODO: Fix Paused
         }
 
-        await _hubContext.Clients.SendTrackNotificationAsync(trackStatusChangedEvent.VoiceChannelId, message);
+        await _notifier.SendTrackNotificationAsync(trackStatusChangedEvent.VoiceChannelId, message);
     }
 }

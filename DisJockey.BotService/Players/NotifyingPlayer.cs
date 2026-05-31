@@ -3,13 +3,18 @@ using DisJockey.Shared.Messaging.Events;
 using Lavalink4NET.Players;
 using Lavalink4NET.Players.Queued;
 using Lavalink4NET.Protocol.Payloads.Events;
+using System.Diagnostics;
 
 namespace DisJockey.BotService.Players;
 
 internal class NotifyingPlayer : QueuedLavalinkPlayer
 {
+    private static readonly ActivitySource _activitySource = new("DisJockey.BotService.Players.NotifyingPlayer");
+
     private readonly IServiceScopeFactory _scopeFactory;
     private CancellationTokenSource? _trackTimerCts;
+
+    private Activity? _trackActivity;
 
     public NotifyingPlayer(IPlayerProperties<NotifyingPlayer, QueuedLavalinkPlayerOptions> properties)
         : base(properties)
@@ -21,6 +26,8 @@ internal class NotifyingPlayer : QueuedLavalinkPlayer
         ITrackQueueItem track,
         CancellationToken cancellationToken = default)
     {
+        _trackActivity = _activitySource.StartActivity("Play Track");
+
         var trackName = track.Track?.Title ?? string.Empty;
 
         _trackTimerCts = new CancellationTokenSource();
@@ -42,6 +49,9 @@ internal class NotifyingPlayer : QueuedLavalinkPlayer
         }
 
         await PublishEventAsync(new TrackStatusChangedEvent(VoiceChannelId, null));
+
+        _trackActivity?.Dispose();
+        _trackActivity = null;
     }
 
     private async Task RunTrackTimerAsync(CancellationToken cancellationToken)
