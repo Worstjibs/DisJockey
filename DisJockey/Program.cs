@@ -14,9 +14,9 @@ using DisJockey.Middleware;
 using DisJockey.Endpoints;
 using DisJockey.Shared.Protos;
 using Microsoft.Extensions.Configuration;
-using DisJockey.Hubs;
 using Grpc.Core;
 using Microsoft.AspNetCore.Http;
+using DisJockey.Infrastructure.Hubs;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -33,16 +33,11 @@ builder.Services.AddCors();
 
 builder.AddInfrastructureServices();
 
-builder.Services.AddApplicationServicesV2()
+builder.Services.AddApplicationServices()
         .AddIdentityServices(builder.Configuration)
         .AddDiscordServices(builder.Configuration);
 
 builder.Services.AddSignalR();
-
-builder.Services.AddGrpcClient<DisJockeyGrpc.DisJockeyGrpcClient>(o =>
-{
-    o.Address = new Uri("http://bot");
-});
 
 var app = builder.Build();
 

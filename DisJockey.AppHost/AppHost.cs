@@ -45,16 +45,16 @@ var api = builder.AddProject<DisJockey>("api")
             .WaitFor(keycloak)
             .WithEnvironment("YoutubeSettings__APIKey", youtubeApiKey);
 
+var botToken = builder.AddParameter("bot-token");
+
 var bot = builder.AddProject<DisJockey_BotService>("bot")
             .WithReference(rabbitMq)
             .WaitFor(rabbitMq)
             .WithReference(lavalink)
             .WaitFor(lavalink)
-            .WithReference(keycloak)
-            .WaitFor(keycloak);
+            .WithEnvironment("BotSettings__BotToken", botToken);
 
 api.WithReference(bot);
-bot.WithReference(api);
 
 var bffClientId = builder.AddParameter("bff-client-id");
 var bffClientSecret = builder.AddParameter("bff-client-secret");
@@ -130,6 +130,7 @@ static IResourceBuilder<KeycloakResource> AddKeycloak(IDistributedApplicationBui
     return keycloak;
 }
 
+#pragma warning disable CS8321 // Local function is declared but never used
 static void AddMonitoringServices(IDistributedApplicationBuilder builder)
 {
     if (builder.ExecutionContext.IsRunMode)
@@ -160,6 +161,7 @@ static void AddMonitoringServices(IDistributedApplicationBuilder builder)
         });
     }
 }
+#pragma warning restore CS8321 // Local function is declared but never used
 
 static void TagImagesWithLatest(IDistributedApplicationBuilder builder)
 {

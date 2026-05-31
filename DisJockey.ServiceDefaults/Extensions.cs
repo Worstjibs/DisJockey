@@ -4,20 +4,21 @@ using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.ServiceDiscovery;
 using OpenTelemetry;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Trace;
 
+#pragma warning disable IDE0130 // Namespace does not match folder structure
 namespace Microsoft.Extensions.Hosting;
+#pragma warning restore IDE0130 // Namespace does not match folder structure
 
 // Adds common Aspire services: service discovery, resilience, health checks, and OpenTelemetry.
 // This project should be referenced by each service project in your solution.
 // To learn more about using this project, see https://aka.ms/dotnet/aspire/service-defaults
 public static class Extensions
 {
-    private const string HealthEndpointPath = "/health";
-    private const string AlivenessEndpointPath = "/alive";
+    private const string _healthEndpointPath = "/health";
+    private const string _alivenessEndpointPath = "/alive";
 
     public static TBuilder AddServiceDefaults<TBuilder>(this TBuilder builder) where TBuilder : IHostApplicationBuilder
     {
@@ -66,13 +67,14 @@ public static class Extensions
                     .AddAspNetCoreInstrumentation(tracing =>
                         // Exclude health check requests from tracing
                         tracing.Filter = context =>
-                            !context.Request.Path.StartsWithSegments(HealthEndpointPath)
-                            && !context.Request.Path.StartsWithSegments(AlivenessEndpointPath)
+                            !context.Request.Path.StartsWithSegments(_healthEndpointPath)
+                            && !context.Request.Path.StartsWithSegments(_alivenessEndpointPath)
                     )
                     // Uncomment the following line to enable gRPC instrumentation (requires the OpenTelemetry.Instrumentation.GrpcNetClient package)
                     //.AddGrpcClientInstrumentation()
                     .AddHttpClientInstrumentation()
                     .AddSource("Wolverine")
+                    .AddSource("DisJockey.*")
                     .AddSignalRInstrumentation();
             });
 
@@ -116,10 +118,10 @@ public static class Extensions
         if (app.Environment.IsDevelopment())
         {
             // All health checks must pass for app to be considered ready to accept traffic after starting
-            app.MapHealthChecks(HealthEndpointPath);
+            app.MapHealthChecks(_healthEndpointPath);
 
             // Only health checks tagged with the "live" tag must pass for app to be considered alive
-            app.MapHealthChecks(AlivenessEndpointPath, new HealthCheckOptions
+            app.MapHealthChecks(_alivenessEndpointPath, new HealthCheckOptions
             {
                 Predicate = r => r.Tags.Contains("live")
             });

@@ -1,5 +1,8 @@
 ﻿using DisJockey.Application.Consumers;
+using DisJockey.Application.Contracts;
 using DisJockey.Application.Interfaces;
+using DisJockey.Infrastructure.Clients;
+using DisJockey.Infrastructure.Hubs;
 using DisJockey.Infrastructure.Persistence;
 using DisJockey.Infrastructure.Persistence.Repositories;
 using DisJockey.Infrastructure.YouTube;
@@ -8,13 +11,16 @@ using DisJockey.Services.Interfaces;
 using DisJockey.Shared.Helpers;
 using DisJockey.Shared.Messaging.Contracts;
 using DisJockey.Shared.Messaging.Events;
+using DisJockey.Shared.Protos;
 using Google.Apis.Services;
 using Google.Apis.YouTube.v3;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Wolverine;
 using Wolverine.RabbitMQ;
+using Wolverine.RabbitMQ.Internal;
 
 namespace DisJockey.Infrastructure;
 
@@ -43,6 +49,26 @@ public static class HostBuilderExtensions
 
             builder.Services.AddScoped<IVideoDetailService, VideoDetailService>();
 
+            builder.AddWolverine();
+
+            builder.Services.AddScoped<IMessageSender, MessageSender>();
+
+            builder.Services.AddSingleton<IUserIdProvider, DiscordUserIdProvider>();
+            builder.Services.AddSingleton<IUserConnectionTracker, UserConnectionTracker>();
+
+            builder.Services.AddScoped<INotifier, HubNotifier>();
+
+            builder.Services.AddTransient<IBotServiceClient, BotServiceClient>();
+            builder.Services.AddGrpcClient<DisJockeyGrpc.DisJockeyGrpcClient>(o =>
+            {
+                o.Address = new Uri("http://bot");
+            });
+
+            return builder;
+        }
+
+        private IHostApplicationBuilder AddWolverine()
+        {
             builder.UseWolverine(options =>
             {
                 options.PublishMessage<PlayTrackEvent>().ToRabbitExchange("play-track-exchange", config =>
@@ -51,14 +77,32 @@ public static class HostBuilderExtensions
                 });
 
                 options.ListenToRabbitQueue("track-played-queue");
+                options.ListenToRabbitQueue(
+                    "user-voice-state-changed-queue",
+                    q =>
+                    {
+                        q.QueueType = QueueType.stream;
+                    });
+
+                options.ListenToRabbitQueue(
+                    "track-status-changed-queue",
+                    q =>
+                    {
+                        q.QueueType = QueueType.stream;
+                    });
+
+                options.ListenToRabbitQueue(
+                    "track-progress-queue",
+                    q =>
+                    {
+                        q.QueueType = QueueType.stream;
+                    });
 
                 options.UseRabbitMqUsingNamedConnection("rabbit-mq")
                     .AutoProvision();
 
                 options.ApplicationAssembly = typeof(TrackPlayedEventConsumer).Assembly;
             });
-
-            builder.Services.AddScoped<IMessageSender, MessageSender>();
 
             return builder;
         }

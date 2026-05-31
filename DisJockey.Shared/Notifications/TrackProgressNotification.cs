@@ -1,6 +1,3 @@
-namespace DisJockey.Shared.Notifications;
+﻿namespace DisJockey.Shared.Notifications;
 
-public record TrackProgressNotification(
-    ulong VoiceChannelId,
-    int ElapsedSeconds,
-    int TotalSeconds);
+public record TrackProgressNotification(int Elapsed, int Total);
