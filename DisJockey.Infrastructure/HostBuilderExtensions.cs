@@ -69,40 +69,37 @@ public static class HostBuilderExtensions
 
         private IHostApplicationBuilder AddWolverine()
         {
-            builder.UseWolverine(options =>
-            {
-                options.PublishMessage<PlayTrackEvent>().ToRabbitExchange("play-track-exchange", config =>
+            builder.AddWolverine(
+                options =>
                 {
-                    config.BindQueue("play-track-queue");
-                });
-
-                options.ListenToRabbitQueue("track-played-queue");
-                options.ListenToRabbitQueue(
-                    "user-voice-state-changed-queue",
-                    q =>
+                    options.PublishMessage<PlayTrackEvent>().ToRabbitExchange("play-track-exchange", config =>
                     {
-                        q.QueueType = QueueType.stream;
+                        config.BindQueue("play-track-queue");
                     });
 
-                options.ListenToRabbitQueue(
-                    "track-status-changed-queue",
-                    q =>
-                    {
-                        q.QueueType = QueueType.stream;
-                    });
+                    options.ListenToRabbitQueue("track-played-queue");
+                    options.ListenToRabbitQueue(
+                        "user-voice-state-changed-queue",
+                        q =>
+                        {
+                            q.QueueType = QueueType.stream;
+                        });
 
-                options.ListenToRabbitQueue(
-                    "track-progress-queue",
-                    q =>
-                    {
-                        q.QueueType = QueueType.stream;
-                    });
+                    options.ListenToRabbitQueue(
+                        "track-status-changed-queue",
+                        q =>
+                        {
+                            q.QueueType = QueueType.stream;
+                        });
 
-                options.UseRabbitMqUsingNamedConnection("rabbit-mq")
-                    .AutoProvision();
-
-                options.ApplicationAssembly = typeof(TrackPlayedEventConsumer).Assembly;
-            });
+                    options.ListenToRabbitQueue(
+                        "track-progress-queue",
+                        q =>
+                        {
+                            q.QueueType = QueueType.stream;
+                        });
+                }, 
+                consumerAssembly: typeof(TrackPlayedEventConsumer).Assembly);
 
             return builder;
         }

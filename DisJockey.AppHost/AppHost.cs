@@ -112,14 +112,14 @@ static IResourceBuilder<KeycloakResource> AddKeycloak(IDistributedApplicationBui
                     .WithArgs("--verbose")
                     .WithLifetime(ContainerLifetime.Persistent);
 
-    var keycloakHostname = builder.AddParameter("keycloak-hostname");
-
 #pragma warning disable ASPIRECERTIFICATES001
     keycloak.WithoutHttpsCertificate();
 #pragma warning restore ASPIRECERTIFICATES001
 
     if (builder.ExecutionContext.IsPublishMode)
     {
+        var keycloakHostname = builder.AddParameter("keycloak-hostname");
+
         // Keycloak will exist behind a proxy, so we can safely disable https
         keycloak.WithEnvironment("KC_HTTP_ENABLED", "true");
         keycloak.WithEnvironment("KC_PROXY_HEADERS", "xforwarded");

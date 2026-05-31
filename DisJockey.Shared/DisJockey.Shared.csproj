@@ -6,12 +6,12 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Microsoft.EntityFrameworkCore" Version="10.0.7" />
-        <PackageReference Include="Microsoft.Extensions.Configuration" Version="10.0.7" />
-        <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="10.0.7" />
-        <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="10.0.7" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore" Version="10.0.8" />
+        <PackageReference Include="Microsoft.Extensions.Configuration" Version="10.0.8" />
+        <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="10.0.8" />
+        <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="10.0.8" />
         <PackageReference Include="Microsoft.IdentityModel.JsonWebTokens" Version="8.18.0" />
-        <PackageReference Include="Google.Protobuf" Version="3.34.1" />
+        <PackageReference Include="Google.Protobuf" Version="3.35.0" />
         <PackageReference Include="Grpc.Core.Api" Version="2.80.0" />
         <PackageReference Include="Grpc.Tools" Version="2.80.0">
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>

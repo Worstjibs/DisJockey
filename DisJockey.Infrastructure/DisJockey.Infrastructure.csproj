@@ -7,20 +7,17 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Aspire.Microsoft.EntityFrameworkCore.SqlServer" Version="13.3.0" />
-        <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.3.9" />
-        <PackageReference Include="Microsoft.AspNetCore.SignalR.Core" Version="1.2.10" />
-
+        <PackageReference Include="Aspire.Microsoft.EntityFrameworkCore.SqlServer" Version="13.3.5" />
         <PackageReference Include="Google.Apis.YouTube.v3" Version="1.74.0.4137" />
-
-        <PackageReference Include="WolverineFx.RabbitMQ" Version="5.39.0" />
         <PackageReference Include="Grpc.Net.ClientFactory" Version="2.80.0" />
+        <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.3.10" />
+        <PackageReference Include="Microsoft.AspNetCore.SignalR.Core" Version="1.2.10" />
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\DisJockey.Application\DisJockey.Application.csproj" />
-      <ProjectReference Include="..\DisJockey.Core\DisJockey.Core.csproj" />
-      <ProjectReference Include="..\DisJockey.Messaging\DisJockey.Messaging.csproj" />
+        <ProjectReference Include="..\DisJockey.Application\DisJockey.Application.csproj" />
+        <ProjectReference Include="..\DisJockey.Core\DisJockey.Core.csproj" />
+        <ProjectReference Include="..\DisJockey.Messaging\DisJockey.Messaging.csproj" />
     </ItemGroup>
 
 </Project>

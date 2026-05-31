@@ -5,13 +5,18 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
     </PropertyGroup>
-    
+
     <ItemGroup>
-        <PackageReference Include="WolverineFx.RabbitMQ" Version="5.39.0" />
+        <PackageReference Include="WolverineFx.Http" Version="6.2.2" />
+        <PackageReference Include="WolverineFx.RabbitMQ" Version="6.2.2" />
     </ItemGroup>
-    
+
     <ItemGroup>
-      <ProjectReference Include="..\DisJockey.Shared\DisJockey.Shared.csproj" />
+        <ProjectReference Include="..\DisJockey.Shared\DisJockey.Shared.csproj" />
     </ItemGroup>
-    
+
+    <ItemGroup Condition="'$(Configuration)' == 'Debug'">
+        <PackageReference Include="WolverineFx.RuntimeCompilation" Version="6.2.2" />
+    </ItemGroup>
+
 </Project>
