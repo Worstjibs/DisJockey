@@ -1,7 +1,6 @@
-﻿using DisJockey.Application.Clients;
-using DisJockey.Application.Contracts;
-using DisJockey.Shared.Protos;
+﻿using DisJockey.Application.Contracts;
 using Microsoft.Extensions.DependencyInjection;
+using System;
 
 namespace DisJockey.Application;
 
@@ -29,13 +28,6 @@ public static class ServiceCollectionExtensions
                 {
                     services.AddScoped(x.Interface, x.Type);
                 });
-
-            services.AddGrpcClient<DisJockeyGrpc.DisJockeyGrpcClient>(o =>
-            {
-                o.Address = new Uri("http://bot");
-            });
-
-            services.AddTransient<IBotServiceClient, BotServiceClient>();
 
             return services;
         }

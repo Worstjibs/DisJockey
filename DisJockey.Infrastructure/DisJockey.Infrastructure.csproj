@@ -14,6 +14,7 @@
         <PackageReference Include="Google.Apis.YouTube.v3" Version="1.74.0.4137" />
 
         <PackageReference Include="WolverineFx.RabbitMQ" Version="5.39.0" />
+        <PackageReference Include="Grpc.Net.ClientFactory" Version="2.80.0" />
     </ItemGroup>
 
     <ItemGroup>

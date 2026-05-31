@@ -1,27 +1,8 @@
+﻿using DisJockey.Application.Contracts;
 using DisJockey.Shared.Protos;
 using Grpc.Core;
 
-namespace DisJockey.Application.Clients;
-
-public interface IBotServiceClient
-{
-    Task<VoiceChannelInfo?> GetUserVoiceChannelAsync(
-        ulong userId,
-        CancellationToken cancellationToken = default);
-    Task<TrackStatusInfo?> GetTrackStatusAsync(
-        ulong serverId,
-        ulong voiceChannelId,
-        CancellationToken cancellationToken = default);
-    Task SeekTrackAsync(
-        ulong serverId,
-        ulong voiceChannelId,
-        int positionSeconds,
-        CancellationToken cancellationToken = default);
-    Task PlayPauseTrackAsync(
-        ulong serverId,
-        ulong voiceChannelId,
-        CancellationToken cancellationToken = default);
-}
+namespace DisJockey.Infrastructure.Clients;
 
 public class BotServiceClient : IBotServiceClient
 {
@@ -110,12 +91,3 @@ public class BotServiceClient : IBotServiceClient
     }
 }
 
-public record VoiceChannelInfo(
-    ulong VoiceChannelId,
-    string VoiceChannelName,
-    ulong ServerId,
-    string ServerName);
-
-public record TrackStatusInfo(
-    string TrackName,
-    bool Paused);

@@ -243,6 +243,9 @@ dotnet_naming_style._fieldname.required_suffix =
 dotnet_naming_style._fieldname.word_separator = 
 dotnet_naming_style._fieldname.capitalization = camel_case
 
+csharp_prefer_system_threading_lock = true:suggestion
+csharp_style_prefer_simple_property_accessors = true:suggestion
+
 [*.{cs,vb}]
 dotnet_style_coalesce_expression = true:suggestion
 dotnet_style_null_propagation = true:suggestion

@@ -20,8 +20,7 @@ public class TrackProgressEventConsumer
 
     public async Task Consume(TrackProgressEvent trackProgressEvent)
     {
-        _logger.LogDebug(
-            "Received {EventName} for VoiceChannel {VoiceChannelId}",
+        _logger.LogDiscordEventReceived(
             nameof(TrackProgressEvent),
             trackProgressEvent.VoiceChannelId);
 

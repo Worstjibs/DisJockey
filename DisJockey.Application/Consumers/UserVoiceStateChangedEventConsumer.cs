@@ -1,4 +1,3 @@
-using DisJockey.Application.Clients;
 using DisJockey.Application.Contracts;
 using DisJockey.Shared.Messaging.Events;
 using DisJockey.Shared.Notifications;
@@ -24,8 +23,7 @@ public class UserVoiceStateChangedEventConsumer
 
     public async Task Consume(UserVoiceStateChangedEvent userVoiceStateChangedEvent)
     {
-        _logger.LogDebug(
-            "Received {EventName} for Discord user {DiscordId}",
+        _logger.LogDiscordUserEventReceived(
             nameof(UserVoiceStateChangedEvent),
             userVoiceStateChangedEvent.DiscordId);
 

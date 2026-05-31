@@ -1,17 +1,17 @@
 ﻿using Discord;
-using Lavalink4NET;
-using Lavalink4NET.Players.Queued;
-using Lavalink4NET.Players;
-using Lavalink4NET.Rest.Entities.Tracks;
-using Microsoft.Extensions.Options;
-using DisJockey.BotService.Services.WheelUp;
 using Discord.WebSocket;
-using Lavalink4NET.Events.Players;
-using Lavalink4NET.Tracks;
-using DisJockey.Shared.Messaging.Events;
-using DisJockey.Shared.Messaging.Enums;
-using DisJockey.Shared.Messaging.Contracts;
 using DisJockey.BotService.Players;
+using DisJockey.BotService.Services.WheelUp;
+using DisJockey.Shared.Messaging.Contracts;
+using DisJockey.Shared.Messaging.Enums;
+using DisJockey.Shared.Messaging.Events;
+using Lavalink4NET;
+using Lavalink4NET.Events.Players;
+using Lavalink4NET.Players;
+using Lavalink4NET.Players.Queued;
+using Lavalink4NET.Rest.Entities.Tracks;
+using Lavalink4NET.Tracks;
+using Microsoft.Extensions.Options;
 
 namespace DisJockey.BotService.Services.Music;
 
@@ -43,7 +43,9 @@ public class MusicService : IMusicService
             return;
         }
 
-        var track = await _audioService.Tracks.LoadTrackAsync(query, MapToTrackSearchMode(searchMode));
+        var sanitizedQuery = RegexHelpers.StripSpecialCharacters(query);
+
+        var track = await _audioService.Tracks.LoadTrackAsync(sanitizedQuery, MapToTrackSearchMode(searchMode));
         if (track is null)
         {
             await context.Interaction.FollowupAsync("😖 No results.").ConfigureAwait(false);

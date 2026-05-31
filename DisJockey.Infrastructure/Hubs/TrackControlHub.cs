@@ -1,4 +1,4 @@
-using DisJockey.Application.Clients;
+using DisJockey.Application.Contracts;
 using DisJockey.Shared.Notifications;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;

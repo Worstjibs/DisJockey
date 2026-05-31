@@ -7,10 +7,6 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Grpc.Net.ClientFactory" Version="2.80.0" />
-    </ItemGroup>
-
-    <ItemGroup>
         <ProjectReference Include="..\DisJockey.Core\DisJockey.Core.csproj" />
         <ProjectReference Include="..\DisJockey.Shared\DisJockey.Shared.csproj" />
     </ItemGroup>

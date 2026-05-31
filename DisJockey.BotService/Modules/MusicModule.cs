@@ -6,10 +6,14 @@ namespace DisJockey.BotService.Modules;
 
 public class MusicModule : InteractionModuleBase<SocketInteractionContext>
 {
+    private readonly ILogger<MusicModule> _logger;
     private readonly IMusicService _musicService;
 
-    public MusicModule(IMusicService musicService)
+    public MusicModule(
+        ILogger<MusicModule> logger,
+        IMusicService musicService)
     {
+        _logger = logger;
         _musicService = musicService;
     }
 
@@ -36,8 +40,10 @@ public class MusicModule : InteractionModuleBase<SocketInteractionContext>
             await DeferAsync().ConfigureAwait(false);
             await deferredAction().ConfigureAwait(false);
         }
-        catch (Exception)
+        catch (Exception ex)
         {
+            _logger.LogError(ex, "An error occured processing the action.");
+
             await Context.Interaction.FollowupAsync("Something went wrong");
         }
     }

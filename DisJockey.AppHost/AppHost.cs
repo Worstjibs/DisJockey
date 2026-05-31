@@ -45,11 +45,14 @@ var api = builder.AddProject<DisJockey>("api")
             .WaitFor(keycloak)
             .WithEnvironment("YoutubeSettings__APIKey", youtubeApiKey);
 
+var botToken = builder.AddParameter("bot-token");
+
 var bot = builder.AddProject<DisJockey_BotService>("bot")
             .WithReference(rabbitMq)
             .WaitFor(rabbitMq)
             .WithReference(lavalink)
-            .WaitFor(lavalink);
+            .WaitFor(lavalink)
+            .WithEnvironment("BotSettings__BotToken", botToken);
 
 api.WithReference(bot);
 

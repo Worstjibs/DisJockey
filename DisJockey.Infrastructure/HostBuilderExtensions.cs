@@ -1,6 +1,7 @@
 ﻿using DisJockey.Application.Consumers;
 using DisJockey.Application.Contracts;
 using DisJockey.Application.Interfaces;
+using DisJockey.Infrastructure.Clients;
 using DisJockey.Infrastructure.Hubs;
 using DisJockey.Infrastructure.Persistence;
 using DisJockey.Infrastructure.Persistence.Repositories;
@@ -10,6 +11,7 @@ using DisJockey.Services.Interfaces;
 using DisJockey.Shared.Helpers;
 using DisJockey.Shared.Messaging.Contracts;
 using DisJockey.Shared.Messaging.Events;
+using DisJockey.Shared.Protos;
 using Google.Apis.Services;
 using Google.Apis.YouTube.v3;
 using Microsoft.AspNetCore.SignalR;
@@ -55,6 +57,12 @@ public static class HostBuilderExtensions
             builder.Services.AddSingleton<IUserConnectionTracker, UserConnectionTracker>();
 
             builder.Services.AddScoped<INotifier, HubNotifier>();
+
+            builder.Services.AddTransient<IBotServiceClient, BotServiceClient>();
+            builder.Services.AddGrpcClient<DisJockeyGrpc.DisJockeyGrpcClient>(o =>
+            {
+                o.Address = new Uri("http://bot");
+            });
 
             return builder;
         }
