@@ -1,9 +1,7 @@
 using Discord;
 using Discord.Interactions;
 using DisJockey.BotService.Services.Music;
-using DisJockey.Shared.Messaging.Contracts;
 using DisJockey.Shared.Messaging.Enums;
-using DisJockey.Shared.Messaging.Events;
 
 namespace DisJockey.BotService.Modules;
 
@@ -11,16 +9,13 @@ public class MusicModule : InteractionModuleBase<SocketInteractionContext>
 {
     private readonly ILogger<MusicModule> _logger;
     private readonly IMusicService _musicService;
-    private readonly IMessageSender _messageSender;
 
     public MusicModule(
         ILogger<MusicModule> logger,
-        IMusicService musicService,
-        IMessageSender messageSender)
+        IMusicService musicService)
     {
         _logger = logger;
         _musicService = musicService;
-        _messageSender = messageSender;
     }
 
     [SlashCommand("play", description: "Plays music", runMode: RunMode.Async)]
@@ -34,21 +29,7 @@ public class MusicModule : InteractionModuleBase<SocketInteractionContext>
                 return "You are not connected to a voice channel.";
             }
 
-            var result = await _musicService.PlayTrackAsync(query, guildId, voiceChannelId.Value, searchMode);
-
-            if (result.IsSuccess && searchMode is SearchMode.YouTube)
-            {
-                var trackPlayedEvent = new TrackPlayedEvent(
-                    result.TrackIdentifier!,
-                    Context.User.Id,
-                    Context.User.GetAvatarUrl(),
-                    Context.User.Username,
-                    SearchMode.YouTube);
-
-                await _messageSender.SendAsync(trackPlayedEvent);
-            }
-
-            return result.Message;
+            return await _musicService.PlayTrackAsync(query, guildId, voiceChannelId.Value, Context.User.Id, searchMode);
         });
     }
 
@@ -118,16 +99,13 @@ public class MusicModule : InteractionModuleBase<SocketInteractionContext>
         return (Context.Guild.Id, voiceChannelId);
     }
 
-    private async Task DeferActionAsync(Func<Task<string?>> deferredAction)
+    private async Task DeferActionAsync(Func<Task<string>> deferredAction)
     {
         try
         {
             await DeferAsync().ConfigureAwait(false);
             var response = await deferredAction().ConfigureAwait(false);
-            if (response is not null)
-            {
-                await FollowupAsync(response).ConfigureAwait(false);
-            }
+            await FollowupAsync(response).ConfigureAwait(false);
         }
         catch (Exception ex)
         {

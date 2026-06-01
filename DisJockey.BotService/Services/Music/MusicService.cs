@@ -1,4 +1,5 @@
 using DisJockey.BotService.Players;
+using DisJockey.BotService.Services.Events;
 using DisJockey.BotService.Services.WheelUp;
 using DisJockey.Shared.Messaging.Enums;
 using Lavalink4NET;
@@ -6,6 +7,7 @@ using Lavalink4NET.Events.Players;
 using Lavalink4NET.Players;
 using Lavalink4NET.Players.Queued;
 using Lavalink4NET.Rest.Entities.Tracks;
+using Lavalink4NET.Tracks;
 using Microsoft.Extensions.Options;
 
 namespace DisJockey.BotService.Services.Music;
@@ -15,29 +17,33 @@ public class MusicService : IMusicService
     private readonly IAudioService _audioService;
     private readonly IOptions<QueuedLavalinkPlayerOptions> _queuePlayerOptions;
     private readonly WheelUpService _wheelUpService;
+    private readonly IEventsPublisher _trackPlayedPublisher;
 
     public MusicService(
         IAudioService audioService,
         IOptions<QueuedLavalinkPlayerOptions> queuePlayerOptions,
-        WheelUpService wheelUpService
+        WheelUpService wheelUpService,
+        IEventsPublisher trackPlayedPublisher
     )
     {
         _audioService = audioService;
         _queuePlayerOptions = queuePlayerOptions;
         _wheelUpService = wheelUpService;
+        _trackPlayedPublisher = trackPlayedPublisher;
     }
 
-    public async Task<PlayTrackResult> PlayTrackAsync(
+    public async Task<string> PlayTrackAsync(
         string query,
         ulong guildId,
         ulong voiceChannelId,
+        ulong userId,
         SearchMode searchMode = SearchMode.YouTube,
         bool enqueue = true)
     {
         var playerResult = await GetQueuedPlayerResultAsync(guildId, voiceChannelId, connectToVoiceChannel: true).ConfigureAwait(false);
         if (!playerResult.IsSuccess)
         {
-            return new PlayTrackResult(GetPlayerErrorMessage(playerResult.Status), TrackIdentifier: null);
+            return GetPlayerErrorMessage(playerResult.Status);
         }
 
         var sanitizedQuery = RegexHelpers.StripSpecialCharacters(query);
@@ -45,16 +51,19 @@ public class MusicService : IMusicService
         var track = await _audioService.Tracks.LoadTrackAsync(sanitizedQuery, MapToTrackSearchMode(searchMode));
         if (track is null)
         {
-            return new PlayTrackResult("😖 No results.", TrackIdentifier: null);
+            return "😖 No results.";
         }
 
         var position = await playerResult.Player.PlayAsync(track, enqueue: enqueue);
 
-        var message = position is 0
+        if (track.Provider is StreamProvider.YouTube)
+        {
+            await _trackPlayedPublisher.PublishTrackPlayedAsync(userId, track.Identifier, searchMode);
+        }
+
+        return position is 0
             ? $"🔈 Playing: {track.Uri}"
             : $"🔈 Added to queue: {track.Uri}";
-
-        return new PlayTrackResult(message, track.Identifier);
     }
 
     public async Task<string> StopAsync(ulong guildId, ulong voiceChannelId)

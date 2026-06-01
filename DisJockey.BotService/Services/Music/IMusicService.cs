@@ -5,7 +5,7 @@ namespace DisJockey.BotService.Services.Music;
 
 public interface IMusicService
 {
-    Task<PlayTrackResult> PlayTrackAsync(string query, ulong guildId, ulong voiceChannelId, SearchMode searchMode = SearchMode.YouTube, bool enqueue = true);
+    Task<string> PlayTrackAsync(string query, ulong guildId, ulong voiceChannelId, ulong userId, SearchMode searchMode = SearchMode.YouTube, bool enqueue = true);
     Task<string> StopAsync(ulong guildId, ulong voiceChannelId);
     Task<string> SkipAsync(ulong guildId, ulong voiceChannelId);
     Task<string> PullUpTrackAsync(ulong guildId, ulong voiceChannelId);

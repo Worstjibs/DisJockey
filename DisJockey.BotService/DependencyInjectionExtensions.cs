@@ -4,6 +4,7 @@ using Discord.WebSocket;
 using DisJockey.BotService.Consumers;
 using DisJockey.BotService.Interactions;
 using DisJockey.BotService.Services;
+using DisJockey.BotService.Services.Events;
 using DisJockey.BotService.Services.Music;
 using DisJockey.BotService.Services.WheelUp;
 using DisJockey.Messaging;
@@ -105,6 +106,7 @@ public static class ServiceCollectionExtensions
             services.Configure<QueuedLavalinkPlayerOptions>(x => new QueuedLavalinkPlayerOptions());
 
             services.AddSingleton<IMusicService, MusicService>();
+            services.AddSingleton<IEventsPublisher, EventsPublisher>();
             services.AddSingleton<WheelUpService>();
 
             return services;
