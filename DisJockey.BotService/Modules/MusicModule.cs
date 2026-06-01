@@ -1,7 +1,9 @@
 using Discord;
 using Discord.Interactions;
 using DisJockey.BotService.Services.Music;
+using DisJockey.Shared.Messaging.Contracts;
 using DisJockey.Shared.Messaging.Enums;
+using DisJockey.Shared.Messaging.Events;
 
 namespace DisJockey.BotService.Modules;
 
@@ -9,13 +11,16 @@ public class MusicModule : InteractionModuleBase<SocketInteractionContext>
 {
     private readonly ILogger<MusicModule> _logger;
     private readonly IMusicService _musicService;
+    private readonly IMessageSender _messageSender;
 
     public MusicModule(
         ILogger<MusicModule> logger,
-        IMusicService musicService)
+        IMusicService musicService,
+        IMessageSender messageSender)
     {
         _logger = logger;
         _musicService = musicService;
+        _messageSender = messageSender;
     }
 
     [SlashCommand("play", description: "Plays music", runMode: RunMode.Async)]
@@ -29,14 +34,21 @@ public class MusicModule : InteractionModuleBase<SocketInteractionContext>
                 return "You are not connected to a voice channel.";
             }
 
-            return await _musicService.PlayTrackAsync(
-                query,
-                guildId,
-                voiceChannelId.Value,
-                Context.User.Id,
-                Context.User.GetAvatarUrl(),
-                Context.User.Username,
-                searchMode);
+            var result = await _musicService.PlayTrackAsync(query, guildId, voiceChannelId.Value, searchMode);
+
+            if (result.IsSuccess && searchMode is SearchMode.YouTube)
+            {
+                var trackPlayedEvent = new TrackPlayedEvent(
+                    result.TrackIdentifier!,
+                    Context.User.Id,
+                    Context.User.GetAvatarUrl(),
+                    Context.User.Username,
+                    SearchMode.YouTube);
+
+                await _messageSender.SendAsync(trackPlayedEvent);
+            }
+
+            return result.Message;
         });
     }
 

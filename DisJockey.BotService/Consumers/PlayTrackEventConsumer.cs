@@ -34,15 +34,20 @@ public class PlayTrackEventConsumer
 
         var voiceChannel = guild.VoiceChannels.First(v => v.ConnectedUsers.Any(u => u.Id == playtrackEvent.DiscordId));
 
-        var result = await _musicService.PlayTrackAsync(playtrackEvent.YoutubeId, guild.Id, voiceChannel.Id, playtrackEvent.Queue);
+        var result = await _musicService.PlayTrackAsync(
+            playtrackEvent.YoutubeId,
+            guild.Id,
+            voiceChannel.Id,
+            SearchMode.YouTube,
+            enqueue: playtrackEvent.Queue);
 
-        if (!result)
+        if (!result.IsSuccess)
         {
             return;
         }
 
         var trackPlayedEvent = new TrackPlayedEvent(
-            playtrackEvent.YoutubeId,
+            result.TrackIdentifier!,
             discordUser.Id,
             discordUser.GetAvatarUrl(),
             discordUser.Username,

@@ -1,14 +1,11 @@
 using DisJockey.BotService.Players;
 using DisJockey.BotService.Services.WheelUp;
-using DisJockey.Shared.Messaging.Contracts;
 using DisJockey.Shared.Messaging.Enums;
-using DisJockey.Shared.Messaging.Events;
 using Lavalink4NET;
 using Lavalink4NET.Events.Players;
 using Lavalink4NET.Players;
 using Lavalink4NET.Players.Queued;
 using Lavalink4NET.Rest.Entities.Tracks;
-using Lavalink4NET.Tracks;
 using Microsoft.Extensions.Options;
 
 namespace DisJockey.BotService.Services.Music;
@@ -18,34 +15,29 @@ public class MusicService : IMusicService
     private readonly IAudioService _audioService;
     private readonly IOptions<QueuedLavalinkPlayerOptions> _queuePlayerOptions;
     private readonly WheelUpService _wheelUpService;
-    private readonly IServiceScopeFactory _serviceScopeFactory;
 
     public MusicService(
         IAudioService audioService,
         IOptions<QueuedLavalinkPlayerOptions> queuePlayerOptions,
-        WheelUpService wheelUpService,
-        IServiceScopeFactory serviceScopeFactory
+        WheelUpService wheelUpService
     )
     {
         _audioService = audioService;
         _queuePlayerOptions = queuePlayerOptions;
         _wheelUpService = wheelUpService;
-        _serviceScopeFactory = serviceScopeFactory;
     }
 
-    public async Task<string?> PlayTrackAsync(
+    public async Task<PlayTrackResult> PlayTrackAsync(
         string query,
         ulong guildId,
         ulong voiceChannelId,
-        ulong userId,
-        string avatarUrl,
-        string username,
-        SearchMode searchMode = SearchMode.YouTube)
+        SearchMode searchMode = SearchMode.YouTube,
+        bool enqueue = true)
     {
         var playerResult = await GetQueuedPlayerResultAsync(guildId, voiceChannelId, connectToVoiceChannel: true).ConfigureAwait(false);
         if (!playerResult.IsSuccess)
         {
-            return GetPlayerErrorMessage(playerResult.Status);
+            return new PlayTrackResult(GetPlayerErrorMessage(playerResult.Status), TrackIdentifier: null);
         }
 
         var sanitizedQuery = RegexHelpers.StripSpecialCharacters(query);
@@ -53,45 +45,16 @@ public class MusicService : IMusicService
         var track = await _audioService.Tracks.LoadTrackAsync(sanitizedQuery, MapToTrackSearchMode(searchMode));
         if (track is null)
         {
-            return "😖 No results.";
+            return new PlayTrackResult("😖 No results.", TrackIdentifier: null);
         }
 
-        var position = await playerResult.Player.PlayAsync(track);
+        var position = await playerResult.Player.PlayAsync(track, enqueue: enqueue);
 
-        if (track.Provider is StreamProvider.YouTube)
-        {
-            var trackPlayedEvent = new TrackPlayedEvent(
-                track.Identifier,
-                userId,
-                avatarUrl,
-                username,
-                SearchMode.YouTube);
-
-            await SendMessageAsync(trackPlayedEvent);
-        }
-
-        return position is 0
+        var message = position is 0
             ? $"🔈 Playing: {track.Uri}"
             : $"🔈 Added to queue: {track.Uri}";
-    }
 
-    public async Task<bool> PlayTrackAsync(string youtubeId, ulong guildId, ulong voiceChannelId, bool queue)
-    {
-        var track = await _audioService.Tracks.LoadTrackAsync(youtubeId, TrackSearchMode.YouTube);
-        if (track is null)
-        {
-            return false;
-        }
-
-        var playerResult = await GetQueuedPlayerResultAsync(guildId, voiceChannelId);
-        if (!playerResult.IsSuccess)
-        {
-            return false;
-        }
-
-        await playerResult.Player.PlayAsync(track, enqueue: queue);
-
-        return true;
+        return new PlayTrackResult(message, track.Identifier);
     }
 
     public async Task<string> StopAsync(ulong guildId, ulong voiceChannelId)
@@ -215,14 +178,6 @@ public class MusicService : IMusicService
         };
     }
 
-    private async Task SendMessageAsync<T>(T message)
-    {
-        using var scope = _serviceScopeFactory.CreateScope();
-        var sender = scope.ServiceProvider.GetRequiredService<IMessageSender>();
-
-        await sender.SendAsync(message);
-    }
-
     public Task OnReadyAsync()
     {
         _audioService.TrackEnded += OnTrackEnded;
@@ -232,7 +187,9 @@ public class MusicService : IMusicService
             var queuedPlayer = eventArgs.Player as IQueuedLavalinkPlayer;
 
             if (queuedPlayer is not null && queuedPlayer.State == PlayerState.NotPlaying)
+            {
                 await queuedPlayer.DisconnectAsync();
+            }
         }
 
         return Task.CompletedTask;
